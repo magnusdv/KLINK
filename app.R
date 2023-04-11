@@ -4,5 +4,5 @@
 #library(pedsuite)
 #library(pedmut)
 #library(openxlsx)
-
+pkgload::load_all()
 KLINK::openKLINK()
