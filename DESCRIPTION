@@ -14,6 +14,7 @@ Imports:
     pedmut,
     pedprobr,
     pedtools,
+    pkgload,
     shiny,
     shinydashboard
 Encoding: UTF-8
