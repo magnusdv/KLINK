@@ -1,7 +1,4 @@
 
-#' @import shiny
-#' @import shinydashboard
-#' @import gt
 #' @export
 openKLINK = function(...) {
 

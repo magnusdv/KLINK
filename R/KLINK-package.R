@@ -2,18 +2,14 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @import shiny
+#' @import shinydashboard
+#' @import gt
 #' @importFrom forrel readFam kinshipLR
 #' @importFrom openxlsx write.xlsx createStyle
-#' @importFrom pedmut alwaysLumpable
-#' @importFrom pedmut getParams
-#' @importFrom pedmut isStationary mutationModel mutationMatrix
+#' @importFrom pedmut alwaysLumpable getParams isStationary mutationModel mutationMatrix
 #' @importFrom pedprobr likelihood2 kosambi setMutationModel
-#' @importFrom pedtools afreq
-#' @importFrom pedtools founders
-#' @importFrom pedtools is.ped is.pedList relabel name getGenotypes whichMarkers mutmod<- plotPedList typedMembers selectMarkers
-#' @importFrom pedtools mutmod
-#' @importFrom pedtools nAlleles
-#' @importFrom pedtools untypedMembers
+#' @importFrom pedtools afreq founders is.ped is.pedList relabel mutmod mutmod<- nAlleles name getGenotypes plotPedList typedMembers selectMarkers untypedMembers whichMarkers
 #' @importFrom stats ave
 #' @importFrom utils read.table
 ## usethis namespace: end

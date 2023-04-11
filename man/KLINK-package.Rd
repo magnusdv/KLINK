@@ -8,6 +8,14 @@
 \description{
 A Shiny app for computing kinship LR using linked markers.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/magnusdv/KLINK}
+  \item Report bugs at \url{https://github.com/magnusdv/KLINK/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Magnus Dehli Vigeland \email{magnusdv@medisin.uio.no}
 
