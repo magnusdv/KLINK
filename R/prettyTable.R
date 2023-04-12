@@ -62,3 +62,22 @@ prettyTable = function(restable, style = 6) {
       locations = list(cells_grand_summary(), cells_stub_grand_summary())
     )
 }
+
+
+prettyMarkerTable = function(mtab) {
+  mtab |> gt() |>
+    opt_stylize(6) |>
+    tab_style(style = cell_text(color = "gray"),
+              locations = cells_body(rows = is.na(Pair))) |>
+    sub_missing(missing_text = "") |>
+    tab_style(
+      style = cell_borders(sides = "left", style = "dashed"),
+      locations = cells_body(columns = "Marker")
+    ) |>
+    tab_spanner(
+      label = "Mutation model",
+      columns = match("Model", names(mtab)):ncol(mtab)
+    )
+}
+
+utils::globalVariables(c("CMpos","Gindex","Gsize","LRlinked","LRsingle","Pair"))
