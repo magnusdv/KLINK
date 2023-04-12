@@ -1,5 +1,5 @@
 
-markerSummary = function(x, markers = NULL) {
+markerSummary = function(x, markers = NULL, linkageMap = NULL) {
   ped = x[[1]][[1]]
   M = if(is.null(markers)) ped$MARKERS else pedtools::getMarkers(ped, markers)
 
@@ -10,17 +10,28 @@ markerSummary = function(x, markers = NULL) {
   reslist = lapply(M, function(m) {
     mut = mutmod(m)
     pars = getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
-    names(pars)[1] = "Model"
+    colnames(pars) = c("Model", "Rate", "Range", "Rate2")
 
     stronglump = alwaysLumpable(mut)
     lumptxt = if(stronglump) "Yes (strongly)" else if (specLump) "Yes (special)" else "No"
 
-    df = as.data.frame(list(Marker = name(m), Alleles = nAlleles(m),
-                            MinFreq = sprintf("%.2g", min(afreq(m)))))
-    cbind(df, pars, Lumpable = lumptxt)
+    cbind.data.frame(Marker = name(m),
+                     Alleles = nAlleles(m),
+                     MinFreq = sprintf("%.2g", min(afreq(m))),
+                     pars,
+                     Stationary = if(isStationary(mut)) "Yes" else "No",
+                     Lumpable = lumptxt)
   })
 
   res = do.call(rbind, reslist)
+  if(any(grepl("/", res$Rate, fixed = TRUE)))
+    colnames(res)[colnames(res) == "Rate"] = "Rate (F/M)"
+
+  if(!is.null(linkageMap)) {
+    pairNo = linkageMap$Pair[match(res$Marker, linkageMap$Marker)]
+    res = cbind(Pair = pairNo, res)
+  }
+
   res
 }
 

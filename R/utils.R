@@ -13,5 +13,3 @@ fold = function(s, width) {
   pattern = sprintf("(.{1,%d})", width)
   trimws(gsub(pattern, '\\1\n', s), "right")
 }
-
-

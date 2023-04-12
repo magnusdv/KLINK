@@ -145,14 +145,26 @@ openKLINK = function(...) {
     markerData = reactiveVal(NULL)
 
     observeEvent(pedigrees$complete, {
-      mtab = markerSummary(pedigrees$complete)
+      mtab = markerSummary(pedigrees$complete, linkageMap = linkageMap())
       markerData(req(mtab))
       updateTabsetPanel(session, "tabs", selected = "Marker data")
     })
 
     # Print loaded marker data
     output$marker_table = render_gt({
-      gt(req(markerData())) |> opt_stylize(6)
+      mtab = req(markerData())
+      gt(mtab) |> opt_stylize(6) |>
+        tab_style(style = cell_text(color = "gray"),
+                  locations = cells_body(rows = is.na(Pair))) |>
+        sub_missing(missing_text = "") |>
+        tab_style(
+          style = cell_borders(sides = "left", style = "dashed"),
+          locations = cells_body(columns = "Marker")
+        ) |>
+        tab_spanner(
+          label = "Mutation model",
+          columns = match("Model", names(mtab)):ncol(mtab)
+        )
     }, width = "100%", align = "left")
 
 
