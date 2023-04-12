@@ -55,17 +55,25 @@ openKLINK = function(...) {
   # Define server
   server = function(input, output, session) {
 
+    # Error utility
+    showNote = function(...) {
+      showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = "error")
+      invisible(NULL)
+    }
+
     famfilename = reactiveVal(NULL)
     pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
 
     observeEvent(input$famfile, {
       fil = req(input$famfile)
       famfilename(fil$name)
-      peds = loadFamFile(fil$datapath)
-      pedigrees$complete = peds
+      peds = tryCatch(loadFamFile(fil$datapath), error = showNote)
+      pedigrees$complete = req(peds)
       if(any(startsWith(unlist(labels(peds[[1]])), ":missing:")))
-        showNotification("Some missing parents have been added. Results may deviate from Familias/FamLink",
-                         duration = NULL, closeButton = TRUE, type = "error")
+        showNote(
+        "Warning: Some missing parents have been added! (See plots.) <br>",
+        "This may cause LR deviations from Familias/FamLink if nonstationary mutation models are used.<br>",
+        "To avoid this problem, add the missing individuals in Familias before saving the .fam file.")
     })
 
     observeEvent(input$loadex, {

@@ -1,12 +1,9 @@
 
 loadFamFile = function(path) {
-  x = tryCatch(
-    forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:"),
-    error = function(e) {print(e); NULL})
+  x = forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:")
 
   if(length(x) != 2)
-    stop(sprintf("Familias file should contain 2 pedigrees; this file has %d.", length(x)),
-         call. = FALSE)
+    stop("Familias file should contain 2 pedigrees; this file has ", length(x))
 
   # Ensure each pedigree is an unnamed list
   x = lapply(x, function(xx) {
