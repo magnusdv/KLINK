@@ -1,9 +1,9 @@
 
-prepareTable = function(pedigrees, markermap) {
+prepareTable = function(pedigrees, linkageMap) {
 
   # Initialise table
-  markermap$Pair = paste("Pair", markermap$Pair)
-  res = markermap[c("Pair", "Marker", "CMpos")]
+  linkageMap$Pair = paste("Pair", linkageMap$Pair)
+  res = linkageMap[c("Pair", "Marker", "CMpos")]
 
   p1 = pedigrees[[1]]
 
@@ -24,7 +24,9 @@ prepareTable = function(pedigrees, markermap) {
 
 
 #' @export
-linkedLR = function(pedigrees, linkageMap) {
+linkedLR = function(pedigrees, linkageMap, mapfun = "Kosambi") {
+
+  MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
 
   restable = prepareTable(pedigrees, linkageMap)
 
@@ -41,23 +43,23 @@ linkedLR = function(pedigrees, linkageMap) {
 
   # Pairwise linkage
   lr2 = vapply(pairs, function(pp)
-    .linkedLR(pedigrees, pp$Marker, cmpos = pp$CMpos, disableMut = FALSE), FUN.VALUE = 1)
+    .linkedLR(pedigrees, pp$Marker, cmpos = pp$CMpos, mapfun = MAPFUN, disableMut = FALSE), FUN.VALUE = 1)
   restable$LRlinked = unlist(lapply(lr2, function(a) c(a, log(a))))
 
   # Without mutmodels
   lr2 = vapply(pairs, function(pp)
-    .linkedLR(pedigrees, pp$Marker, cmpos = pp$CMpos, disableMut = TRUE), FUN.VALUE = 1)
+    .linkedLR(pedigrees, pp$Marker, cmpos = pp$CMpos, mapfun = MAPFUN, disableMut = TRUE), FUN.VALUE = 1)
   restable$LRnomut = unlist(lapply(lr2, function(a) c(a, log(a))))
 
   restable
 }
 
 
-.linkedLR = function(peds, markerpair, cmpos, disableMut = FALSE) {
+.linkedLR = function(peds, markerpair, cmpos, mapfun, disableMut = FALSE) {
   if(length(markerpair) < 2)
     return(NA_real_)
 
-  rho = kosambi(diff(cmpos))
+  rho = mapfun(diff(cmpos))
 
   H1 = selectMarkers(peds[[1]], markerpair)
   H2 = selectMarkers(peds[[2]], markerpair)

@@ -5,7 +5,7 @@ openKLINK = function(...) {
   # Define UI
   ui = dashboardPage(title = "KLINK",
 
-    header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with linked markers"), titleWidth = 400),
+    header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"), titleWidth = 400),
 
     sidebar = dashboardSidebar(
       fileInput("famfile", "Upload .fam file", buttonLabel = icon("folder-open")),
@@ -15,6 +15,8 @@ openKLINK = function(...) {
       actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
       actionButton("compute", "Calculate LR", width = "50%", class = "btn btn-danger"),
       hr(),
+      radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
+                   selected = "Kosambi", inline = TRUE),
       selectInput("showmarker", "Plot genotypes: ", choices = c(None = ""))
     ),
 
@@ -23,7 +25,7 @@ openKLINK = function(...) {
       tags$head(
         tags$style(HTML("
           .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
-          #shiny-notification-panel {top:20%; left:20%; width:100%; max-width:450px;font-size:20px;}
+          #shiny-notification-panel {top:25%; left:15%; width:100%; max-width:580px;font-size:20px;}
 
       "))),
 
@@ -122,11 +124,13 @@ openKLINK = function(...) {
     # Compute LR
     observeEvent(input$compute, {
       ped = req(pedigrees$reduced)
-      res = linkedLR(ped, linkageMap())
+      res = linkedLR(ped, linkageMap = linkageMap(), mapfun = input$mapfunction)
       resultTable(res)
       updateTabsetPanel(session, "tabs", selected = "LR table")
     })
 
+    # Reset when changing map function
+    observeEvent(input$mapfunction, resultTable(NULL))
 
     # Marker data table -------------------------------------------------------
 
