@@ -1,5 +1,5 @@
 
 writeResult = function(data, file) {
-  hs = createStyle(textDecoration = "bold")
-  write.xlsx(data, file = file, headerStyle = hs, colWidths = "auto")
+  hs = openxlsx::createStyle(textDecoration = "bold")
+  openxlsx::write.xlsx(data, file = file, headerStyle = hs, colWidths = "auto")
 }

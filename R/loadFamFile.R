@@ -7,9 +7,9 @@ loadFamFile = function(path) {
 
   # Ensure each pedigree is an unnamed list
   x = lapply(x, function(xx) {
-    if(is.ped(xx))
+    if(pedtools::is.ped(xx))
       list(xx)
-    else if(is.pedList(xx))
+    else if(pedtools::is.pedList(xx))
       unname(xx)
     else
       stop("No pedigrees detected in Familias file.")

@@ -8,16 +8,16 @@ prepareTable = function(pedigrees, linkageMap) {
   p1 = pedigrees[[1]]
 
   # Reduce to markers included in pedigrees
-  res = res[res$Marker %in% name(p1), , drop = FALSE]
+  res = res[res$Marker %in% pedtools::name(p1), , drop = FALSE]
 
   # Genotypes
-  geno = t.default(getGenotypes(p1, ids = typedMembers(p1), markers = res$Marker))
+  geno = t.default(pedtools::getGenotypes(p1, ids = typedMembers(p1), markers = res$Marker))
   colnames(geno) = paste0("Geno", 1:ncol(geno))
   res = cbind(res, geno)
 
   # Group index
-  res$Gindex = ave(res$Pair, res$Pair, FUN = seq_along)
-  res$Gsize = ave(res$Pair, res$Pair, FUN = function(a) rep(length(a), length(a)))
+  res$Gindex = stats::ave(res$Pair, res$Pair, FUN = seq_along)
+  res$Gsize = stats::ave(res$Pair, res$Pair, FUN = function(a) rep(length(a), length(a)))
 
   res
 }
@@ -31,7 +31,7 @@ linkedLR = function(pedigrees, linkageMap, mapfun = "Kosambi") {
   restable = prepareTable(pedigrees, linkageMap)
 
   # Single-point LR
-  lr1 = kinshipLR(pedigrees, markers = restable$Marker)
+  lr1 = forrel::kinshipLR(pedigrees, markers = restable$Marker)
   restable$LRsingle = lr1$LRperMarker[,1]
 
   # Split linkage groups
@@ -61,19 +61,19 @@ linkedLR = function(pedigrees, linkageMap, mapfun = "Kosambi") {
 
   rho = mapfun(diff(cmpos))
 
-  H1 = selectMarkers(peds[[1]], markerpair)
-  H2 = selectMarkers(peds[[2]], markerpair)
+  H1 = pedtools::selectMarkers(peds[[1]], markerpair)
+  H2 = pedtools::selectMarkers(peds[[2]], markerpair)
 
   if(disableMut) {
-    H1 = H1 |> setMutationModel(model = NULL)
-    H2 = H2 |> setMutationModel(model = NULL)
+    H1 = H1 |> pedprobr::setMutationModel(model = NULL)
+    H2 = H2 |> pedprobr::setMutationModel(model = NULL)
   }
   else {
     H1 = H1 |> reduceAllelesSpecial(1) |> reduceAllelesSpecial(2)
     H2 = H2 |> reduceAllelesSpecial(1) |> reduceAllelesSpecial(2)
   }
 
-  numer = likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
-  denom = likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho)
+  numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
+  denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho)
   numer/denom
 }

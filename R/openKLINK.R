@@ -97,7 +97,7 @@ openKLINK = function(...) {
         pedigrees$active = pedigrees$complete
 
       # Update dropdown marker list
-      markers = c(None = "", name(peds[[1]]))
+      markers = c(None = "", pedtools::name(peds[[1]]))
       updateSelectInput(session, "showmarker", choices = markers, selected = character(0))
     })
 
@@ -111,7 +111,7 @@ openKLINK = function(...) {
 
     output$pedplot2 = renderPlot({
       ped2 = req(pedigrees$active[[2]])
-      plotPed(ped2, marker = input$showmarker, margin = 0.1, cex = 1.7)
+      plotPed(ped2, marker = input$showmarker, margin = 0.1, cex = 1.3)
     }, execOnResize = TRUE)
 
     observeEvent(input$hideEmpty, {
@@ -163,7 +163,7 @@ openKLINK = function(...) {
     # Change map file
     observeEvent(input$mapfile, {
       file = req(input$mapfile)
-      map = read.table(file$datapath, header=FALSE, sep="\t")
+      map = utils::read.table(file$datapath, header=FALSE, sep="\t")
       linkageMap(map)
       resultTable(NULL)
       updateTabsetPanel(session, "tabs", selected = "Linkage map")

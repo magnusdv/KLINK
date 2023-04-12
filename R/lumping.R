@@ -1,9 +1,9 @@
 # A modified version of pedprobr::reduceAlleles()
 reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
-  if(is.pedList(x))
+  if(pedtools::is.pedList(x))
     return(lapply(x, function(comp) reduceAllelesSpecial(comp, marker = marker, verbose = verbose)))
 
-  midx = whichMarkers(x, marker)
+  midx = pedtools::whichMarkers(x, marker)
   m = x$MARKERS[[midx]]
 
   if (all(m != 0)) {
@@ -14,7 +14,7 @@ reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
   mut = attrs$mutmod
 
   # If stationary mutation model, return unchanged (special lumping unneeded)
-  if(is.null(mut) || isStationary(mut))
+  if(is.null(mut) || pedmut::isStationary(mut))
     return(x)
 
   # Check if special lumping applies
@@ -45,7 +45,7 @@ reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
   presentFreq = attrs$afreq[presentIdx]
   attr(m, "afreq") = c(presentFreq, 1 - sum(presentFreq))
 
-  mutmod(m) = lumpSpecial(mut, lump = lump)
+  pedtools::mutmod(m) = lumpSpecial(mut, lump = lump)
 
   if(verbose) message(sprintf("Special lumping with untyped founders: %d -> %d alleles",
                               length(origAlleles), length(presentIdx) + 1))
@@ -57,7 +57,7 @@ reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
 lumpSpecial = function(mut, lump, method = "foundersUntyped") {
   if(inherits(mut, "mutationModel")) {
     newmut = lapply(mut, function(m) lumpSpecial(m, lump = lump, method = method))
-    return(mutationModel(newmut))
+    return(pedmut::mutationModel(newmut))
   }
 
   als = colnames(mut)
@@ -71,5 +71,5 @@ lumpSpecial = function(mut, lump, method = "foundersUntyped") {
   m2 = cbind(m2, lump = 1 - rowSums(m2))
 
   newfr = c(afr[keep], lump = sum(afr[lump]))
-  mutationMatrix("custom", matrix = m2, afreq = newfr)
+  pedmut::mutationMatrix("custom", matrix = m2, afreq = newfr)
 }

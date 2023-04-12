@@ -8,18 +8,18 @@ markerSummary = function(x, markers = NULL, linkageMap = NULL) {
     all(untypedMembers(x[[2]]) %in% founders(x[[2]]))
 
   reslist = lapply(M, function(m) {
-    mut = mutmod(m)
-    pars = getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
+    mut = pedtools::mutmod(m)
+    pars = pedmut::getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
     colnames(pars) = c("Model", "Rate", "Range", "Rate2")
 
-    stronglump = alwaysLumpable(mut)
+    stronglump = pedmut::alwaysLumpable(mut)
     lumptxt = if(stronglump) "Yes (strongly)" else if (specLump) "Yes (special)" else "No"
 
-    cbind.data.frame(Marker = name(m),
-                     Alleles = nAlleles(m),
-                     MinFreq = sprintf("%.2g", min(afreq(m))),
+    cbind.data.frame(Marker = pedtools::name(m),
+                     Alleles = pedtools::nAlleles(m),
+                     MinFreq = sprintf("%.2g", min(pedtools::afreq(m))),
                      pars,
-                     Stationary = if(isStationary(mut)) "Yes" else "No",
+                     Stationary = if(pedmut::isStationary(mut)) "Yes" else "No",
                      Lumpable = lumptxt)
   })
 
