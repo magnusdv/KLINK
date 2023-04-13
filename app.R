@@ -1,2 +1,2 @@
 pkgload::load_all(".")
-KLINK::openKLINK()
+KLINK::runKLINK()
