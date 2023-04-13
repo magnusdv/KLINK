@@ -1,28 +1,31 @@
-# A modified version of pedprobr::reduceAlleles()
-reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
+lumpAllSpecial = function(x, verbose = FALSE) {
   if(pedtools::is.pedList(x))
-    return(lapply(x, function(comp) reduceAllelesSpecial(comp, marker = marker, verbose = verbose)))
+    return(lapply(x, function(comp) lumpAllSpecial(comp, verbose = verbose)))
 
-  midx = pedtools::whichMarkers(x, marker)
-  m = x$MARKERS[[midx]]
+  x$MARKERS = lapply(x$MARKERS, reduceAllelesSpecial, verbose = verbose)
+  x
+}
+
+# A modified version of pedprobr::reduceAlleles()
+reduceAllelesSpecial = function(m, verbose = FALSE) {
 
   if (all(m != 0)) {
     if(verbose) message("Lumping not needed - all members genotyped")
-    return(x)
+    return(m)
   }
   attrs = attributes(m)
   mut = attrs$mutmod
 
   # If stationary mutation model, return unchanged (special lumping unneeded)
-  if(is.null(mut) || pedmut::isStationary(mut))
-    return(x)
+  if(is.null(mut))# || pedmut::isStationary(mut))
+    return(m)
 
-  # Check if special lumping applies
+  # Check if special lumping applies: All untyped are founders
   untyped = m[,1] == 0 & m[,2] == 0
-  foundersUntyped = all(x$FID[untyped] == 0)
-
-  if(!foundersUntyped)
-    return(x)
+  if(!all(x$FID[untyped] == 0)) {
+    if(verbose) message("Special lumping does not apply - returning marker unchanged")
+    return(m)
+  }
 
   origAlleles = attrs$alleles
 
@@ -33,7 +36,7 @@ reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
   if(length(presentIdx) >= length(origAlleles) - 1) {
     if(verbose) message(sprintf("Lumping not needed: %d of %d alleles observed",
                                 length(presentIdx), length(origAlleles)))
-    return(x)
+    return(m)
   }
 
   presentIdx = sort.int(presentIdx, method = "shell")
@@ -47,11 +50,11 @@ reduceAllelesSpecial = function(x, marker, verbose = FALSE) {
 
   pedtools::mutmod(m) = lumpSpecial(mut, lump = lump)
 
-  if(verbose) message(sprintf("Special lumping with untyped founders: %d -> %d alleles",
-                              length(origAlleles), length(presentIdx) + 1))
+  if(verbose)
+    message(sprintf("Special lumping with untyped founders: %d -> %d alleles",
+                    length(origAlleles), length(presentIdx) + 1))
 
-  x$MARKERS[[midx]] = m
-  x
+  m
 }
 
 lumpSpecial = function(mut, lump, method = "foundersUntyped") {
@@ -81,3 +84,4 @@ specialLumpability = function(x) {
   ped2 = x[[2]]
   all(untypedMembers(ped1) %in% founders(ped1)) &&
     all(untypedMembers(ped2) %in% founders(ped2))
+}
