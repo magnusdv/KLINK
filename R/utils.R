@@ -13,3 +13,9 @@ fold = function(s, width) {
   pattern = sprintf("(.{1,%d})", width)
   trimws(gsub(pattern, '\\1\n', s), "right")
 }
+
+safelog = function(v) {
+  res = rep(NA_real_, length(v))
+  res[v > 0] = log(v[v > 0])
+  res
+}

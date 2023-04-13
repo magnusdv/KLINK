@@ -1,57 +1,70 @@
 
-prepareTable = function(pedigrees, linkageMap) {
-
-  # Initialise table
-  linkageMap$Pair = paste("Pair", linkageMap$Pair)
-  res = linkageMap[c("Pair", "Marker", "CMpos")]
-
-  p1 = pedigrees[[1]]
-
-  # Reduce to markers included in pedigrees
-  res = res[res$Marker %in% pedtools::name(p1), , drop = FALSE]
-
-  # Genotypes
-  geno = t.default(pedtools::getGenotypes(p1, ids = typedMembers(p1), markers = res$Marker))
-  colnames(geno) = paste0("Geno", 1:ncol(geno))
-  res = cbind(res, geno)
-
-  # Group index
-  res$Gindex = stats::ave(res$Pair, res$Pair, FUN = seq_along)
-  res$Gsize = stats::ave(res$Pair, res$Pair, FUN = function(a) rep(length(a), length(a)))
-
-  res
-}
-
-
 #' @export
-linkedLR = function(pedigrees, linkageMap, mapfun = "Kosambi") {
+linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi") {
+
+  if(is.null(markerData))
+    markerData = markerSummary(pedigrees, linkageMap)
 
   MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
 
-  restable = prepareTable(pedigrees, linkageMap)
+  # Initialise table: Pair, Marker, Geno
+  res = markerData[c(1, 2, grep("Geno", names(markerData), fixed = TRUE))]
+  nr = nrow(res)
+
+  # Add cM positions
+  res$PosCM = linkageMap$PosCM[match(res$Marker, linkageMap$Marker)]
+
+  # Replace missing pairs with dummy 1001, 1002, ... (otherwise lost in split)
+  if(any(NApair <- is.na(res$Pair)))
+    res$Pair[NApair] = 1000 + seq_along(which(NApair))
+
+  # Group size (1 or 2)
+  res$Gsize = stats::ave(1:nr, res$Pair, FUN = function(a) rep(length(a), length(a)))
+
+  # Put (intact) pairs on top
+  res = res[order(-res$Gsize, res$Pair, res$PosCM), , drop = FALSE]
+
+  # Index within each group (do after ordering!)
+  res$Gindex = stats::ave(1:nr, res$Pair, FUN = seq_along)
+
+  # Special lumping
+  if(specialLumpability(pedigrees))
+    pedigrees = lapply(pedigrees, lumpAllSpecial)
 
   # Single-point LR
-  lr1 = forrel::kinshipLR(pedigrees, markers = restable$Marker)
-  restable$LRsingle = lr1$LRperMarker[,1]
+  lr1 = forrel::kinshipLR(pedigrees, markers = res$Marker)
+  res$LRsingle = lr1$LRperMarker[,1]
+
+  # No-mutation versions
+  pedsNomut = lapply(pedigrees, function(x) pedprobr::setMutationModel(x, NULL))
+  LRnomut = forrel::kinshipLR(pedsNomut, markers = res$Marker)$LRperMarker[,1]
 
   # Split linkage groups
-  pairs = split(restable, restable$Pair)
+  pairs = split(res, res$Pair)
 
-  # LR nolink (product of singlepoint)
-  lrProd = vapply(pairs, function(pp) prod(pp$LRsingle), FUN.VALUE = 1)
-  restable$LRnolink = unlist(lapply(lrProd, function(a) c(a, log(a))))
+  res$LRnolink = NA_real_
+  res$LRlinked = NA_real_
+  res$LRnomut  = NA_real_
 
-  # Pairwise linkage
-  lr2 = vapply(pairs, function(pp)
-    .linkedLR(pedigrees, pp$Marker, cmpos = pp$CMpos, mapfun = MAPFUN, disableMut = FALSE), FUN.VALUE = 1)
-  restable$LRlinked = unlist(lapply(lr2, function(a) c(a, log(a))))
+  for(pp in pairs) {
+    m = pp$Marker
+    idx1 = match(m[1], res$Marker)
 
-  # Without mutmodels
-  lr2 = vapply(pairs, function(pp)
-    .linkedLR(pedigrees, pp$Marker, cmpos = pp$CMpos, mapfun = MAPFUN, disableMut = TRUE), FUN.VALUE = 1)
-  restable$LRnomut = unlist(lapply(lr2, function(a) c(a, log(a))))
+    if(nrow(pp) == 2) {
+      res$LRnolink[idx1] = prod(pp$LRsingle)
+      res$LRlinked[idx1] = .linkedLR(pedigrees, m, cmpos = pp$PosCM, mapfun = MAPFUN)
+      res$LRnomut[idx1]  = .linkedLR(pedsNomut, m, cmpos = pp$PosCM, mapfun = MAPFUN)
+    }
+    else {
+      res$LRnolink[idx1] = res$LRlinked[idx1] = pp$LRsingle
+      res$LRnomut[idx1] = LRnomut[[m]]
+    }
+  }
 
-  restable
+  # Repair "Pair" column
+  res$Pair = ifelse(res$Gsize > 1, paste("Pair", res$Pair), "Unpaired")
+
+  res
 }
 
 
@@ -67,10 +80,6 @@ linkedLR = function(pedigrees, linkageMap, mapfun = "Kosambi") {
   if(disableMut) {
     H1 = H1 |> pedprobr::setMutationModel(model = NULL)
     H2 = H2 |> pedprobr::setMutationModel(model = NULL)
-  }
-  else {
-    H1 = H1 |> reduceAllelesSpecial(1) |> reduceAllelesSpecial(2)
-    H2 = H2 |> reduceAllelesSpecial(1) |> reduceAllelesSpecial(2)
   }
 
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
