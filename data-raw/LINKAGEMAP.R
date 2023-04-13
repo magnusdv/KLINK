@@ -8,8 +8,8 @@ LINKAGEMAP = readxl::read_excel("data-raw/markerMap.xlsx") |>
 # Test
 x = LINKAGEMAP |>
   group_by(Pair) |>
-  mutate(CMdist = diff(CMpos),
-         rho = pedprobr::kosambi(cM = CMdist)) |>
+  mutate(DistCM = diff(PosCM),
+         rho = pedprobr::kosambi(cM = DistCM)) |>
   print()
 
 usethis::use_data(LINKAGEMAP, overwrite = TRUE)
