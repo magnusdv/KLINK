@@ -20,15 +20,15 @@ runKLINK = function(...) {
 
     sidebar = dashboardSidebar(
       fileInput("famfile", "Upload .fam file", buttonLabel = icon("folder-open")),
-      actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
       fileInput("mapfile", "Change marker map", buttonLabel = icon("folder-open"),
                 placeholder = "BUILTIN"),
       hr(),
+      actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
       actionButton("compute", "Calculate LR", width = "50%", class = "btn btn-danger"),
-      checkboxInput("linkedonly", "Show linked only", value = FALSE),
       #checkboxInput("uselog", "Show log(LR)", value = FALSE),
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
-                   selected = "Kosambi", inline = TRUE)
+                   selected = "Kosambi", inline = TRUE),
+      checkboxInput("linkedonly", "Show linked only", value = FALSE)
       #selectInput("showmarker", "Plot genotypes: ", choices = c(None = ""))
     ),
 
@@ -197,14 +197,17 @@ runKLINK = function(...) {
       filename = function() sprintf("KLINK-%s.xlsx", sub(".fam", "", famfilename())),
       content = function(file) {
         res = resultTable()
-        LRcols = c("LRnolink",	"LRlinked",	"LRnomut")
-        res[res$Gindex > 1, LRcols] = NA
-        res$Gindex = res$Gsize = NULL
 
-        # add totals row
-        res = rbind(res, NA)
-        res[nrow(res), LRcols] = apply(res[LRcols], 2, prod, na.rm = TRUE)
-        res[nrow(res), 1] = "Total LR"
+        if(!is.null(res)) {
+          LRcols = c("LRnolink",	"LRlinked",	"LRnomut")
+          res[res$Gindex > 1, LRcols] = NA
+          res$Gindex = res$Gsize = NULL
+
+          # add totals row
+          res = rbind(res, NA)
+          res[nrow(res), LRcols] = apply(res[LRcols], 2, prod, na.rm = TRUE)
+          res[nrow(res), 1] = "Total LR"
+        }
 
         data = list(linkageMap = linkageMap(),
                     markerData = markerData(),
