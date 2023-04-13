@@ -1,13 +1,13 @@
-lumpAllSpecial = function(x, verbose = FALSE) {
+lumpAllSpecial = function(x, verbose = FALSE, check = TRUE) {
   if(pedtools::is.pedList(x))
     return(lapply(x, function(comp) lumpAllSpecial(comp, verbose = verbose)))
 
-  x$MARKERS = lapply(x$MARKERS, reduceAllelesSpecial, verbose = verbose)
+  x$MARKERS = lapply(x$MARKERS, function(m) reduceAllelesSpecial(m, verbose = verbose, ped = if(check) x))
   x
 }
 
 # A modified version of pedprobr::reduceAlleles()
-reduceAllelesSpecial = function(m, verbose = FALSE) {
+reduceAllelesSpecial = function(m, verbose = FALSE, ped = NULL) {
 
   if (all(m != 0)) {
     if(verbose) message("Lumping not needed - all members genotyped")
@@ -20,11 +20,13 @@ reduceAllelesSpecial = function(m, verbose = FALSE) {
   if(is.null(mut))# || pedmut::isStationary(mut))
     return(m)
 
-  # Check if special lumping applies: All untyped are founders
-  untyped = m[,1] == 0 & m[,2] == 0
-  if(!all(x$FID[untyped] == 0)) {
-    if(verbose) message("Special lumping does not apply - returning marker unchanged")
-    return(m)
+  # If pedigree is included: Check if special lumping applies
+  if(!is.null(ped)) {
+    untyped = m[,1] == 0 & m[,2] == 0
+    if(!all(ped$FID[untyped] == 0)) { # Are all untyped founders?
+      if(verbose) message("Special lumping does not apply - returning marker unchanged")
+      return(m)
+    }
   }
 
   origAlleles = attrs$alleles
