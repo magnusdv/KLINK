@@ -73,3 +73,11 @@ lumpSpecial = function(mut, lump, method = "foundersUntyped") {
   newfr = c(afr[keep], lump = sum(afr[lump]))
   pedmut::mutationMatrix("custom", matrix = m2, afreq = newfr)
 }
+
+
+# Check if special (founder-type) lumping applies to all markers
+specialLumpability = function(x) {
+  ped1 = x[[1]]
+  ped2 = x[[2]]
+  all(untypedMembers(ped1) %in% founders(ped1)) &&
+    all(untypedMembers(ped2) %in% founders(ped2))
