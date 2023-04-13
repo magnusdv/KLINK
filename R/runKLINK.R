@@ -1,31 +1,43 @@
-
+#' Launch the KLINK app
+#'
+#' This launches the shiny app KLINK.
+#'
+#' @return NULL
+#'
+#' @examples
+#'
+#' \dontrun{
+#' runKLINK()
+#' }
+#'
 #' @export
-openKLINK = function(...) {
+runKLINK = function(...) {
 
   # Define UI
   ui = dashboardPage(title = "KLINK",
 
-    header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"), titleWidth = 400),
+    header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"), titleWidth = 500),
 
     sidebar = dashboardSidebar(
       fileInput("famfile", "Upload .fam file", buttonLabel = icon("folder-open")),
+      actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
       fileInput("mapfile", "Change marker map", buttonLabel = icon("folder-open"),
                 placeholder = "BUILTIN"),
       hr(),
-      actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
       actionButton("compute", "Calculate LR", width = "50%", class = "btn btn-danger"),
-      hr(),
+      checkboxInput("linkedonly", "Show linked only", value = FALSE),
+      #checkboxInput("uselog", "Show log(LR)", value = FALSE),
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
-                   selected = "Kosambi", inline = TRUE),
-      selectInput("showmarker", "Plot genotypes: ", choices = c(None = ""))
+                   selected = "Kosambi", inline = TRUE)
+      #selectInput("showmarker", "Plot genotypes: ", choices = c(None = ""))
     ),
 
     body = dashboardBody(
 
       tags$head(
         tags$style(HTML("
-          .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
-          #shiny-notification-panel {top:25%; left:15%; width:100%; max-width:580px;font-size:20px;}
+          #hide .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
+          #shiny-notification-panel {top:0%; left:30%; width:100%; max-width:580px;font-size:20px;}
 
       "))),
 
@@ -42,7 +54,7 @@ openKLINK = function(...) {
         column(width = 8,
                tabBox(id = "tabs", width = NULL, selected = "Linkage map",
                  title = tagList(downloadButton('download', class = "btn btn-warning",
-                                                style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
+                            style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
                  tabPanel("Linkage map", gt::gt_output("linkage_table")),
                  tabPanel("Marker data", gt::gt_output("marker_table")),
                  tabPanel("LR table", gt::gt_output("result_table"))
@@ -69,7 +81,8 @@ openKLINK = function(...) {
       famfilename(fil$name)
       peds = tryCatch(loadFamFile(fil$datapath), error = showNote)
       pedigrees$complete = req(peds)
-      if(any(startsWith(unlist(labels(peds[[1]])), ":missing:")))
+      allLabs = unlist(lapply(peds, labels), recursive = TRUE)
+      if(any(startsWith(allLabs, ":missing:")))
         showNote(
         "Warning: Some missing parents have been added! (See plots.) <br>",
         "This may cause LR deviations from Familias/FamLink if nonstationary mutation models are used.<br>",
@@ -126,13 +139,15 @@ openKLINK = function(...) {
     # Print LR result table
     output$result_table = render_gt({
       res = req(resultTable())
-      prettyTable(res)
+      if(input$linkedonly)
+        res = res[res$Gsize > 1, , drop = FALSE]
+      prettyTable(req(res))
     }, width = "100%", align = "left")
 
     # Compute LR
     observeEvent(input$compute, {
       ped = req(pedigrees$reduced)
-      res = linkedLR(ped, linkageMap = linkageMap(), mapfun = input$mapfunction)
+      res = linkedLR(ped, linkageMap(), markerData(), mapfun = input$mapfunction)
       resultTable(res)
       updateTabsetPanel(session, "tabs", selected = "LR table")
     })
@@ -202,5 +217,5 @@ openKLINK = function(...) {
   }
 
   # Run the application
-  shinyApp(ui = ui, server = server, ...)
+  shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))
 }
