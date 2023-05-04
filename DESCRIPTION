@@ -1,21 +1,21 @@
 Package: KLINK
 Title: Kinship Analysis With Linked Markers
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "magnusdv@medisin.uio.no", role = c("aut", "cre"))
-Description: A Shiny app for computing kinship LR using linked markers.
+Description: A Shiny app for computing kinship LR using pairwise linked markers.
 License: GPL (>= 3)
 Depends: 
     R (>= 4.1)
 Imports: 
-    forrel,
-    gt,
+    forrel (>= 1.5.1),
+    gt (>= 0.9.0),
     openxlsx,
-    pedmut,
-    pedprobr,
-    pedtools,
+    pedmut (>= 0.6.0),
+    pedprobr (>= 0.8.0),
+    pedtools (>= 2.1.1),
     pkgload,
-    shiny,
+    shiny (>= 1.7.4),
     shinydashboard,
     utils
 Encoding: UTF-8
