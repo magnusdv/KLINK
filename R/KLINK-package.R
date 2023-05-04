@@ -2,7 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @import shiny
+#' @rawNamespace import(shiny, except = c(singleton, is.singleton))
 #' @import shinydashboard
 #' @import gt
 #' @import openxlsx
