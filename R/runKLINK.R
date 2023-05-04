@@ -79,6 +79,12 @@ runKLINK = function() {
 
     NOTES = reactiveVal(NULL)
 
+    addNote = function(...) {
+      oldnotes = NOTES()
+      newnote = HTML(paste(..., sep = "<br>"))
+      NOTES(c(oldnotes, newnote))
+    }
+
     output$notificationMenu = renderMenu({
       notes = lapply(NOTES(), function(n) {notificationItem(HTML(n), status = "warning")})
       dropdownMenu(type = "notifications", .list = notes, badgeStatus = "warning")
@@ -100,7 +106,7 @@ runKLINK = function() {
       peds = tryCatch(
         error = showNote,
         withCallingHandlers(
-          warning = function(w) NOTES(c(NOTES(), conditionMessage(w))),
+          warning = function(w) addNote(conditionMessage(w)),
           loadFamFile(fil$datapath)
         )
       )
@@ -109,10 +115,8 @@ runKLINK = function() {
       allLabs = unlist(lapply(peds, labels), recursive = TRUE)
 
       if(any(startsWith(allLabs, ":missing:")))
-        showNote(
-        "Warning: Some missing parents have been added! (See plots.) <br>",
-        "This may cause LR deviations from Familias/FamLink if nonstationary mutation models are used.<br>",
-        "To avoid this problem, add the missing individuals in Familias before saving the .fam file.")
+        addNote("Some missing parents have been added! (See plots.)",
+                "This may cause LR deviations from Familias/FamLink if non-stationary mutation models are used.")
     })
 
     observeEvent(input$loadex, {
