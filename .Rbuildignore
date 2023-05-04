@@ -5,3 +5,4 @@
 ^app\.R$
 ^rsconnect$
 ^Rprof.out$
+^notes-private$
