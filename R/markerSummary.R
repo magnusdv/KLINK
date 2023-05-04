@@ -18,8 +18,13 @@ markerSummary = function(x, linkageMap = NULL) {
     pars = pedmut::getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
     colnames(pars) = c("Model", "Rate", "Range", "Rate2")
 
-    lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else if (specLump) "Yes" else "No"
-    stattxt = if(pedmut::isStationary(mut)) "Yes" else "No"
+    if(is.null(mut)) {
+      lumptxt = stattxt = "-"
+    }
+    else {
+      lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else if (specLump) "Yes" else "No"
+      stattxt = if(pedmut::isStationary(mut)) "Yes" else "No"
+    }
     cbind.data.frame(Marker = a$name,
                      Alleles = length(a$alleles),
                      MinFreq = sprintf("%.2g", min(a$afreq)),
@@ -28,6 +33,7 @@ markerSummary = function(x, linkageMap = NULL) {
   })
 
   res = do.call(rbind, reslist)
+
   if(any(grepl("/", res$Rate, fixed = TRUE)))
     colnames(res)[colnames(res) == "Rate"] = "Rate (f/m)"
 

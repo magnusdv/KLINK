@@ -5,8 +5,10 @@ plotPed = function(x, marker = NULL, ...) {
   if(!is.null(marker) && marker == "")
     marker = NULL
 
-  miss = grep(":missing:", unlist(labels(x)), value = TRUE, fixed = TRUE)
+  allLabs = unlist(labels(x))
+  miss = grep(":missing:", allLabs, value = TRUE, fixed = TRUE)
+  nonmiss = setdiff(allLabs, miss)
 
-  pedtools::plotPedList(x, marker = marker, hatched = typedMembers, frames = FALSE,
-                        col = list(red = miss), ...)
+  plotPedList(x, marker = marker, hatched = typedMembers, frames = FALSE, labs = nonmiss,
+              col = list(red = miss), lwd = list("2" = miss), lty = list(dashed = miss), ...)
 }

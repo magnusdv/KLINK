@@ -2,9 +2,9 @@
 % Please edit documentation in R/runKLINK.R
 \name{runKLINK}
 \alias{runKLINK}
-\title{Launch the KLINK app}
+\title{Launch KLINK}
 \usage{
-runKLINK(...)
+runKLINK()
 }
 \description{
 This launches the shiny app KLINK.

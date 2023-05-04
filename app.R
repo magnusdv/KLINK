@@ -1,2 +1,2 @@
-pkgload::load_all(".")
+pkgload::load_all(".", quiet = TRUE)
 KLINK::runKLINK()

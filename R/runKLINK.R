@@ -1,4 +1,4 @@
-#' Launch the KLINK app
+#' Launch KLINK
 #'
 #' This launches the shiny app KLINK.
 #'
@@ -11,15 +11,17 @@
 #' }
 #'
 #' @export
-runKLINK = function(...) {
+runKLINK = function() {
 
   # Define UI
   ui = dashboardPage(title = "KLINK",
 
-    header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"), titleWidth = 500),
+    header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"),
+                             titleWidth = 500,
+                             dropdownMenuOutput("notificationMenu")),
 
     sidebar = dashboardSidebar(
-      fileInput("famfile", "Upload .fam file", buttonLabel = icon("folder-open")),
+      fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open")),
       fileInput("mapfile", "Change marker map", buttonLabel = icon("folder-open"),
                 placeholder = "BUILTIN"),
       hr(),
@@ -36,15 +38,23 @@ runKLINK = function(...) {
 
       tags$head(
         tags$style(HTML("
-          #hide .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
-          #shiny-notification-panel {top:0%; left:30%; width:100%; max-width:580px;font-size:20px;}
-
+          #hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
+          #shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
+          .shiny-notification {opacity:1}
+          .fa-triangle-exclamation {font-size:24px; padding-bottom:5px;}
+          .main-header .navbar-custom-menu {float:left;}
+          #notificationMenu span.label.label-warning {font-size:14px;}
+          #notificationMenu a.dropdown-toggle {padding-bottom:5px;}
+          .sidebar-toggle {display: none !important;}
+          #notificationMenu .dropdown-menu {width:400px;}
+          #notificationMenu .dropdown-menu > li .menu > li > a {white-space:normal !important;}
       "))),
 
       fluidRow(
         column(width = 4,
                box(title = tagList("Ped 1",
-                                   tags$div(checkboxInput("hideEmpty", "Hide untyped components"), id = "hide",
+                                   tags$div(checkboxInput("hideEmpty", "Hide untyped components"),
+                                            id = "hideEmptyCheck",
                                             style = "position:absolute; right:5px; top:5px; margin:0px; padding:0px;")),
                    width = NULL, status = "info", solidHeader = TRUE,
                    plotOutput("pedplot1", height = "330px")),
@@ -67,9 +77,16 @@ runKLINK = function(...) {
   # Define server
   server = function(input, output, session) {
 
+    NOTES = reactiveVal(NULL)
+
+    output$notificationMenu = renderMenu({
+      notes = lapply(NOTES(), function(n) {notificationItem(HTML(n), status = "warning")})
+      dropdownMenu(type = "notifications", .list = notes, badgeStatus = "warning")
+    })
+
     # Error utility
-    showNote = function(...) {
-      showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = "error")
+    showNote = function(..., type = "error") {
+      showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = type)
       invisible(NULL)
     }
 
@@ -79,9 +96,18 @@ runKLINK = function(...) {
     observeEvent(input$famfile, {
       fil = req(input$famfile)
       famfilename(fil$name)
-      peds = tryCatch(loadFamFile(fil$datapath), error = showNote)
+      NOTES(NULL)
+      peds = tryCatch(
+        error = showNote,
+        withCallingHandlers(
+          warning = function(w) NOTES(c(NOTES(), conditionMessage(w))),
+          loadFamFile(fil$datapath)
+        )
+      )
+
       pedigrees$complete = req(peds)
       allLabs = unlist(lapply(peds, labels), recursive = TRUE)
+
       if(any(startsWith(allLabs, ":missing:")))
         showNote(
         "Warning: Some missing parents have been added! (See plots.) <br>",
@@ -91,6 +117,7 @@ runKLINK = function(...) {
 
     observeEvent(input$loadex, {
       fil = system.file("extdata", "halfsib-test.fam", package = "KLINK")
+      NOTES(NULL)
       pedigrees$complete = loadFamFile(fil)
       famfilename("halfsib-test.fam")
     })
@@ -104,8 +131,8 @@ runKLINK = function(...) {
       resultTable(NULL)
 
       # Uncheck "remove empty"
-      if(input$hideEmpty)
-        updateCheckboxInput(session, "hideEmpty", value = FALSE)
+      if(!input$hideEmpty && !identical(peds, pedred))
+        updateCheckboxInput(session, "hideEmpty", value = TRUE)
       else
         pedigrees$active = pedigrees$complete
 
@@ -138,10 +165,14 @@ runKLINK = function(...) {
 
     # Print LR result table
     output$result_table = render_gt({
-      res = req(resultTable())
-      if(input$linkedonly)
+      res = resultTable()
+      validate(need(!is.null(res), "Nothing to show yet. After loading a .fam file, press 'Calculate LR'"))
+
+      if(input$linkedonly) {
         res = res[res$Gsize > 1, , drop = FALSE]
-      prettyTable(req(res))
+        validate(need(nrow(res) > 0, "There are no linked markers in the dataset. Uncheck 'Show linked only' to see all markers."))
+      }
+      prettyTable(res)
     }, width = "100%", align = "left")
 
     # Compute LR
@@ -167,7 +198,8 @@ runKLINK = function(...) {
 
     # Print loaded marker data
     output$marker_table = render_gt({
-      mtab = req(markerData())
+      mtab = markerData()
+      validate(need(!is.null(mtab), "Nothing to show yet. Load a .fam file to get started!"))
       prettyMarkerTable(mtab)
     }, width = "100%", align = "left")
 
@@ -196,23 +228,7 @@ runKLINK = function(...) {
     output$download = downloadHandler(
       filename = function() sprintf("KLINK-%s.xlsx", sub(".fam", "", famfilename())),
       content = function(file) {
-        res = resultTable()
-
-        if(!is.null(res)) {
-          LRcols = c("LRnolink",	"LRlinked",	"LRnomut")
-          res[res$Gindex > 1, LRcols] = NA
-          res$Gindex = res$Gsize = NULL
-
-          # add totals row
-          res = rbind(res, NA)
-          res[nrow(res), LRcols] = apply(res[LRcols], 2, prod, na.rm = TRUE)
-          res[nrow(res), 1] = "Total LR"
-        }
-
-        data = list(linkageMap = linkageMap(),
-                    markerData = markerData(),
-                    LRtable = res)
-        writeResult(data, file)
+        writeResult(linkageMap(), markerData(), resultTable(), file, famfilename())
       },
       contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )

@@ -6,7 +6,7 @@
 \alias{KLINK-package}
 \title{KLINK: Kinship Analysis With Linked Markers}
 \description{
-A Shiny app for computing kinship LR using linked markers.
+A Shiny app for computing kinship LR using pairwise linked markers.
 }
 \seealso{
 Useful links:

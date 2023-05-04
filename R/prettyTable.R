@@ -1,12 +1,14 @@
 prettyTable = function(restable, style = 6) {
 
+  if(nrow(restable) == 0)
+    return("Nothin to show")
+
   LRcols = c("LRnolink", "LRlinked", "LRnomut")
 
   restable |>
     gt(groupname_col = "Pair") |>
     opt_stylize(style = style) |>
     cols_hide(columns = c(Gindex, Gsize, PosCM)) |>
-    #fmt_number(PosCM, decimals = 2) |>
     tab_style(
       style = cell_text(size = pct(95)),
       locations = cells_body(columns = starts_with("Geno"))

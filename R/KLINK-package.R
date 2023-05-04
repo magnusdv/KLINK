@@ -5,7 +5,8 @@
 #' @import shiny
 #' @import shinydashboard
 #' @import gt
-#' @importFrom pedtools founders typedMembers untypedMembers
+#' @import openxlsx
+#' @import pedtools
 ## usethis namespace: end
 NULL
 
