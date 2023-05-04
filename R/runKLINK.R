@@ -53,7 +53,7 @@ runKLINK = function() {
       fluidRow(
         column(width = 4,
                box(title = tagList("Ped 1",
-                                   tags$div(checkboxInput("hideEmpty", "Hide untyped components"),
+                                   tags$div(checkboxInput("hideEmpty", "Hide untyped components", value = TRUE),
                                             id = "hideEmptyCheck",
                                             style = "position:absolute; right:5px; top:5px; margin:0px; padding:0px;")),
                    width = NULL, status = "info", solidHeader = TRUE,
@@ -126,15 +126,10 @@ runKLINK = function() {
       peds = pedigrees$complete
       pedred = removeEmpty(peds)
       pedigrees$reduced = pedred
+      pedigrees$active = if(input$hideEmpty) pedred else peds
 
       # Reset main table
       resultTable(NULL)
-
-      # Uncheck "remove empty"
-      if(!input$hideEmpty && !identical(peds, pedred))
-        updateCheckboxInput(session, "hideEmpty", value = TRUE)
-      else
-        pedigrees$active = pedigrees$complete
 
       # Update dropdown marker list
       markers = c(None = "", pedtools::name(peds[[1]]))
