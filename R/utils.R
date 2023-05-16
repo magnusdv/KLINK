@@ -19,3 +19,8 @@ safelog = function(v) {
   res[v > 0] = log(v[v > 0])
   res
 }
+
+
+`%||%` = function(x, y) {
+  if(is.null(x)) y else x
+}

@@ -27,11 +27,9 @@ runKLINK = function() {
       hr(),
       actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
       actionButton("compute", "Calculate LR", width = "50%", class = "btn btn-danger"),
-      #checkboxInput("uselog", "Show log(LR)", value = FALSE),
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                    selected = "Kosambi", inline = TRUE),
       checkboxInput("linkedonly", "Show linked only", value = FALSE)
-      #selectInput("showmarker", "Plot genotypes: ", choices = c(None = ""))
     ),
 
     body = dashboardBody(
@@ -114,9 +112,12 @@ runKLINK = function() {
       pedigrees$complete = req(peds)
       allLabs = unlist(lapply(peds, labels), recursive = TRUE)
 
-      if(any(startsWith(allLabs, ":missing:")))
-        addNote("Some missing parents have been added! (See plots.)",
-                "This may cause LR deviations from Familias/FamLink if non-stationary mutation models are used.")
+      if(any(misspar <- startsWith(allLabs, ":missing:"))) {
+        nmiss = sum(misspar)
+        msg = if(nmiss == 1) "1 missing parent was added." else paste(nmiss, "missing parents were added.")
+        msg = paste(msg, "LRs may deviate from Familias/FamLink2.")
+        addNote(msg)
+      }
     })
 
     observeEvent(input$loadex, {

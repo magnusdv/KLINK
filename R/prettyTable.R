@@ -11,7 +11,7 @@ prettyTable = function(restable, style = 6) {
     cols_hide(columns = c(Gindex, Gsize, PosCM)) |>
     tab_style(
       style = cell_text(size = pct(95)),
-      locations = cells_body(columns = starts_with("Geno"))
+      locations = cells_body(columns = starts_with("Person"))
     ) |>
     tab_style(
       style = cell_text(size = pct(85), weight = "bold", style = "italic"),

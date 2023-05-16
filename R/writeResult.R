@@ -98,7 +98,7 @@ outputLRreport = function(resultTable) {
   names(res)[names(res) == "LRlinked"] = "LR"
 
   # Identify markers with missing data
-  genoCols = grep("^Geno", names(res), value = TRUE)
+  genoCols = grep("^Person", names(res), value = TRUE)
   res$miss = apply(res, 1, function(v) all(v[genoCols] == "-/-"))
 
   # Incomplete pairs ...

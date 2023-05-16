@@ -8,7 +8,7 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
   MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
 
   # Initialise table: Pair, Marker, Geno
-  res = markerData[c(1, 2, grep("Geno", names(markerData), fixed = TRUE))]
+  res = markerData[c(1, 2, grep("Person", names(markerData), fixed = TRUE))]
   nr = nrow(res)
 
   # Add cM positions

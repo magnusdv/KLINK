@@ -8,7 +8,7 @@ markerSummary = function(x, linkageMap = NULL) {
 
   # Genotypes
   geno = t.default(pedtools::getGenotypes(ped1, ids = typedMembers(ped1)))
-  colnames(geno) = paste0("Geno", 1:ncol(geno))
+  colnames(geno) = paste0("Person", 1:ncol(geno))
 
   # List of lists: Marker attributes
   locAttrs = pedtools::getLocusAttributes(ped1)
