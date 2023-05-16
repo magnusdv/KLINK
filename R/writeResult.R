@@ -1,11 +1,14 @@
 
-writeResult = function(linkageMap, markerData, resultTable, file, fam) {
+writeResult = function(linkageMap, markerData, resultTable, pedigrees,
+                       notes, file, fam) {
+
+  sheets = list("Linkage map" = linkageMap,
+                "Marker data" = markerData %||% "No marker data loaded",
+                "LR table" = outputLRcomplete(resultTable) %||% "No likelihood ratios calculated",
+                Notifications = outputNotes(notes))
 
   hs = createStyle(textDecoration = "bold")
-  wb = buildWorkbook(list(linkageMap = linkageMap,
-                          markerData = markerData,
-                          LRtable = outputLRcomplete(resultTable)),
-                     headerStyle = hs, colWidths = "auto")
+  wb = buildWorkbook(sheets, headerStyle = hs, colWidths = "auto")
 
   if(is.null(resultTable)) {
     saveWorkbook(wb, file = file)
@@ -141,4 +144,11 @@ outputLRreport = function(resultTable) {
 
   # Return
   res
+}
+
+outputNotes = function(notes) {
+  if(is.null(notes))
+    "No notifications recorded"
+  else
+    data.frame(Notifications = notes)
 }

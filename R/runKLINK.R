@@ -227,7 +227,9 @@ runKLINK = function() {
     output$download = downloadHandler(
       filename = function() sprintf("KLINK-%s.xlsx", sub(".fam", "", famfilename())),
       content = function(file) {
-        writeResult(linkageMap(), markerData(), resultTable(), file, famfilename())
+        writeResult(linkageMap(), markerData(), resultTable(),
+                    pedigrees$reduced, NOTES(),
+                    file, famfilename())
       },
       contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
