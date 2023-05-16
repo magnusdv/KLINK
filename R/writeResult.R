@@ -35,7 +35,7 @@ writeResult = function(linkageMap, markerData, resultTable, pedigrees,
     addStyle(wb, "Report", style, rows = rows, cols = cols, gridExpand = TRUE, stack = stack)
   }
 
-  # Merge & center LR column for linked pairs
+  # Merge & centre LR column for linked pairs
   for(i in which(is.na(report$LR)) + 2) { # NB top line + header line
     mergeCells(wb, "Report", cols = LRcol, rows = c(i-1, i))
     #addSt(c = 2:(LRcol-1), r = i-1, border = "bottom", borderColour = "gray95")
@@ -67,6 +67,31 @@ writeResult = function(linkageMap, markerData, resultTable, pedigrees,
   setColWidths(wb, "Report", c(1,nc), "auto", ignoreMergedCells = TRUE)
   setColWidths(wb, "Report", 2, "13.00")
   setColWidths(wb, "Report", 3:LRcol, "10.00")
+
+  ### Additional legends
+  legendRw = 2
+  legendCl = LRcol + 3
+  ids = typedMembers(pedigrees[[1]])
+  idsPers = paste0("Person", seq_along(ids))
+
+  # Relationships
+  if(length(ids) == 2) {
+    rels = lapply(pedigrees, function(ped) {
+      pednew = relabel(ped, old = ids, new = idsPers)
+      r = verbalisr::verbalise(pednew, idsPers) |> format(includePaths = FALSE)
+      s = sub(".*: ", "", r) # remove "Lineal of degree 1: " etc
+      paste(s, collapse = " AND ")
+    })
+    relDf = data.frame(Relationship = as.character(rels), row.names = paste("Ped", 1:2))
+    writeLegend(wb, relDf, c = legendCl, r = legendRw, fill = "#C7F6B6")
+    legendRw = legendRw + length(rels) + 3
+  }
+
+  # Key to Person1, Person2, ...
+  key = data.frame("Sample " = paste(ids, ""), row.names = paste(idsPers, ""))
+  writeLegend(wb, key, c = legendCl, r = legendRw, fill = "#ffffe0")
+
+  setColWidths(wb, "Report", legendCl + 0:1, "auto")
 
   activeSheet(wb) = "Report"
   saveWorkbook(wb, file = file)
@@ -151,4 +176,12 @@ outputNotes = function(notes) {
     "No notifications recorded"
   else
     data.frame(Notifications = notes)
+}
+
+writeLegend = function(wb, df, r, c, fill) {
+  hs2 = createStyle(textDecoration = "bold", border = "TopBottomLeftRight")
+  writeData(wb, "Report", df, startCol = c, startRow = r, headerStyle = hs2,
+            borders = "all", rowNames = TRUE)
+  addStyle(wb, "Report", rows = r + 0:nrow(df), cols = c + 0:1, gridExpand = TRUE, stack = TRUE,
+           style = createStyle(fgFill = fill))
 }
