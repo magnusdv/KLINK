@@ -46,7 +46,7 @@ runKLINK = function() {
           #notificationMenu span.label.label-warning {font-size:14px;}
           #notificationMenu a.dropdown-toggle {padding-bottom:5px;}
           .sidebar-toggle {display: none !important;}
-          #notificationMenu .dropdown-menu {width:400px;}
+          #notificationMenu .dropdown-menu {width:380px;}
           #notificationMenu .dropdown-menu > li .menu > li > a {white-space:normal !important;}
       "))),
 
@@ -165,7 +165,7 @@ runKLINK = function() {
     # Print LR result table
     output$result_table = render_gt({
       res = resultTable()
-      validate(need(!is.null(res), "Nothing to show yet. After loading a .fam file, press 'Calculate LR'"))
+      validate(need(!is.null(res), "No likelihood ratios have been calculated yet."))
 
       if(input$linkedonly) {
         res = res[res$Gsize > 1, , drop = FALSE]
@@ -198,7 +198,7 @@ runKLINK = function() {
     # Print loaded marker data
     output$marker_table = render_gt({
       mtab = markerData()
-      validate(need(!is.null(mtab), "Nothing to show yet. Load a .fam file to get started!"))
+      validate(need(!is.null(mtab), "No data has been loaded."))
       prettyMarkerTable(mtab)
     }, width = "100%", align = "left")
 
