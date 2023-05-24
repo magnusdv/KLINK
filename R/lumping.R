@@ -20,6 +20,9 @@ reduceAllelesSpecial = function(m, verbose = FALSE, ped = NULL) {
   if(is.null(mut))# || pedmut::isStationary(mut))
     return(m)
 
+  if(verbose && !is.null(attrs$name))
+    message(attrs$name, ": ", appendLF = FALSE)
+
   # If pedigree is included: Check if special lumping applies
   if(!is.null(ped)) {
     untyped = m[,1] == 0 & m[,2] == 0
@@ -50,7 +53,7 @@ reduceAllelesSpecial = function(m, verbose = FALSE, ped = NULL) {
   presentFreq = attrs$afreq[presentIdx]
   attr(m, "afreq") = c(presentFreq, 1 - sum(presentFreq))
 
-  pedtools::mutmod(m) = lumpSpecial(mut, lump = lump)
+  pedtools::mutmod(m) = lumpMutSpecial(mut, lump = lump)
 
   if(verbose)
     message(sprintf("Special lumping with untyped founders: %d -> %d alleles",
@@ -59,9 +62,9 @@ reduceAllelesSpecial = function(m, verbose = FALSE, ped = NULL) {
   m
 }
 
-lumpSpecial = function(mut, lump, method = "foundersUntyped") {
+lumpMutSpecial = function(mut, lump, method = "foundersUntyped") {
   if(inherits(mut, "mutationModel")) {
-    newmut = lapply(mut, function(m) lumpSpecial(m, lump = lump, method = method))
+    newmut = lapply(mut, function(m) lumpMutSpecial(m, lump = lump, method = method))
     return(pedmut::mutationModel(newmut))
   }
 
