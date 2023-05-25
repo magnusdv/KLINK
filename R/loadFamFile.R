@@ -26,6 +26,17 @@ loadFamFile = function(path) {
     x = x[1:2]
   }
 
+  if(!specialLumpability(x)) {
+    alwLumpable = vapply(1:nMarkers(x[[1]]), FUN.VALUE = FALSE, function(i)
+      is.null(mut <- mutmod(x[[1]], i)) || pedmut::alwaysLumpable(mut))
+    if(!all(alwLumpable)) {
+      x = lapply(x, function(ped)
+        setMutmod(ped, markers = !alwLumpable, model = "proportional", update = TRUE))
+      msg = "Pedigree prohibits lumping of complex mutation models; changed these to 'proportional'"
+      warning(msg, call. = FALSE)
+    }
+  }
+
   if(is.null(names(x)))
     names(x) = c("Ped 1", "Ped 2")
 
