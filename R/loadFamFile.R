@@ -1,6 +1,7 @@
 
-loadFamFile = function(path) {
-  x = forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:")
+loadFamFile = function(path, fallbackModel = "equal") {
+  x = forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:",
+                      fallbackModel = fallbackModel)
 
   if(!length(x) || (!is.ped(x[[1]]) && !is.pedList(x[[1]])))
     stop("No pedigrees found in the Familias file.", call. = FALSE)
@@ -31,9 +32,10 @@ loadFamFile = function(path) {
       is.null(mut <- mutmod(x[[1]], i)) || pedmut::alwaysLumpable(mut))
     if(!all(alwLumpable)) {
       x = lapply(x, function(ped)
-        setMutmod(ped, markers = !alwLumpable, model = "proportional", update = TRUE))
-      msg = "Pedigree prohibits lumping of complex mutation models; changed these to 'proportional'"
-      warning(msg, call. = FALSE)
+        setMutmod(ped, markers = !alwLumpable, model = fallbackModel, update = TRUE))
+      msg = sprintf("Pedigree prohibits lumping of complex mutation models; changed these to '%s'",
+                    fallbackModel)
+      warning(msg, call. = FALSE, )
     }
   }
 

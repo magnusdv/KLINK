@@ -29,7 +29,10 @@ runKLINK = function() {
       actionButton("compute", "Calculate LR", width = "50%", class = "btn btn-danger"),
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                    selected = "Kosambi", inline = TRUE),
-      checkboxInput("linkedonly", "Show linked only", value = FALSE)
+      checkboxInput("linkedonly", "Show linked only", value = FALSE),
+      hr(),
+      radioButtons("fallback", "Fallback mutation model", choices = c("equal", "proportional"),
+                   selected = "equal", inline = TRUE)
     ),
 
     body = dashboardBody(
@@ -105,7 +108,7 @@ runKLINK = function() {
         error = showNote,
         withCallingHandlers(
           warning = function(w) addNote(conditionMessage(w)),
-          loadFamFile(fil$datapath)
+          loadFamFile(fil$datapath, fallbackModel = input$fallback)
         )
       )
 
