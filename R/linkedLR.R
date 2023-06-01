@@ -1,4 +1,3 @@
-
 #' @export
 linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi") {
 
@@ -36,7 +35,7 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
   res$LRsingle = lr1$LRperMarker[,1]
 
   # No-mutation versions
-  pedsNomut = lapply(pedigrees, function(x) pedprobr::setMutationModel(x, NULL))
+  pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL))
   LRnomut = forrel::kinshipLR(pedsNomut, markers = res$Marker)$LRperMarker[,1]
 
   # Split linkage groups
@@ -78,8 +77,8 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
   H2 = pedtools::selectMarkers(peds[[2]], markerpair)
 
   if(disableMut) {
-    H1 = H1 |> pedprobr::setMutationModel(model = NULL)
-    H2 = H2 |> pedprobr::setMutationModel(model = NULL)
+    H1 = H1 |> setMutmod(model = NULL)
+    H2 = H2 |> setMutmod(model = NULL)
   }
 
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
