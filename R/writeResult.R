@@ -88,7 +88,8 @@ writeResult = function(linkageMap, markerData, resultTable, pedigrees,
   }
 
   # Key to Person1, Person2, ...
-  key = data.frame("Sample " = paste(ids, ""), row.names = paste(idsPers, ""))
+  key = data.frame("Sample " = paste(ids, ""), row.names = paste(idsPers, ""),
+                   check.names = FALSE)
   writeLegend(wb, key, c = legendCl, r = legendRw, fill = "#ffffe0")
 
   setColWidths(wb, "Report", legendCl + 0:1, "auto")
