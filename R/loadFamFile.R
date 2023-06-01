@@ -35,7 +35,7 @@ loadFamFile = function(path, fallbackModel = "equal") {
         setMutmod(ped, markers = !alwLumpable, model = fallbackModel, update = TRUE))
       msg = sprintf("Pedigree prohibits lumping of complex mutation models; changed these to '%s'",
                     fallbackModel)
-      warning(msg, call. = FALSE, )
+      warning(msg, call. = FALSE)
     }
   }
 
