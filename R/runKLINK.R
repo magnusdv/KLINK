@@ -58,15 +58,20 @@ runKLINK = function() {
                                             id = "hideEmptyCheck",
                                             style = "position:absolute; right:5px; top:5px; margin:0px; padding:0px;")),
                    width = NULL, status = "info", solidHeader = TRUE,
-                   plotOutput("pedplot1", height = "330px")),
+                   plotOutput("pedplot1", height = "325px")),
                box(title = "Ped 2", width = NULL, status = "info", solidHeader = TRUE,
-                   plotOutput("pedplot2", height = "330px")),
+                   plotOutput("pedplot2", height = "325px")),
         ),
         column(width = 8,
                tabBox(id = "tabs", width = NULL, selected = "Linkage map",
                  title = tagList(downloadButton('download', class = "btn btn-warning",
                             style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
-                 tabPanel("Linkage map", gt::gt_output("linkage_table")),
+                 tabPanel("Linkage map",
+                   fluidRow(
+                     column(6, gt::gt_output("linkage_table")),
+                     column(6, plotOutput("karyo", height = "640px"))
+                   )
+                 ),
                  tabPanel("Marker data", gt::gt_output("marker_table")),
                  tabPanel("LR table", gt::gt_output("result_table"))
                ),
@@ -210,6 +215,8 @@ runKLINK = function() {
     # Linkage map table ----------------------------------------------------
     linkageMap = reactiveVal(KLINK::LINKAGEMAP)
 
+    output$karyo = renderPlot(karyogram(linkageMap()))
+
     # Change map file
     observeEvent(input$mapfile, {
       file = req(input$mapfile)
@@ -221,7 +228,10 @@ runKLINK = function() {
 
     # Print loaded genetic map
     output$linkage_table = render_gt({
-      gt(req(linkageMap())) |> opt_stylize(6)
+      gt(req(linkageMap())) |> opt_stylize(6) |>
+        tab_options(data_row.padding = px(3)) |>
+        tab_style(style = cell_text(whitespace = "nowrap"),
+                  locations = cells_body())
     }, width = "100%", align = "left")
 
 
