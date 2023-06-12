@@ -18,8 +18,8 @@ prettyTable = function(restable, style = 6) {
       locations = cells_row_groups()
     ) |>
     tab_options(
-      row_group.padding = px(2),
-      data_row.padding = px(3)
+      row_group.padding = px(1),
+      data_row.padding = px(0)
     ) |>
     cols_label(
       LRsingle ~ "LR",
@@ -52,10 +52,10 @@ prettyTable = function(restable, style = 6) {
         cells_stub_grand_summary()
       )
     ) |>
-    tab_style(
-      style = cell_text(color = "gray50"),
-      locations = cells_body(rows = Gsize == 1)
-    ) |>
+    # tab_style(
+    #   style = cell_text(color = "cyan"), #gray50
+    #   locations = cells_body(rows = Gsize == 1)
+    # ) |>
     tab_style(
       style = cell_text(size = pct(110)),
       locations = list(cells_grand_summary(), cells_stub_grand_summary())
@@ -69,14 +69,16 @@ prettyTable = function(restable, style = 6) {
 prettyMarkerTable = function(mtab) {
   mtab |> gt() |>
     opt_stylize(6) |>
-    tab_options(data_row.padding = px(3)) |>
-    tab_style(style = cell_text(color = "gray"),
-              locations = cells_body(rows = is.na(Pair))) |>
+    tab_options(data_row.padding = px(2)) |>
+    tab_style(style = cell_text(weight = if(anyNA(mtab$Pair)) 500),
+              locations = cells_body(rows = !is.na(Pair))) |>
     sub_missing(missing_text = "") |>
     tab_style(
       style = cell_borders(sides = "left", style = "dashed"),
       locations = cells_body(columns = "Marker")
     ) |>
+    tab_style(style = cell_text(whitespace = "nowrap"),
+              locations = cells_body()) |>
     tab_spanner(
       label = "Mutation model",
       columns = match("Model", names(mtab)):ncol(mtab)

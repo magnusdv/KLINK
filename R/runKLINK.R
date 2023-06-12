@@ -21,18 +21,22 @@ runKLINK = function() {
                              dropdownMenuOutput("notificationMenu")),
 
     sidebar = dashboardSidebar(
-      fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open")),
-      fileInput("mapfile", "Change marker map", buttonLabel = icon("folder-open"),
+      fluidRow(style = "padding: 5px 15px 0px 15px",
+        column(6, h4(HTML("<b>Load data</b>"), style = "margin-bottom: 0px")),
+        column(6, align = "right",
+               actionButton("loadex",  "Example", class = "btn-sm btn btn-warning", style = "padding: 1px 10px;"))
+      ),
+      tags$div(class = "loadfile", fileInput("famfile", ".fam file", buttonLabel = icon("folder-open"))),
+
+      fileInput("mapfile", "Marker map", buttonLabel = icon("folder-open"),
                 placeholder = "BUILTIN"),
+      radioButtons("fallback", "Fallback mutation model", choices = c("equal", "proportional"),
+                   selected = "equal", inline = TRUE),
       hr(),
-      actionButton("loadex",  "Load example", width = "50%", class = "btn btn-info"),
-      actionButton("compute", "Calculate LR", width = "50%", class = "btn btn-danger"),
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                    selected = "Kosambi", inline = TRUE),
-      checkboxInput("linkedonly", "Show linked only", value = FALSE),
-      hr(),
-      radioButtons("fallback", "Fallback mutation model", choices = c("equal", "proportional"),
-                   selected = "equal", inline = TRUE)
+      actionButton("compute", "Calculate LR", class = "btn-lg btn-info", style = "margin-top:20px;")
+      #checkboxInput("linkedonly", "Show linked only", value = FALSE),
     ),
 
     body = dashboardBody(
@@ -49,6 +53,8 @@ runKLINK = function() {
           .sidebar-toggle {display: none !important;}
           #notificationMenu .dropdown-menu {width:380px;}
           #notificationMenu .dropdown-menu > li .menu > li > a {white-space:normal !important;}
+          .form-group.shiny-input-container {margin-bottom:0px}
+          .progress {margin-bottom:0px}
       "))),
 
       fluidRow(
@@ -175,11 +181,6 @@ runKLINK = function() {
     output$result_table = render_gt({
       res = resultTable()
       validate(need(!is.null(res), "No likelihood ratios have been calculated yet."))
-
-      if(input$linkedonly) {
-        res = res[res$Gsize > 1, , drop = FALSE]
-        validate(need(nrow(res) > 0, "There are no linked markers in the dataset. Uncheck 'Show linked only' to see all markers."))
-      }
       prettyTable(res)
     }, width = "100%", align = "left")
 
