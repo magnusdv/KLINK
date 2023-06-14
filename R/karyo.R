@@ -1,3 +1,4 @@
+#' @importFrom graphics legend par plot.new points rect text.default
 karyogram = function(markerdata, cols = KARYOPALETTE, bgcol = "gray92") {
 
   h = 0.7
