@@ -28,7 +28,7 @@ runKLINK = function() {
         column(6, align = "right",
                actionButton("loadex",  "Example", class = "btn-sm btn btn-success", style = "padding: 1px 10px; background-color:#90ee90"))
       ),
-      tags$div(class = "loadfile", fileInput("famfile", ".fam file", buttonLabel = icon("folder-open"))),
+      tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"))),
 
       fileInput("mapfile", "Marker map", buttonLabel = icon("folder-open"),
                 placeholder = "BUILTIN"),
@@ -39,10 +39,8 @@ runKLINK = function() {
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                    selected = "Kosambi", inline = TRUE),
       hr(),
-      #fluidRow(style = "padding: 0px",column(12, style = "padding: 15px",
-        actionButton("compute", "Calculate LR", class = "btn-lg btn-danger",
+      actionButton("compute", "Calculate LR", class = "btn-lg btn-danger",
                      style = "margin-top:20px;background-color:#FF5c5c")
-      #))
     ),
 
     body = dashboardBody(

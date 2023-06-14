@@ -153,8 +153,8 @@ outputLRunlinked = function(resultTable) {
     return("No likelihood ratios calculated")
 
   # Keep only these markers if paired
-  keep = c("D5S2500", "SE33", "D8S1132", "D10S1435", "D11S2368", "vWA",
-           "D18S51", "D19S253", "Penta D")
+  keep = c("D5S2800", "SE33", "D8S1132", "D10S1435", "D11S554",
+           "D12S391", "D18S51", "D19S433", "D21S2055")
 
   res = removeMissing(res)
 
