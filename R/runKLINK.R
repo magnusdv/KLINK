@@ -24,21 +24,25 @@ runKLINK = function() {
 
     sidebar = dashboardSidebar(
       fluidRow(style = "padding: 5px 15px 0px 15px",
-        column(6, h4(HTML("<b>Load data</b>"), style = "margin-bottom: 0px")),
+        column(6, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
         column(6, align = "right",
-               actionButton("loadex",  "Example", class = "btn-sm btn btn-warning", style = "padding: 1px 10px;"))
+               actionButton("loadex",  "Example", class = "btn-sm btn btn-success", style = "padding: 1px 10px; background-color:#90ee90"))
       ),
       tags$div(class = "loadfile", fileInput("famfile", ".fam file", buttonLabel = icon("folder-open"))),
 
       fileInput("mapfile", "Marker map", buttonLabel = icon("folder-open"),
                 placeholder = "BUILTIN"),
+      hr(),
+      h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
       radioButtons("fallback", "Fallback mutation model", choices = c("equal", "proportional"),
                    selected = "equal", inline = TRUE),
-      hr(),
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                    selected = "Kosambi", inline = TRUE),
-      actionButton("compute", "Calculate LR", class = "btn-lg btn-info", style = "margin-top:20px;")
-      #checkboxInput("linkedonly", "Show linked only", value = FALSE),
+      hr(),
+      #fluidRow(style = "padding: 0px",column(12, style = "padding: 15px",
+        actionButton("compute", "Calculate LR", class = "btn-lg btn-danger",
+                     style = "margin-top:20px;background-color:#FF5c5c")
+      #))
     ),
 
     body = dashboardBody(
