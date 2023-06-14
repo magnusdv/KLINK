@@ -1,3 +1,12 @@
+# KLINK 0.5.0
+
+* Add karyogram showing marker positions.
+
+* Add sheets "Unlinked" and "Linked only" in excel output.
+
+* Tweaked button placements.
+
+
 # KLINK 0.4.1
 
 * New button letting the user choose fallback mutation model (applied when a model specified in the input file fails for whatever reason).
