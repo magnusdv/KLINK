@@ -4,16 +4,26 @@ writeResult = function(linkageMap, markerData, resultTable, pedigrees,
 
   sheets = list("Linkage map" = linkageMap,
                 "Marker data" = markerData %||% "No marker data loaded",
-                "LR table" = outputLRcomplete(resultTable) %||% "No likelihood ratios calculated",
-                Notifications = outputNotes(notes))
+                "LR table" = outputLRcomplete(resultTable),
+                Notifications = outputNotes(notes),
+                Report = NULL,
+                "Unlinked" = outputLRunlinked(resultTable),
+                "Linked only" = outputLRlinkedOnly(resultTable)
+  )
 
   hs = createStyle(textDecoration = "bold")
   wb = buildWorkbook(sheets, headerStyle = hs, colWidths = "auto")
 
-  if(is.null(resultTable)) {
-    saveWorkbook(wb, file = file)
+  # Write report with special styling
+  writeReportSheet(wb, resultTable, pedigrees = pedigrees, fam = fam)
+
+  saveWorkbook(wb, file = file)
+}
+
+writeReportSheet = function(wb, resultTable, pedigrees, fam) {
+
+  if(is.null(resultTable))
     return()
-  }
 
   # Report table
   report = outputLRreport(resultTable)
@@ -21,7 +31,6 @@ writeResult = function(linkageMap, markerData, resultTable, pedigrees,
   nc = ncol(report)
   LRcol = match("LR", names(report))
 
-  addWorksheet(wb, "Report")
   title = sprintf("Resultatrapport KLINK (fra %s)",
                   sub(".fam", "", basename(fam), fixed = TRUE))
   writeData(wb, sheet = "Report", title)
@@ -88,20 +97,18 @@ writeResult = function(linkageMap, markerData, resultTable, pedigrees,
   }
 
   # Key to Person1, Person2, ...
-  key = data.frame("Sample " = paste(ids, ""), row.names = paste(idsPers, ""),
+  key = data.frame("Sample " = paste(ids, ""),
+                   row.names = paste(idsPers, ""),
                    check.names = FALSE)
   writeLegend(wb, key, c = legendCl, r = legendRw, fill = "#ffffe0")
 
   setColWidths(wb, "Report", legendCl + 0:1, "auto")
-
   activeSheet(wb) = "Report"
-  saveWorkbook(wb, file = file)
 }
-
 
 outputLRcomplete = function(resultTable) {
   if(is.null(res <- resultTable))
-    return()
+    return("No likelihood ratios calculated")
 
   LRcols = c("LRnolink",	"LRlinked",	"LRnomut")
   res[res$Gindex > 1, LRcols] = NA
@@ -111,6 +118,62 @@ outputLRcomplete = function(resultTable) {
   res = rbind(res, NA)
   res[nrow(res), LRcols] = apply(res[LRcols], 2, prod, na.rm = TRUE)
   res[nrow(res), 1] = "Total LR"
+
+  # Return
+  res
+}
+
+outputLRlinkedOnly = function(resultTable) {
+  if(is.null(res <- resultTable))
+    return("No likelihood ratios calculated")
+
+  res = removeMissing(res)
+
+  LRcols = c("LRlinked")
+  res = res[res$Gsize == 2, , drop = FALSE]
+  res[res$Gindex > 1, LRcols] = NA
+  res$Gindex = res$Gsize = res$PosCM = res$LRnolink = res$LRnomut = NULL
+
+  nr = nrow(res)
+  if(nr == 0)
+    return("No markers to report")
+
+  # Add totals row
+  res = rbind(res, NA)
+  res$LRsingle[nr+1] = prod(res$LRsingle, na.rm = TRUE)
+  res$LRlinked[nr+1] = prod(res$LRlinked, na.rm = TRUE)
+  res[nr+1, 1] = "Total LR"
+
+  # Return
+  res
+}
+
+outputLRunlinked = function(resultTable) {
+  if(is.null(res <- resultTable))
+    return("No likelihood ratios calculated")
+
+  # Keep only these markers if paired
+  keep = c("D5S2500", "SE33", "D8S1132", "D10S1435", "D11S2368", "vWA",
+           "D18S51", "D19S253", "Penta D")
+
+  res = removeMissing(res)
+
+  # Columns
+  cols = c("Marker", grep("^Person", names(res), value = TRUE), "LRsingle")
+
+  res = res[res$Gsize == 1 | res$Marker %in% keep, cols, drop = FALSE]
+  nr = nrow(res)
+  if(nr == 0)
+    return("No markers to report")
+
+  res = cbind(Idx = seq_len(nr), res)
+
+  # Add totals row
+  res = rbind(res, NA)
+  res$LRsingle[nr+1] = prod(res$LRsingle, na.rm = TRUE)
+  res[nr+1, 1] = "Total LR"
+
+  names(res)[1] = ""
 
   # Return
   res
@@ -185,4 +248,26 @@ writeLegend = function(wb, df, r, c, fill) {
             borders = "all", rowNames = TRUE)
   addStyle(wb, "Report", rows = r + 0:nrow(df), cols = c + 0:1, gridExpand = TRUE, stack = TRUE,
            style = createStyle(fgFill = fill))
+}
+
+
+# Inspired by manipulations inside `outputLRreport()`
+removeMissing = function(resTable) {
+  res = resTable
+
+  # Identify markers with missing data
+  genoCols = grep("^Person", names(res), value = TRUE)
+  miss = apply(res, 1, function(v) all(v[genoCols] == "-/-"))
+
+  # Incomplete pairs ...
+  miss2 = miss & res$Gsize == 2
+  incomp = res$Pair %in% unique(res$Pair[miss2])
+
+  # ... convert to singlepoint
+  if(any(miss2)) {
+    res$LRlinked[incomp] = res$LRsingle[incomp]
+    res$Gindex[incomp] = res$Gsize[incomp] = 1L
+  }
+
+  res[!miss, , drop = FALSE]
 }
