@@ -13,6 +13,8 @@
 #' @export
 runKLINK = function() {
 
+  VERSION = "0.5.0"
+
   # Define UI
   ui = dashboardPage(title = "KLINK",
 
@@ -82,7 +84,13 @@ runKLINK = function() {
                  tabPanel("LR table", gt::gt_output("result_table"))
                ),
         ),
-      )
+      ),
+      p("This is KLINK version", VERSION, "(",
+        a("changelog", href = "https://github.com/magnusdv/klink/blob/master/NEWS.md", target="_blank", .noWS = "outside"), ").",
+        "If you find something that isn't working properly, please file a ",
+        a("bug report", href = "https://github.com/magnusdv/klink/issues", target="_blank", .noWS = "outside"),
+        ". For more information about the R packages on which KLINK is based, see the",
+        a("ped suite", href = "https://magnusdv.github.io/pedsuite", target="_blank"), "homepage.")
     )
   )
 
