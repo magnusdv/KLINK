@@ -3,8 +3,15 @@ Title: Kinship Analysis with Linked Markers
 Version: 0.6.0
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"))
-Description: A Shiny app for computing kinship LR using pairwise linked markers.
+Description: A Shiny app based on the 'pedsuite' packages, for computing
+    likelihood ratios in forensic kinship testing. The app is similar in
+    purpose to the (non-R) software 'Familias' and 'FamLink', but offers a
+    number of unique features, including visualisations and automated
+    report generation. Pairs of linked markers are supported, as well as
+    all common mutation models.
 License: GPL (>= 3)
+URL: https://github.com/magnusdv/KLINK
+BugReports: https://github.com/magnusdv/KLINK/issues
 Depends: 
     R (>= 4.1)
 Imports: 
@@ -24,5 +31,3 @@ Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-URL: https://github.com/magnusdv/KLINK
-BugReports: https://github.com/magnusdv/KLINK/issues
