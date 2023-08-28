@@ -1,3 +1,30 @@
+#' LR with pairwise linked markers
+#'
+#' This function does the main LR calculations of the KLINK app.
+#'
+#' @param pedigrees A list of two pedigrees.
+#' @param linkageMap A data frame with columns including `Pair`, `Marker`,
+#'   `Chrom`, `PosCM`
+#' @param markerData A data frame, normally extracted automatically from
+#'   `pedigrees`.
+#' @param mapfun Name of the map function to be used; either "Haldane" or
+#'   "Kosambi" (default)
+#'
+#' @return A data frame with detailed LR results.
+#'
+#' @examples
+#' library(forrel)
+#'
+#' ped1 = nuclearPed(fa = "AF", child = "CH") |>
+#'   profileSim(markers = NorwegianFrequencies)
+#'
+#' ped2 = singletons(c("AF", "CH")) |>
+#'   transferMarkers(from = ped1, to = _)
+#'
+#' pedigrees = list(ped1, ped2)
+#'
+#' linkedLR(pedigrees, LINKAGEMAP)
+#'
 #' @export
 linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi") {
 
