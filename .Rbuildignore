@@ -6,3 +6,4 @@
 ^rsconnect$
 ^Rprof.out$
 ^notes-private$
+^cran-comments\.md$

@@ -1,3 +1,8 @@
+# KLINK 0.6.0
+
+* First CRAN release.
+
+
 # KLINK 0.5.0
 
 * Add karyogram showing marker positions.

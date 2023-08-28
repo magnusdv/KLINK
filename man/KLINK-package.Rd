@@ -4,7 +4,7 @@
 \name{KLINK-package}
 \alias{KLINK}
 \alias{KLINK-package}
-\title{KLINK: Kinship Analysis With Linked Markers}
+\title{KLINK: Kinship Analysis with Linked Markers}
 \description{
 A Shiny app for computing kinship LR using pairwise linked markers.
 }
@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Magnus Dehli Vigeland \email{magnusdv@medisin.uio.no}
+\strong{Maintainer}: Magnus Dehli Vigeland \email{m.d.vigeland@medisin.uio.no}
 
 }
 \keyword{internal}
