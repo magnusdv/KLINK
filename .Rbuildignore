@@ -8,3 +8,4 @@
 ^notes-private$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^README\.Rmd$
