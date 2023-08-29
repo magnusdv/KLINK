@@ -1,4 +1,4 @@
-# KLINK 0.6.0
+# KLINK 0.6.1
 
 * First CRAN release.
 
