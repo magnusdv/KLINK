@@ -6,7 +6,7 @@
 \alias{KLINK-package}
 \title{KLINK: Kinship Analysis with Linked Markers}
 \description{
-A Shiny app based on the 'pedsuite' packages, for computing likelihood ratios in forensic kinship testing. The app is similar in purpose to the (non-R) software 'Familias' and 'FamLink', but offers a number of unique features, including visualisations and automated report generation. Pairs of linked markers are supported, as well as all common mutation models.
+A 'shiny' application for forensic kinship testing, based on the 'pedsuite' R packages. 'KLINK' is closely aligned with the (non-R) software 'Familias' and 'FamLink', but offers several unique features, including visualisations and automated report generation. The calculation of likelihood ratios supports pairs of linked markers, and all common mutation models.
 }
 \seealso{
 Useful links:

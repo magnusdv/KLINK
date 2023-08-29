@@ -6,6 +6,9 @@
 \usage{
 runKLINK()
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 This launches the shiny app KLINK.
 }

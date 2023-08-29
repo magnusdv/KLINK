@@ -3,11 +3,11 @@ Title: Kinship Analysis with Linked Markers
 Version: 0.6.0
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"))
-Description: A Shiny app based on the 'pedsuite' packages, for computing
-    likelihood ratios in forensic kinship testing. The app is similar in
-    purpose to the (non-R) software 'Familias' and 'FamLink', but offers a
-    number of unique features, including visualisations and automated
-    report generation. Pairs of linked markers are supported, as well as
+Description: A 'shiny' application for forensic kinship testing, based on
+    the 'pedsuite' R packages. 'KLINK' is closely aligned with the (non-R)
+    software 'Familias' and 'FamLink', but offers several unique features,
+    including visualisations and automated report generation. The
+    calculation of likelihood ratios supports pairs of linked markers, and
     all common mutation models.
 License: GPL (>= 3)
 URL: https://github.com/magnusdv/KLINK

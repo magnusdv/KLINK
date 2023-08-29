@@ -3,7 +3,12 @@ karyogram = function(markerdata, cols = KARYOPALETTE, bgcol = "gray92") {
 
   h = 0.7
   plot.new()
+
+  oldpar = par(no.readonly = TRUE)
+  on.exit(par(oldpar))
+
   par(mar = c(1,2,1,1), usr = c(0, max(CHROM.MB), 22+h, 1), xpd = TRUE)
+
   rect(xleft = 0, ybottom = 1:22, xright = CHROM.MB, ytop = 1:22 + h, col = bgcol)
   text.default(0, 1:22 + h/2, labels = 1:22, pos = 2)
 

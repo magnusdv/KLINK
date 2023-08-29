@@ -2,7 +2,7 @@
 #'
 #' This launches the shiny app KLINK.
 #'
-#' @return NULL
+#' @return No return value, called for side effects.
 #'
 #' @examples
 #'
@@ -10,10 +10,11 @@
 #' runKLINK()
 #' }
 #'
+#' @importFrom utils packageDescription
 #' @export
 runKLINK = function() {
 
-  VERSION = "0.5.0"
+  VERSION = packageDescription("KLINK")$Version
 
   # Define UI
   ui = dashboardPage(title = "KLINK",
