@@ -1,3 +1,14 @@
+# KLINK 0.7.0
+
+* Although KLINK is primarily a Shiny app, the package now documents and exports the main functions, enabling analysis in R as well.
+
+* Added new dataset `paternity`, with simulated data for a paternity case (including a mutation).
+
+* Improved formatting in output Excel document.
+
+* Simplified code in sync with recent pedsuite updates. The plots may appear slightly modified.
+
+
 # KLINK 0.6.1
 
 * First CRAN release.

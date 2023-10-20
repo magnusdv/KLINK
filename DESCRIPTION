@@ -1,6 +1,6 @@
 Package: KLINK
 Title: Kinship Analysis with Linked Markers
-Version: 0.6.1
+Version: 0.7.0
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"))
 Description: A 'shiny' application for forensic kinship testing, based on
@@ -15,12 +15,12 @@ BugReports: https://github.com/magnusdv/KLINK/issues
 Depends: 
     R (>= 4.1)
 Imports: 
-    forrel (>= 1.5.3),
+    forrel (>= 1.6.0),
     gt (>= 0.9.0),
     openxlsx,
     pedmut (>= 0.6.0),
     pedprobr (>= 0.8.0),
-    pedtools (>= 2.3.1),
+    pedtools (>= 2.4.0),
     pkgload,
     shiny (>= 1.7.4),
     shinydashboard,
