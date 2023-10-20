@@ -171,12 +171,12 @@ runKLINK = function() {
 
     output$pedplot1 = renderPlot({
       ped1 = req(pedigrees$active[[1]])
-      plotPed(ped1, marker = input$showmarker, cex = 1.3)
+      plotPed(ped1, marker = input$showmarker, cex = 1.2, margin = 3)
     }, execOnResize = TRUE)
 
     output$pedplot2 = renderPlot({
       ped2 = req(pedigrees$active[[2]])
-      plotPed(ped2, marker = input$showmarker, margin = 0.1, cex = 1.3)
+      plotPed(ped2, marker = input$showmarker, cex = 1.2, margin = 3)
     }, execOnResize = TRUE)
 
     observeEvent(input$hideEmpty, {
