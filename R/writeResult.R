@@ -168,8 +168,6 @@ outputLRreport = function(resultTable) {
   if(is.null(res <- resultTable))
     return()
 
-  names(res)[names(res) == "LRlinked"] = "LR"
-
   # Remove missing & handle linkage pairs
   res = removeMissing(res)
 
@@ -177,15 +175,16 @@ outputLRreport = function(resultTable) {
   res$LRsingle[res$Gsize == 1] = NA
 
   # Prepare merge
-  res$LR[res$Gindex > 1] = NA
+  res$LRlinked[res$Gindex > 1] = NA
 
   # Total (to be added below)
-  total = prod(res$LR, na.rm = TRUE)
+  total = prod(res$LRlinked, na.rm = TRUE)
 
   # Select columns
   res$Idx = 1:nrow(res)
   genoCols = grep("^Person", names(res), value = TRUE)
-  res = res[c("Idx", "Marker", genoCols, "LR", "LRsingle")]
+  res = res[c("Idx", "Marker", genoCols, "LRlinked", "LRsingle")]
+  names(res)[names(res) == "LRlinked"] = "LR"
 
   # Round to 3 decimals
   res$LR = ifelse(is.na(res$LR), NA_character_, sprintf("%.3f", res$LR))
@@ -269,10 +268,10 @@ removeMissing = function(resTable) {
 
   # Identify markers with missing data
   genoCols = grep("^Person", names(res), value = TRUE)
-  miss = apply(res, 1, function(v) all(v[genoCols] == "-/-"))
+  res$miss = apply(res, 1, function(v) all(v[genoCols] == "-/-"))
 
   # Incomplete pairs ...
-  miss2 = miss & res$Gsize == 2
+  miss2 = res$miss & res$Gsize == 2
   incomp = res$Pair %in% unique(res$Pair[miss2])
 
   # ... convert to singlepoint
@@ -284,7 +283,7 @@ removeMissing = function(resTable) {
   # Put pairs at bottom, and incomplete pairs at very bottom
   res = res[order(res$Gsize, incomp), , drop = FALSE]
 
-  res[!miss, , drop = FALSE]
+  res[!res$miss, , drop = FALSE]
 }
 
 

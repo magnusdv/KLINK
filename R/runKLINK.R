@@ -251,7 +251,10 @@ runKLINK = function() {
     # Download tables ---------------------------------------------------------
 
     output$download = downloadHandler(
-      filename = function() sprintf("KLINK-%s.xlsx", sub(".fam", "", famfilename())),
+      filename = function() {
+        fam = famfilename()
+        paste0("KLINK-", if(!is.null(fam)) sub(".fam", "", fam), ".xlsx")
+      },
       content = function(file) {
         writeResult(resultTable(),
                     pedigrees = pedigrees$reduced,
