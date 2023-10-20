@@ -1,7 +1,28 @@
 
+#' Load .fam file
+#'
+#' @param path The path to a .fam file.
+#' @param fallbackModel The name of a mutation model; passed on to
+#'   [forrel::readFam()].
+#'
+#' @return A list of two `ped` objects.
+#'
+#' @examples
+#' fam = system.file("extdata/halfsib-test.fam", package = "KLINK")
+#' peds = loadFamFile(fam)
+#' pedtools::plotPedList(peds)
+#'
+#' @export
 loadFamFile = function(path, fallbackModel = "equal") {
-  x = forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:",
-                      fallbackModel = fallbackModel)
+  x0 = forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:",
+                      fallbackModel = fallbackModel, includeParams = TRUE, simplify1 = FALSE)
+
+  x = x0$main
+  params = x0$params
+
+  theta = params$theta
+  if(length(theta) && !is.na(theta) && theta > 0)
+    warning("Nonzero theta correction detected: theta = ", theta, call. = FALSE)
 
   if(!length(x) || (!is.ped(x[[1]]) && !is.pedList(x[[1]])))
     stop("No pedigrees found in the Familias file.", call. = FALSE)

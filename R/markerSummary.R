@@ -1,10 +1,20 @@
-
-markerSummary = function(x, linkageMap = NULL) {
-  ped1 = x[[1]]
-  ped2 = x[[2]]
+#' Generate table of marker data
+#'
+#' @param pedigrees A list of 2 pedigrees.
+#' @param linkageMap A data frame.
+#'
+#' @return A data frame.
+#'
+#' @examples
+#' markerSummary(paternity)
+#'
+#' @export
+markerSummary = function(pedigrees, linkageMap = NULL) {
+  ped1 = pedigrees[[1]]
+  ped2 = pedigrees[[2]]
 
   # Check if special (founder-type) lumping applies to all markers
-  specLump = specialLumpability(x)
+  specLump = specialLumpability(pedigrees)
 
   # Genotypes
   geno = t.default(pedtools::getGenotypes(ped1, ids = typedMembers(ped1)))
