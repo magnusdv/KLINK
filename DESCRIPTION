@@ -1,6 +1,6 @@
 Package: KLINK
 Title: Kinship Analysis with Linked Markers
-Version: 0.7.0
+Version: 0.7.1
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"))
 Description: A 'shiny' application for forensic kinship testing, based on
