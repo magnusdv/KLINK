@@ -1,3 +1,9 @@
+# KLINK 0.7.1
+
+* New button "Mask" for downloading a masked version of the dataset.
+
+* This version also transitions to the new package `pedFamilias()` for reading and writing .fam files.
+
 # KLINK 0.7.0
 
 * Although KLINK is primarily a Shiny app, the package now documents and exports the main functions, enabling analysis in R as well.
