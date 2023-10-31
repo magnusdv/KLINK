@@ -20,7 +20,12 @@ safelog = function(v) {
   res
 }
 
-
 `%||%` = function(x, y) {
   if(is.null(x)) y else x
 }
+
+setnames = function(x, nms) {
+  names(x) = nms
+  x
+}
+

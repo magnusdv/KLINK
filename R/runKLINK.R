@@ -25,9 +25,13 @@ runKLINK = function() {
 
     sidebar = dashboardSidebar(
       fluidRow(style = "padding: 5px 15px 0px 15px",
-        column(6, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
-        column(6, align = "right",
-               actionButton("loadex",  "Example", class = "btn-sm btn btn-success", style = "padding: 1px 10px; background-color:#90ee90"))
+        column(3, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
+        column(5, align = "right",
+               actionButton("loadex",  "Example", class = "btn-sm btn btn-success",
+                            style = "padding: 1px 10px; background-color:#90ee90")),
+        column(4, align = "right",
+               downloadButton("mask", "Mask", class = "btn-sm btn btn-light",
+                              style = "padding: 0px 6px; color: black; margin-top: 7px"))
       ),
       tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"))),
 
@@ -120,22 +124,26 @@ runKLINK = function() {
     }
 
     famfilename = reactiveVal(NULL)
+    famparams = reactiveVal(NULL)
     pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
 
     observeEvent(input$famfile, {
       fil = req(input$famfile)
       famfilename(fil$name)
       NOTES(NULL)
-      peds = tryCatch(
+      peddata = tryCatch(
         error = showNote,
         withCallingHandlers(
           warning = function(w) addNote(conditionMessage(w)),
-          loadFamFile(fil$datapath, fallbackModel = input$fallback)
+          loadFamFile(fil$datapath, fallbackModel = input$fallback, withParams = TRUE)
         )
       )
 
-      pedigrees$complete = req(peds)
-      allLabs = unlist(lapply(peds, labels), recursive = TRUE)
+      peds = req(peddata$peds)
+      pedigrees$complete = peds
+      famparams(peddata$params)
+
+      allLabs = unlist(lapply(peds, labels), recursive = TRUE, use.names = FALSE)
 
       if(any(misspar <- startsWith(allLabs, ":missing:"))) {
         nmiss = sum(misspar)
@@ -231,8 +239,10 @@ runKLINK = function() {
 
     # Change map file
     observeEvent(input$mapfile, {
-      file = req(input$mapfile)
-      map = utils::read.table(file$datapath, header=FALSE, sep="\t")
+      path = req(input$mapfile$datapath)
+      header = readLines(path, n = 1) |> startsWith("Pair")
+      map = utils::read.table(path, header = header, sep="\t")
+
       linkageMap(map)
       resultTable(NULL)
       updateTabsetPanel(session, "tabs", selected = "Linkage map")
@@ -267,6 +277,38 @@ runKLINK = function() {
       contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+
+    # Mask / unmask -----------------------------------------------------------
+
+    output$mask = downloadHandler(
+      filename = function() {
+        origfam = famfilename() %||% "KLINK.fam"
+        sub(".fam", "_MASKED.zip", origfam, fixed = TRUE)
+      },
+      content = function(file) {
+        peds = req(pedigrees$complete)
+
+        origfam = basename(famfilename() %||% "KLINK.fam")
+        tmp = tempdir()
+        fam = sub(".fam", "_MASKED.fam", origfam, fixed = TRUE)
+        map = sub(".fam", "_MASKED.map", origfam, fixed = TRUE)
+        key = sub(".fam", "_MASKED-keys.txt", origfam, fixed = TRUE)
+
+        # Write .fam file with masked data
+        keys = writeMasked(file.path(tmp, fam), peds = peds, params = famparams())
+
+        # Masked linkage map
+        mm = maskMap(map = linkageMap(), keys = keys)
+        write.table(mm, file = file.path(tmp, map), quote = FALSE, sep = "\t", col.names = TRUE, row.names = FALSE)
+
+        # Write keys to file
+        writeKeys(keys, file = file.path(tmp, key))
+
+        # Zip
+        zip::zip(zipfile = file, files = c(fam, map, key), root = tmp)
+      },
+      contentType = "application/zip"
+    )
   }
 
   # Run the application

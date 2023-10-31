@@ -25,7 +25,8 @@ Imports:
     shiny (>= 1.7.4),
     shinydashboard,
     utils,
-    verbalisr
+    verbalisr,
+    zip
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
