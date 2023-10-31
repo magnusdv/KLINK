@@ -1,9 +1,8 @@
-
 #' Load .fam file
 #'
 #' @param path The path to a .fam file.
 #' @param fallbackModel The name of a mutation model; passed on to
-#'   [forrel::readFam()].
+#'   [pedFamilias::readFam()].
 #'
 #' @return A list of two `ped` objects.
 #'
@@ -13,9 +12,10 @@
 #' pedtools::plotPedList(peds)
 #'
 #' @export
-loadFamFile = function(path, fallbackModel = "equal") {
-  x0 = forrel::readFam(path, useDVI = FALSE, verbose = FALSE, prefixAdded = ":missing:",
-                      fallbackModel = fallbackModel, includeParams = TRUE, simplify1 = FALSE)
+loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
+  x0 = pedFamilias::readFam(path, useDVI = FALSE, verbose = FALSE,
+                            prefixAdded = ":missing:", includeParams = TRUE,
+                            fallbackModel = fallbackModel, simplify1 = FALSE)
 
   x = x0$main
   params = x0$params
@@ -63,7 +63,10 @@ loadFamFile = function(path, fallbackModel = "equal") {
   if(is.null(names(x)))
     names(x) = c("Ped 1", "Ped 2")
 
-  x
+  if(withParams)
+    list(peds = x, params = params)
+  else
+    x
 }
 
 

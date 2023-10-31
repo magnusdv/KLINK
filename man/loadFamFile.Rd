@@ -4,13 +4,13 @@
 \alias{loadFamFile}
 \title{Load .fam file}
 \usage{
-loadFamFile(path, fallbackModel = "equal")
+loadFamFile(path, fallbackModel = "equal", withParams = FALSE)
 }
 \arguments{
 \item{path}{The path to a .fam file.}
 
 \item{fallbackModel}{The name of a mutation model; passed on to
-\code{\link[forrel:readFam]{forrel::readFam()}}.}
+\code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.}
 }
 \value{
 A list of two \code{ped} objects.
