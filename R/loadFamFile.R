@@ -3,6 +3,8 @@
 #' @param path The path to a .fam file.
 #' @param fallbackModel The name of a mutation model; passed on to
 #'   [pedFamilias::readFam()].
+#' @param withParams A logical indicating if the Familias parameters should be
+#'   included in the output. (See [pedFamilias::readFam()].)
 #'
 #' @return A list of two `ped` objects.
 #'
@@ -13,8 +15,8 @@
 #'
 #' @export
 loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
-  x0 = pedFamilias::readFam(path, useDVI = FALSE, verbose = FALSE,
   if (getOption("KLINK.debug")) print("loadFamFile")
+  x0 = pedFamilias::readFam(path, useDVI = NA, verbose = FALSE,
                             prefixAdded = ":missing:", includeParams = TRUE,
                             fallbackModel = fallbackModel, simplify1 = FALSE)
 
@@ -70,6 +72,8 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
 
   if(is.null(names(x)))
     names(x) = c("Ped 1", "Ped 2")
+  else if(any(msnm <- names(x) == ""))
+    names(x)[msnm] = paste("Ped", which(msnm))
 
   if(withParams)
     list(peds = x, params = params)

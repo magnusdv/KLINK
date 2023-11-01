@@ -11,6 +11,9 @@ loadFamFile(path, fallbackModel = "equal", withParams = FALSE)
 
 \item{fallbackModel}{The name of a mutation model; passed on to
 \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.}
+
+\item{withParams}{A logical indicating if the Familias parameters should be
+included in the output. (See \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.)}
 }
 \value{
 A list of two \code{ped} objects.

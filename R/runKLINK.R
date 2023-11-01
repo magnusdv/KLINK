@@ -10,7 +10,7 @@
 #' runKLINK()
 #' }
 #'
-#' @importFrom utils packageDescription
+#' @importFrom utils packageDescription write.table
 #' @export
 runKLINK = function() {
 
