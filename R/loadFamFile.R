@@ -43,8 +43,12 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
       stop("Unexpected content detected in the Familias file.")
   })
 
-  if(length(x) == 1)
-    stop("Only one pedigree found in the Familias file.", call. = FALSE)
+  if(length(x) == 1) {
+    warning("Only one pedigree found. Adding unrelated hypothesis", call. = FALSE)
+    un = singletons(typedMembers(x[[1]]))
+    un = transferMarkers(from = x[[1]], to = un)
+    x = c(x, list(un))
+  }
 
   if(length(x) > 2) {
     warning("This familias file contains more than two pedigrees; only the first two are used", call. = FALSE)
