@@ -10,5 +10,6 @@ plotPed = function(x, marker = NULL, ...) {
   nonmiss = setdiff(allLabs, miss)
 
   plot(x, marker = marker, hatched = typedMembers, frames = FALSE, labs = nonmiss,
-       col = list(red = miss), lwd = list("2" = miss), lty = list(dashed = miss), ...)
+       col = list(red = miss), lwd = list("2" = miss), lty = list(dashed = miss),
+       autoScale = TRUE, minsize = 0.15, ...)
 }

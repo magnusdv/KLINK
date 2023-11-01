@@ -2,9 +2,11 @@
 
 * New button "Mask" for downloading a masked version of the dataset.
 
-* This version also transitions to the new package `pedFamilias()` for reading and writing .fam files.
+* Reading/writing .fam files is now handled by the new package `pedFamilias()`, which has been split out from `forrel`.
 
-* Added option `KLINK.debug` which can be set to TRUE for debugging. 
+* Added R option `KLINK.debug` which can be set to TRUE for debugging (only when running KLINK from R). 
+
+* Use (experimental) `autoScale` option in pedigree plots.
 
 * Minor internal tweaks and bug fixes.
 
