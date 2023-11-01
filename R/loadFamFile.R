@@ -14,6 +14,7 @@
 #' @export
 loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
   x0 = pedFamilias::readFam(path, useDVI = FALSE, verbose = FALSE,
+  if (getOption("KLINK.debug")) print("loadFamFile")
                             prefixAdded = ":missing:", includeParams = TRUE,
                             fallbackModel = fallbackModel, simplify1 = FALSE)
 
@@ -78,6 +79,7 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
 
 
 removeEmpty = function(x) {
+  if (getOption("KLINK.debug")) print("removeEmpty")
   if(is.null(x))
     return(NULL)
   for(pedname in names(x)) {

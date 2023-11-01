@@ -113,12 +113,14 @@ runKLINK = function() {
     }
 
     output$notificationMenu = renderMenu({
+      if (getOption("KLINK.debug")) print("notificationMenu")
       notes = lapply(NOTES(), function(n) {notificationItem(HTML(n), status = "warning")})
       dropdownMenu(type = "notifications", .list = notes, badgeStatus = "warning")
     })
 
     # Error utility
     showNote = function(..., type = "error") {
+      if (getOption("KLINK.debug")) print("showNote")
       showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = type)
       invisible(NULL)
     }
@@ -128,6 +130,7 @@ runKLINK = function() {
     pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
 
     observeEvent(input$famfile, {
+      if (getOption("KLINK.debug")) print("famfile")
       fil = req(input$famfile)
       famfilename(fil$name)
       NOTES(NULL)
@@ -154,6 +157,7 @@ runKLINK = function() {
     })
 
     observeEvent(input$loadex, {
+      if (getOption("KLINK.debug")) print("loadex")
       fil = system.file("extdata", "halfsib-test.fam", package = "KLINK")
       NOTES(NULL)
       pedigrees$complete = loadFamFile(fil)
@@ -161,6 +165,7 @@ runKLINK = function() {
     })
 
     observeEvent(pedigrees$complete, {
+      if (getOption("KLINK.debug")) print("Set reduced/active")
       peds = pedigrees$complete
       pedred = removeEmpty(peds)
       pedigrees$reduced = pedred
@@ -178,11 +183,13 @@ runKLINK = function() {
     # Pedigree plots ----------------------------------------------------------
 
     output$pedplot1 = renderPlot({
+      if (getOption("KLINK.debug")) print("plot1")
       ped1 = req(pedigrees$active[[1]])
       plotPed(ped1, marker = input$showmarker, cex = 1.2, margin = 3)
     }, execOnResize = TRUE)
 
     output$pedplot2 = renderPlot({
+      if (getOption("KLINK.debug")) print("plot2")
       ped2 = req(pedigrees$active[[2]])
       plotPed(ped2, marker = input$showmarker, cex = 1.2, margin = 3)
     }, execOnResize = TRUE)
@@ -198,6 +205,7 @@ runKLINK = function() {
 
     # Print LR result table
     output$result_table = render_gt({
+      if (getOption("KLINK.debug")) print("LR table")
       res = resultTable()
       validate(need(!is.null(res), "No likelihood ratios have been calculated yet."))
       prettyTable(res)
@@ -205,6 +213,7 @@ runKLINK = function() {
 
     # Compute LR
     observeEvent(input$compute, {
+      if (getOption("KLINK.debug")) print("compute LR")
       ped = req(pedigrees$reduced)
       res = linkedLR(ped, linkageMap(), markerData(), mapfun = input$mapfunction)
       resultTable(res)
@@ -219,6 +228,7 @@ runKLINK = function() {
     markerData = reactiveVal(NULL)
 
     observeEvent(pedigrees$complete, {
+      if (getOption("KLINK.debug")) print("markerData")
       mtab = markerSummary(pedigrees$complete, linkageMap = linkageMap())
       markerData(req(mtab))
       updateTabsetPanel(session, "tabs", selected = "Marker data")
@@ -226,6 +236,7 @@ runKLINK = function() {
 
     # Print loaded marker data
     output$marker_table = render_gt({
+      if (getOption("KLINK.debug")) print("marker table")
       mtab = markerData()
       validate(need(!is.null(mtab), "No data has been loaded."))
       prettyMarkerTable(mtab)
@@ -239,6 +250,7 @@ runKLINK = function() {
 
     # Change map file
     observeEvent(input$mapfile, {
+      if (getOption("KLINK.debug")) print("mapfile")
       path = req(input$mapfile$datapath)
       header = readLines(path, n = 1) |> startsWith("Pair")
       map = utils::read.table(path, header = header, sep="\t")
@@ -266,6 +278,8 @@ runKLINK = function() {
         paste0("KLINK-", if(!is.null(fam)) sub(".fam", "", fam), ".xlsx")
       },
       content = function(file) {
+        if (getOption("KLINK.debug")) print("download")
+
         writeResult(resultTable(),
                     pedigrees = pedigrees$reduced,
                     linkageMap = linkageMap(),
@@ -286,6 +300,7 @@ runKLINK = function() {
         sub(".fam", "_MASKED.zip", origfam, fixed = TRUE)
       },
       content = function(file) {
+        if (getOption("KLINK.debug")) print("mask")
         peds = req(pedigrees$complete)
 
         origfam = basename(famfilename() %||% "KLINK.fam")
