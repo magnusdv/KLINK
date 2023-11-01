@@ -63,7 +63,11 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
 
   # No-mutation versions
   pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL))
-  LRnomut = forrel::kinshipLR(pedsNomut, markers = res$Marker)$LRperMarker[,1]
+  LRnomut = forrel::kinshipLR(pedsNomut, markers = res$Marker)$LRperMarker[, 1]
+
+  # Fix lost names when only 1 marker
+  if(is.null(names(LRnomut)))
+    names(LRnomut) = res$Marker
 
   # Split linkage groups
   pairs = split(res, res$Pair)
