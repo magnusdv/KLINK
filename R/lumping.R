@@ -71,7 +71,7 @@ lumpMutSpecial = function(mut, lump, method = "foundersUntyped") {
   als = colnames(mut)
   afr = attr(mut, "afreq")
   keep = setdiff(als, lump)
-  wei = if(method == "foundersUntyped") afr[lump] else stop("Method not implemented: ", method)
+  wei = if(method == "foundersUntyped") afr[lump] else stop2("Lumping method not implemented: ", method)
   weiScaled = wei/sum(wei)
 
   m2 = mut[keep, keep, drop = FALSE]
