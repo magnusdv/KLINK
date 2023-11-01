@@ -20,6 +20,9 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
   x = x0$main
   params = x0$params
 
+  if(isTRUE(params$dvi))
+    stop2("This file was exported from the DVI module of Familias. Such files cannot be used in KLINK.")
+
   theta = params$theta
   if(length(theta) && !is.na(theta) && theta > 0)
     warning("Nonzero theta correction detected: theta = ", theta, call. = FALSE)
