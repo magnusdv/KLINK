@@ -4,6 +4,11 @@
 
 * This version also transitions to the new package `pedFamilias()` for reading and writing .fam files.
 
+* Added option `KLINK.debug` which can be set to TRUE for debugging. 
+
+* Minor internal tweaks and bug fixes.
+
+
 # KLINK 0.7.0
 
 * Although KLINK is primarily a Shiny app, the package now documents and exports the main functions, enabling analysis in R as well.
