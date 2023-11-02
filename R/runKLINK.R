@@ -44,7 +44,7 @@ runKLINK = function() {
       radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                    selected = "Kosambi", inline = TRUE),
       hr(),
-      actionButton("compute", "Calculate LR", class = "btn-lg btn-danger",
+      actionButton("compute", "Calculate LR", class = "btn-lg btn-danger", onclick = "buttonClick('compute')",
                      style = "margin-top:20px;background-color:#FF5c5c")
     ),
 
@@ -65,6 +65,7 @@ runKLINK = function() {
           .form-group.shiny-input-container {margin-bottom:0px}
           .progress {margin-bottom:0px}
       "))),
+      tags$head(includeHTML("GA.html")),
 
       fluidRow(
         column(width = 4,
