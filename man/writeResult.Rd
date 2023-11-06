@@ -50,6 +50,6 @@ writeResult(LRtab,
             markerData = mdata,
             outfile = tmp)
 
-openxlsx::openXL(tmp)
+# openxlsx::openXL(tmp)
 
 }
