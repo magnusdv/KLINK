@@ -2,7 +2,8 @@ Package: KLINK
 Title: Kinship Analysis with Linked Markers
 Version: 0.7.2
 Authors@R: 
-    person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"))
+    person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-9134-4962"))
 Description: A 'shiny' application for forensic kinship testing, based on
     the 'pedsuite' R packages. 'KLINK' is closely aligned with the (non-R)
     software 'Familias' and 'FamLink', but offers several unique features,

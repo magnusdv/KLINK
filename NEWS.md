@@ -1,3 +1,10 @@
+# KLINK 0.7.2
+
+* Internal reorganisation, moving the Shiny code to `inst/shiny/app.R`.
+
+* Fixes a minor regression error in the previous version.
+
+
 # KLINK 0.7.1
 
 * New button "Mask" for downloading a masked version of the dataset.

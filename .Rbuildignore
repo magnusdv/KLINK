@@ -2,7 +2,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^app\.R$
 ^Rprof.out$
 ^notes-private$
 ^cran-comments\.md$
