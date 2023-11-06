@@ -30,7 +30,7 @@
 #'             markerData = mdata,
 #'             outfile = tmp)
 #'
-#' openxlsx::openXL(tmp)
+#' # openxlsx::openXL(tmp)
 #'
 #' @export
 writeResult = function(resultTable, pedigrees, linkageMap, markerData,

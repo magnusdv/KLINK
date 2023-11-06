@@ -3,9 +3,9 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^app\.R$
-^rsconnect$
 ^Rprof.out$
 ^notes-private$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^README\.Rmd$
+^inst/shiny/rsconnect$
