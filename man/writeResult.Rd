@@ -34,6 +34,7 @@ This function produces an Excel document containing the genotype data and
 various LR tables.
 }
 \examples{
+\donttest{
 # Built-in dataset `paternity`
 peds = paternity
 map = LINKAGEMAP
@@ -51,5 +52,5 @@ writeResult(LRtab,
             outfile = tmp)
 
 # openxlsx::openXL(tmp)
-
+}
 }

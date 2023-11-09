@@ -2,6 +2,8 @@
 
 * Internal reorganisation, moving the Shiny code to `inst/shiny/app.R`.
 
+* `launchApp()` is now the main launching function, with `runKLINK()` as an alias.
+
 * Fixes a minor regression error in the previous version.
 
 

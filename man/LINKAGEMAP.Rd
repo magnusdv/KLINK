@@ -11,6 +11,6 @@ A data frame with 18 rows and 5 columns.
 LINKAGEMAP
 }
 \description{
-A genetic map including 9 pairs of linked STR markers
+A genetic map including 9 pairs of linked STR markers.
 }
 \keyword{datasets}

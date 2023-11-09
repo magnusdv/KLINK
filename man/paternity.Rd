@@ -11,13 +11,12 @@ A list of two pedigrees, named H1 and H2.
 paternity
 }
 \description{
-A list of two pedigrees forming the hypotheses in a paternity case: H1 (AF is
-the father of CH) and H2 (unrelated). AF and CH are genotyped with 11 marker.
+A list of two pedigrees forming the hypotheses in a paternity case: H1 (\code{AF} is
+the father of \code{CH}) and H2 (unrelated). \code{AF} and \code{CH} are genotyped with 11
+markers, with allele frequencies from \code{forrel::NorwegianFrequencies}.
 }
 \examples{
-library(forrel)
-
-plotPedList(paternity, marker = "SE33")
-kinshipLR(paternity)
+pedtools::plotPedList(paternity, marker = "SE33")
+forrel::kinshipLR(paternity)
 }
 \keyword{datasets}

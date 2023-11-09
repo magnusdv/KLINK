@@ -3,10 +3,10 @@
 
 ## usethis namespace: start
 #' @rawNamespace import(shiny, except = c(singleton, is.singleton))
-#' @import shinydashboard
 #' @import gt
 #' @import openxlsx
 #' @import pedtools
+#' @import shinydashboard
 ## usethis namespace: end
 NULL
 

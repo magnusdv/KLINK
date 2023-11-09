@@ -13,7 +13,7 @@ runKLINK()
 No return value, called for side effects.
 }
 \description{
-This launches the shiny app KLINK.
+This launches the KLINK app. \code{runKLINK()} is a synonym for \code{launchApp()}.
 }
 \examples{
 

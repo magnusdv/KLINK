@@ -14,6 +14,7 @@
 #' @return NULL
 #'
 #' @examples
+#' \donttest{
 #' # Built-in dataset `paternity`
 #' peds = paternity
 #' map = LINKAGEMAP
@@ -31,7 +32,7 @@
 #'             outfile = tmp)
 #'
 #' # openxlsx::openXL(tmp)
-#'
+#' }
 #' @export
 writeResult = function(resultTable, pedigrees, linkageMap, markerData,
                        outfile, notes = NULL, fam = NULL) {

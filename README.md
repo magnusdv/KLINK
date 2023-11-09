@@ -28,7 +28,7 @@ install.packages("KLINK")
 Then you may start KLINK as follows:
 
 ``` r
-KLINK::runKLINK()
+KLINK::launchApp()
 ```
 
 <img src="man/figures/screenshot-klink.png" width="100%" />
