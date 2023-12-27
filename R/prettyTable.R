@@ -34,8 +34,10 @@ prettyTable = function(restable, style = 6) {
     grand_summary_rows(
       columns = LRcols,
       fns = list("Total LR" = ~ prod(.[Gindex == 1])),
-      fmt = list(~fmt_scientific(., columns = where(~max(.x, na.rm = T) >= 1e4), decimals = 2),
-                 ~fmt_number(., columns = where(~max(.x, na.rm = T) < 1e4), n_sigfig = 4, use_seps = FALSE)),
+      fmt = list(~fmt_scientific(., columns = where(~ is.finite(.x) && .x > 0 && abs(log10(.x)) >= 4),
+                                 decimals = 2),
+                 ~fmt_number(., columns = where(~ is.finite(.x) && .x > 0 && abs(log10(.x)) < 4),
+                             n_sigfig = 4, use_seps = FALSE)),
       missing_text = ""
     ) |>
     fmt_number(c("LRsingle", LRcols), decimals = 3) |>
