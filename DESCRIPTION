@@ -1,6 +1,6 @@
 Package: KLINK
 Title: Kinship Analysis with Linked Markers
-Version: 0.7.2
+Version: 0.7.3
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-9134-4962"))
@@ -21,8 +21,8 @@ Imports:
     openxlsx,
     pedFamilias,
     pedmut (>= 0.7.1),
-    pedprobr (>= 0.8.0),
-    pedtools (>= 2.5.0),
+    pedprobr (>= 0.9.3),
+    pedtools (>= 2.6.0),
     shiny (>= 1.7.4),
     shinydashboard,
     verbalisr,
