@@ -91,7 +91,7 @@ ui = dashboardPage(title = "KLINK",
      "If you find something that isn't working properly, please file a ",
      a("bug report", href = "https://github.com/magnusdv/klink/issues", target="_blank", .noWS = "outside"),
      ". For more information about the R packages on which KLINK is based, see the",
-     a("ped suite", href = "https://magnusdv.github.io/pedsuite", target="_blank"), "homepage.")
+     a("pedsuite", href = "https://magnusdv.github.io/pedsuite", target="_blank"), "homepage.")
    )
 )
 

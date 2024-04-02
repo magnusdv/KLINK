@@ -1,11 +1,9 @@
 
 plotPed = function(x, cex = 1.2, marker = NULL, ...) {
-  x = foldLabs(x)
-
   if(!is.null(marker) && marker == "")
     marker = NULL
 
-  allLabs = unlist(labels(x))
+  allLabs = labels(x)
   miss = grep(":missing:", allLabs, value = TRUE, fixed = TRUE)
   nonmiss = setdiff(allLabs, miss)
 
@@ -19,7 +17,7 @@ plotPed = function(x, cex = 1.2, marker = NULL, ...) {
 
     tryCatch({
       plot(x, marker = marker, hatched = typedMembers, frames = FALSE, labs = nonmiss,
-           col = list(red = miss), lwd = list("2" = miss), lty = list(dashed = miss),
+           foldLabs = 10, col = list(red = miss), lwd = list("2" = miss), lty = list(dashed = miss),
            cex = cex, autoScale = TRUE, minsize = 0.15, ...)
       tryAgain = FALSE
     },
