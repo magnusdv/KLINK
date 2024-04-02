@@ -44,7 +44,7 @@ ui = dashboardPage(title = "KLINK",
   body = dashboardBody(
 
    tags$head(
-       tags$style(HTML("
+    tags$style(HTML("
         #hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
         #shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
         .shiny-notification {opacity:1}
@@ -57,8 +57,21 @@ ui = dashboardPage(title = "KLINK",
         #notificationMenu .dropdown-menu > li .menu > li > a {white-space:normal !important;}
         .form-group.shiny-input-container {margin-bottom:0px}
         .progress {margin-bottom:0px}
-    "))),
-   tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
+        .wait-cursor { cursor: wait !important; }
+    ")),
+
+    tags$script(HTML("
+      Shiny.addCustomMessageHandler('waitCursor', function(message) {
+        if(message) {
+          $('body').addClass('wait-cursor');
+        } else {
+          $('body').removeClass('wait-cursor');
+        }
+      });
+    ")),
+
+    includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))
+   ),
 
    fluidRow(
      column(width = 4,
@@ -210,7 +223,11 @@ server = function(input, output, session) {
   observeEvent(input$compute, {
     if (getOption("KLINK.debug")) print("compute LR")
     ped = req(pedigrees$reduced)
+
+    session$sendCustomMessage(type = 'waitCursor', message = TRUE)
     res = KLINK::linkedLR(ped, linkageMap(), markerData(), mapfun = input$mapfunction)
+    session$sendCustomMessage(type = 'waitCursor', message = FALSE)
+
     resultTable(res)
     updateTabsetPanel(session, "tabs", selected = "LR table")
   })
