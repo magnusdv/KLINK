@@ -6,11 +6,9 @@
 
 * Use scientific format also for small LR totals in-app.
 
-* Unlinked report: Prioritise D10S2325 over D10S1435 if both are present (reverses previous behaviour).
+* Unlinked report: Prioritise D5S2500 over D5S2800 if both are present, and similarly D10S2325 over D10S1435, and D19S253 over D19S433 (reverses previous behaviour).
 
-* Built-in linkage map: Fix typo HD-plex -> HDplex. 
-
-* Built-in linkage map: For marker D12S391 change kit label from Fusion6C to Fusion6C/SureID.
+* Fix typos in built-in linkage map.
 
 * Fix outdated mutation model in dataset `paternity`.
 

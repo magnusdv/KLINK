@@ -212,8 +212,16 @@ outputLRunlinked = function(resultTable) {
     return(NULL)
 
   # Keep only these markers if paired
-  keep = c("D5S2800", "SE33", "D8S1132", "D10S2325", "D11S554",
-           "D12S391", "D18S51", "D19S433", "D21S2055")
+  keep = c("D5S2500",  # not D5S2800
+           "SE33",     # not D6S474
+           "D8S1132",  # not D8S1179
+           "D10S2325", # not D10S1435
+           "D11S554",  # not D11S2368
+           "D12S391",  # not vWA
+           "D18S51",   # not D18S1364
+           "D19S253",  # not D19S433
+           "D21S2055"  # not Penta D
+           )
 
   # Remove markers with no data (and make linked leftovers into singles)
   res = removeMissing(res)
