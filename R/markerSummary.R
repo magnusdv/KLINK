@@ -56,3 +56,10 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
 
 # Polymorphic information content
 PIC = function(afr) 1 - sum(afr^2) - sum(afr^2)^2 + sum(afr^4)
+
+# Convert list of linked pairs to vector with pair indices and NAs elsewhere
+lp2vec = function(markers, linkedPairs) {
+  pairvec = rep(seq_along(linkedPairs), each = 2)
+  names(pairvec) = unlist(linkedPairs)
+  as.integer(pairvec[markers])
+}

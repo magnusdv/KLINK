@@ -1,5 +1,5 @@
 
-plotPed = function(x, cex = 1.2, marker = NULL, ...) {
+plotPed = function(x, cex = 1.2, marker = NULL, margins = c(2,3,2,3), ...) {
   if(!is.null(marker) && marker == "")
     marker = NULL
 
@@ -12,21 +12,23 @@ plotPed = function(x, cex = 1.2, marker = NULL, ...) {
 
   while(tryAgain) {
     iter = iter + 1
-    if(iter > 1)
-      cex = cex * 0.9
-
+    if(iter > 1) {
+      cex = cex * 0.8
+      margins = margins * 0.8
+    }
     tryCatch({
-      plot(x, marker = marker, hatched = typedMembers, frames = FALSE, labs = nonmiss,
-           foldLabs = 10, col = list(red = miss), lwd = list("2" = miss), lty = list(dashed = miss),
-           cex = cex, autoScale = TRUE, minsize = 0.15, ...)
+      plot(x, marker = marker, hatched = typedMembers, frames = FALSE,
+           labs = nonmiss, foldLabs = 10, col = list(red = miss),
+           lwd = list("2" = miss), lty = list(dashed = miss),
+           cex = cex, autoScale = TRUE, minsize = 0.2, margins = margins, ...)
       tryAgain = FALSE
     },
     error = function(e) {
       msg = conditionMessage(e)
-      if(!grepl("reduce cex", msg))
+      if(!grepl("reduce cex|minsize", msg))
         stop(msg, call. = FALSE)
       else if(iter == 10)
-        stop("Autoscale fail: Pedigree too large for plot window.\n\n(This does not affect the LR calculations.)", call. = FALSE)
+        stop("Autoscale fail: Pedigree too large for plot window.\n\n(This does not affect LR calculations.)", call. = FALSE)
     })
   }
 }

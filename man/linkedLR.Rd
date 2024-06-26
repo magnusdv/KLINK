@@ -4,19 +4,35 @@
 \alias{linkedLR}
 \title{LR with pairwise linked markers}
 \usage{
-linkedLR(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi")
+linkedLR(
+  pedigrees,
+  linkageMap,
+  linkedPairs = NULL,
+  maxdist = Inf,
+  markerData = NULL,
+  mapfun = "Kosambi",
+  lumpSpecial = TRUE
+)
 }
 \arguments{
 \item{pedigrees}{A list of two pedigrees.}
 
-\item{linkageMap}{A data frame with columns including \code{Pair}, \code{Marker},
-\code{Chrom}, \code{PosCM}}
+\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chrom} and
+\code{PosCM}.}
 
-\item{markerData}{A data frame, normally extracted automatically from
-\code{pedigrees}.}
+\item{linkedPairs}{A list of marker pairs. If not supplied, calculated as
+\code{getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)}.}
+
+\item{maxdist}{A number, passed onto \code{getLinkedMarkers()} if \code{linkedPairs} is
+NULL.}
+
+\item{markerData}{A data frame with marker data, typically the output of
+\code{markerSummary(pedigrees)}.}
 
 \item{mapfun}{Name of the map function to be used; either "Haldane" or
-"Kosambi" (default)}
+"Kosambi" (default).}
+
+\item{lumpSpecial}{A logical, by default TRUE.}
 }
 \value{
 A data frame with detailed LR results.
@@ -35,6 +51,9 @@ ped2 = singletons(c("AF", "CH")) |>
 
 pedigrees = list(ped1, ped2)
 
-linkedLR(pedigrees, LINKAGEMAP)
+linkedLR(pedigrees, KLINK::LINKAGEMAP)
+
+# For testing
+# .linkedLR(pedigrees, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
 
 }

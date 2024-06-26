@@ -3,12 +3,17 @@
 #' This function does the main LR calculations of the KLINK app.
 #'
 #' @param pedigrees A list of two pedigrees.
-#' @param linkageMap A data frame with columns including `Pair`, `Marker`,
-#'   `Chrom`, `PosCM`
-#' @param markerData A data frame, normally extracted automatically from
-#'   `pedigrees`.
+#' @param linkageMap A data frame with columns including `Marker`, `Chrom` and
+#'   `PosCM`.
+#' @param linkedPairs A list of marker pairs. If not supplied, calculated as
+#'   `getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)`.
+#' @param maxdist A number, passed onto `getLinkedMarkers()` if `linkedPairs` is
+#'   NULL.
+#' @param markerData A data frame with marker data, typically the output of
+#'   `markerSummary(pedigrees)`.
 #' @param mapfun Name of the map function to be used; either "Haldane" or
-#'   "Kosambi" (default)
+#'   "Kosambi" (default).
+#' @param lumpSpecial A logical, by default TRUE.
 #'
 #' @return A data frame with detailed LR results.
 #'
@@ -23,19 +28,36 @@
 #'
 #' pedigrees = list(ped1, ped2)
 #'
-#' linkedLR(pedigrees, LINKAGEMAP)
+#' linkedLR(pedigrees, KLINK::LINKAGEMAP)
+#'
+#' # For testing
+#' # .linkedLR(pedigrees, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
 #'
 #' @export
-linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi") {
+linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
+                    markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE) {
   if (getOption("KLINK.debug")) print("linkedLR")
 
-  if(is.null(markerData))
-    markerData = markerSummary(pedigrees, linkageMap)
+  if(is.null(markerData)) {
+    markerData = markerSummary(pedigrees)
+    ord = order(match(markerData$Marker, linkageMap$Marker))
+    markerData = markerData[ord, , drop = FALSE]
+  }
+
+  # Genotype columns
+  colnms = names(markerData)
+  gcols = colnms[(match("MinFreq", colnms) + 1):(match("Model", colnms) - 1)]
+
+  # Find linked pairs, if not supplied
+  if(is.null(linkedPairs))
+    linkedPairs = getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)
+
+  markerData$Pair = lp2vec(markerData$Marker, linkedPairs)
 
   MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
 
   # Initialise table: Pair, Marker, Geno
-  res = markerData[c(1, 2, grep("Person", names(markerData), fixed = TRUE))]
+  res = markerData[c("Pair", "Marker", gcols)]
   nr = nrow(res)
 
   # Add cM positions
@@ -55,7 +77,7 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
   res$Gindex = stats::ave(1:nr, res$Pair, FUN = seq_along)
 
   # Special lumping
-  if(specialLumpability(pedigrees))
+  if(lumpSpecial && specialLumpability(pedigrees))
     pedigrees = lapply(pedigrees, lumpAllSpecial)
 
   # Single-point LR
@@ -83,8 +105,8 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
 
     if(nrow(pp) == 2) {
       res$LRnolink[idx1] = prod(pp$LRsingle)
-      res$LRlinked[idx1] = .linkedLR(pedigrees, m, cmpos = pp$PosCM, mapfun = MAPFUN)
-      res$LRnomut[idx1]  = .linkedLR(pedsNomut, m, cmpos = pp$PosCM, mapfun = MAPFUN)
+      res$LRlinked[idx1] = .linkedLR(pedigrees, m, cmpos = pp$PosCM, mapfun = MAPFUN)$LR
+      res$LRnomut[idx1]  = .linkedLR(pedsNomut, m, cmpos = pp$PosCM, mapfun = MAPFUN)$LR
     }
     else {
       res$LRnolink[idx1] = res$LRlinked[idx1] = pp$LRsingle
@@ -99,10 +121,19 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
 }
 
 
-.linkedLR = function(peds, markerpair, cmpos, mapfun, disableMut = FALSE) {
+# Normally not run by end user
+.linkedLR = function(peds, markerpair, cmpos = NULL, mapfun = "Kosambi",
+                     linkageMap = NULL, disableMut = FALSE) {
   if (getOption("KLINK.debug")) print(paste(".linkedLR:", paste(markerpair, collapse = ", ")))
   if(length(markerpair) < 2)
     return(NA_real_)
+
+  # For testing purposes
+  if(is.null(cmpos))
+    cmpos = linkageMap$PosCM[match(markerpair, linkageMap$Marker)]
+  if(is.character(mapfun))
+    mapfun = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi,
+                    stop2("Illegal map function: ", mapfun))
 
   rho = mapfun(diff(cmpos))
 
@@ -116,5 +147,6 @@ linkedLR = function(pedigrees, linkageMap, markerData = NULL, mapfun = "Kosambi"
 
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
   denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho)
-  numer/denom
+  LR = numer/denom
+  list(lnLik1 = log(numer), lnLik2 = log(denom), LR = LR)
 }
