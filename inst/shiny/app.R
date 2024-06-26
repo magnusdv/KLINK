@@ -1,5 +1,6 @@
 suppressPackageStartupMessages({
   library(shiny)
+  library(shinyjs)
   library(shinydashboard)
   library(gt)
   library(KLINK)
@@ -9,43 +10,54 @@ suppressPackageStartupMessages({
 
 VERSION = packageDescription("KLINK")$Version
 
+debug = function(x) {if (getOption("KLINK.debug")) print(x)}
+
 # Define UI
 ui = dashboardPage(title = "KLINK",
 
-  header = dashboardHeader(title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"),
-                           titleWidth = 500,
-                           dropdownMenuOutput("notificationMenu")),
+  header = dashboardHeader(
+    title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"),
+    titleWidth = 500,
+    dropdownMenuOutput("notificationMenu")
+  ),
 
   sidebar = dashboardSidebar(
     fluidRow(style = "padding: 5px 15px 0px 15px",
-             column(3, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
-             column(5, align = "right",
-                    actionButton("loadex",  "Example", class = "btn-sm btn btn-success",
-                                 style = "padding: 1px 10px; background-color:#90ee90")),
+             column(4, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
              column(4, align = "right",
-                    downloadButton("mask", "Mask", class = "btn-sm btn btn-light",
-                                   style = "padding: 0px 6px; color: black; margin-top: 7px"))
+                    actionButton("loadex",  "Example", class = "btn-sm btn btn-success",
+                                 style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
+             column(4, align = "right",
+                    actionButton("reset",  "Reset",width = "100%", class = "btn-sm btn btn-warning",
+                                  style = "padding: 1px 8px; margin: 8px 0px 0px 0px;")),
     ),
-    tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"))),
+    tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
+    tags$div(class = "loadfile", fileInput("xmlfile", "(Optional) .xml", buttonLabel = icon("folder-open"), accept = ".xml")),
 
-    fileInput("mapfile", "Marker map", buttonLabel = icon("folder-open"),
-              placeholder = "BUILTIN"),
     hr(),
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
-    radioButtons("fallback", "Fallback mutation model", choices = c("equal", "proportional"),
-                 selected = "equal", inline = TRUE),
     radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
                  selected = "Kosambi", inline = TRUE),
+    radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
+                 choices = c("Built-in" = "LINKAGEMAP", "Custom" = "custom")),
+    conditionalPanel(
+      condition = "input.maptype == 'custom'",
+      fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
+                accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
+    ),
+    numericInput("maxdist", label = "Ignore linkage above (cM)", value = 1000, min = 0, step = 5),
     hr(),
     actionButton("compute", "Calculate LR", class = "btn-lg btn-danger", onclick = "buttonClick('compute')",
                  style = "margin-top:20px;background-color:#FF5c5c")
  ),
 
   body = dashboardBody(
+    useShinyjs(),
 
-   tags$head(
-    tags$style(HTML("
+    tags$head(tags$style(HTML("
         #hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
+        #selectmarker .selectize-input {padding: 3px 6px; min-height: 0px; font-size: smaller}
+        #selectmarker .selectize-dropdown {padding: 3px 6px; font-size: smaller}
         #shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
         .shiny-notification {opacity:1}
         .fa-triangle-exclamation {font-size:24px; padding-bottom:5px;}
@@ -78,11 +90,17 @@ ui = dashboardPage(title = "KLINK",
             box(title = tagList("Ped 1",
                                 tags$div(checkboxInput("hideEmpty", "Hide untyped components", value = TRUE),
                                          id = "hideEmptyCheck",
-                                         style = "position:absolute; right:5px; top:5px; margin:0px; padding:0px;")),
+                                         style = "position:absolute; right:5px; top:5px; margin:0px; padding:0px; font-size: smaller")),
                 width = NULL, status = "info", solidHeader = TRUE,
-                plotOutput("pedplot1", height = "325px")),
-            box(title = "Ped 2", width = NULL, status = "info", solidHeader = TRUE,
-                plotOutput("pedplot2", height = "325px")),
+                plotOutput("pedplot1", height = "315px")),
+            box(
+              #title = "Ped 2", width = NULL, status = "info", solidHeader = TRUE,
+              title = tagList("Ped 2",
+                               tags$div(selectInput("showmarker", NULL, choices = c("Marker" = "")),
+                                        id = "selectmarker",
+                                        style = "position:absolute; right:5px; top:5px; margin:0px; padding:0px; width: 100px")),
+              width = NULL, status = "info", solidHeader = TRUE,
+              plotOutput("pedplot2", height = "315px")),
      ),
      column(width = 8,
             tabBox(id = "tabs", width = NULL, selected = "Linkage map",
@@ -90,8 +108,8 @@ ui = dashboardPage(title = "KLINK",
                                                   style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
                    tabPanel("Linkage map",
                             fluidRow(
-                              column(6, gt::gt_output("linkage_table")),
-                              column(6, plotOutput("karyo", height = "640px"))
+                              column(6, class = "col-lg-5", gt::gt_output("linkage_table")),
+                              column(6, class = "col-lg-7", plotOutput("karyo", height = "680px"))
                             )
                    ),
                    tabPanel("Marker data", gt::gt_output("marker_table")),
@@ -112,6 +130,16 @@ ui = dashboardPage(title = "KLINK",
 # Define server
 server = function(input, output, session) {
 
+  # Error utility
+  showNote = function(..., type = "error") {
+    debug("showNote")
+    showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = type)
+    invisible(NULL)
+  }
+
+  famfile = reactiveValues(famname = NULL, params = NULL)
+  pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
+  XML = reactiveVal(NULL)
   NOTES = reactiveVal(NULL)
 
   addNote = function(...) {
@@ -121,38 +149,29 @@ server = function(input, output, session) {
   }
 
   output$notificationMenu = renderMenu({
-    if (getOption("KLINK.debug")) print("notificationMenu")
+    debug("notificationMenu")
     notes = lapply(NOTES(), function(n) {notificationItem(HTML(n), status = "warning")})
     dropdownMenu(type = "notifications", .list = notes, badgeStatus = "warning")
   })
 
-  # Error utility
-  showNote = function(..., type = "error") {
-    if (getOption("KLINK.debug")) print("showNote")
-    showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = type)
-    invisible(NULL)
-  }
-
-  famfilename = reactiveVal(NULL)
-  famparams = reactiveVal(NULL)
-  pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
-
   observeEvent(input$famfile, {
-    if (getOption("KLINK.debug")) print("famfile")
+    debug("famfile")
     fil = req(input$famfile)
-    famfilename(fil$name)
+    famfile$famname = fil$name
+    XML(NULL)
     NOTES(NULL)
+
     peddata = tryCatch(
       error = showNote,
       withCallingHandlers(
         warning = function(w) addNote(conditionMessage(w)),
-        KLINK::loadFamFile(fil$datapath, fallbackModel = input$fallback, withParams = TRUE)
+        KLINK::loadFamFile(fil$datapath, fallbackModel = "equal", withParams = TRUE)
       )
     )
 
     peds = req(peddata$peds)
     pedigrees$complete = peds
-    famparams(peddata$params)
+    famfile$params = peddata$params
 
     allLabs = unlist(lapply(peds, labels), recursive = TRUE, use.names = FALSE)
 
@@ -164,16 +183,52 @@ server = function(input, output, session) {
     }
   })
 
+  observeEvent(input$xmlfile, {
+    debug("xmlfile")
+    fil = req(input$xmlfile)
+
+    # Typed members in the Familias file
+    peds = pedigrees$complete
+    famids = if(!is.null(peds)) typedMembers(peds[[1]]) else NULL
+
+    xmldat = tryCatch(
+      KLINK:::parseXML(fil, famname = famfile$famname, famids = famids),
+      error = showNote)
+
+    if(is.null(xmldat)) {
+      shinyjs::reset("xmlfile")
+      return()
+    }
+
+    # Check AMEL
+    amelsex = match(xmldat$AMEL, c("X-Y", "X-X"))
+    sex = getSex(peds[[1]], famids)
+    if(!identical(amelsex, sex))
+      showNote("Warning: AMEL genotypes do not match sex given in .fam file",
+               type = "warning")
+
+    # Rename typed individuals
+    newpeds = lapply(peds, function(ped)
+      pedtools::relabel(ped, old = xmldat$ID, new = xmldat$Initials))
+
+    # Update reacives
+    pedigrees$complete = newpeds
+    XML(xmldat)
+  })
+
   observeEvent(input$loadex, {
-    if (getOption("KLINK.debug")) print("loadex")
+    debug("loadex")
     fil = system.file("extdata", "halfsib-test.fam", package = "KLINK")
+    shinyjs::reset("famfile")
+    shinyjs::reset("xmlfile")
     NOTES(NULL)
+    XML(NULL)
     pedigrees$complete = KLINK::loadFamFile(fil)
-    famfilename("halfsib-test.fam")
+    famfile$famname = "halfsib-test.fam"
   })
 
   observeEvent(pedigrees$complete, {
-    if (getOption("KLINK.debug")) print("Set reduced/active")
+    debug("Set reduced/active")
     peds = pedigrees$complete
     pedred = KLINK:::removeEmpty(peds)
     pedigrees$reduced = pedred
@@ -183,23 +238,35 @@ server = function(input, output, session) {
     resultTable(NULL)
 
     # Update dropdown marker list
-    markers = c(None = "", pedtools::name(peds[[1]]))
-    updateSelectInput(session, "showmarker", choices = markers, selected = character(0))
+    markers = c("Marker" = "",  "(none)", pedtools::name(peds[[1]]))
+    updateSelectInput(session, "showmarker", choices = markers)
   })
 
 
   # Pedigree plots ----------------------------------------------------------
 
+  selectedMarker = reactive(if(input$showmarker == "(none)") NULL else input$showmarker)
+  observeEvent(input$showmarker, {
+    if(input$showmarker == "(none)") {
+      markers = c("Marker" = "",  "(none)", pedtools::name(pedigrees$complete[[1]]))
+      updateSelectInput(session, "showmarker", choices = markers)
+    }
+  })
+
   output$pedplot1 = renderPlot({
-    if (getOption("KLINK.debug")) print("plot1")
+    debug("plot1")
     ped1 = req(pedigrees$active[[1]])
-    KLINK:::plotPed(ped1, marker = input$showmarker, cex = 1.2, margin = 3)
+    m = input$showmarker
+    if(m == "Marker") m = NULL
+    KLINK:::plotPed(ped1, marker = selectedMarker(), cex = 1.2)
   }, execOnResize = TRUE)
 
   output$pedplot2 = renderPlot({
-    if (getOption("KLINK.debug")) print("plot2")
+    debug("plot2")
     ped2 = req(pedigrees$active[[2]])
-    KLINK:::plotPed(ped2, marker = input$showmarker, cex = 1.2, margin = 3)
+    m = input$showmarker
+    if(m == "Marker") m = NULL
+    KLINK:::plotPed(ped2, marker = selectedMarker(), cex = 1.2)
   }, execOnResize = TRUE)
 
   observeEvent(input$hideEmpty, {
@@ -213,19 +280,23 @@ server = function(input, output, session) {
 
   # Print LR result table
   output$result_table = render_gt({
-    if (getOption("KLINK.debug")) print("LR table")
+    debug("LR table")
     res = resultTable()
     validate(need(!is.null(res), "No likelihood ratios have been calculated yet."))
-    KLINK:::prettyTable(res)
+    KLINK:::prettyResultTable(res)
   }, width = "100%", align = "left")
 
   # Compute LR
   observeEvent(input$compute, {
-    if (getOption("KLINK.debug")) print("compute LR")
-    ped = req(pedigrees$reduced)
+    debug("compute LR")
 
     session$sendCustomMessage(type = 'waitCursor', message = TRUE)
-    res = KLINK::linkedLR(ped, linkageMap(), markerData(), mapfun = input$mapfunction)
+    res = KLINK::linkedLR(pedigrees = req(pedigrees$reduced),
+                          linkageMap = linkageMap(),
+                          linkedPairs = linkedPairs(),
+                          markerData = markerData(),
+                          mapfun = input$mapfunction,
+                          lumpSpecial = TRUE)
     session$sendCustomMessage(type = 'waitCursor', message = FALSE)
 
     resultTable(res)
@@ -240,31 +311,60 @@ server = function(input, output, session) {
   markerData = reactiveVal(NULL)
 
   observeEvent(pedigrees$complete, {
-    if (getOption("KLINK.debug")) print("markerData")
-    mtab = KLINK::markerSummary(pedigrees$complete, linkageMap = linkageMap())
-    markerData(req(mtab))
+    debug("markerData")
+    mtab = KLINK::markerSummary(pedigrees$complete, replaceNames = is.null(XML()))
+    req(mtab)
+
+    # Sort according to map
+    mtab = mtab[order(match(mtab$Marker, linkageMap()$Marker)), , drop = FALSE]
+    markerData(mtab)
     updateTabsetPanel(session, "tabs", selected = "Marker data")
   })
 
   # Print loaded marker data
   output$marker_table = render_gt({
-    if (getOption("KLINK.debug")) print("marker table")
+    debug("marker table")
     mtab = markerData()
     validate(need(!is.null(mtab), "No data has been loaded."))
-    KLINK:::prettyMarkerTable(mtab)
+    KLINK:::prettyMarkerTable(mtab, linkedPairs())
   }, width = "100%", align = "left")
 
 
   # Linkage map table ----------------------------------------------------
-  linkageMap = reactiveVal(KLINK::LINKAGEMAP)
 
-  output$karyo = renderPlot(KLINK:::karyogram(linkageMap()))
+  # Complete linkage map
+  linkageMap = reactiveVal(NULL)
+
+  # Subset where only observed markers are included
+  linkageMapSubset = reactive({
+    debug("linkage map subset")
+    fullmap = linkageMap()
+    mdat = markerData()
+    if(is.null(mdat))
+      return(fullmap)
+    fullmap[fullmap$Marker %in% mdat$Marker, , drop = FALSE]
+  })
+
+  # Linked pairs
+  linkedPairs = reactive({
+    debug("linked pairs")
+    mdat = markerData()
+    getLinkedPairs(mdat$Marker, linkageMap(), maxdist = req(input$maxdist))
+  })
+
+  # React to Marker map radio selection
+  observeEvent(input$maptype, {
+    debug("maptype")
+    req(input$maptype != "custom")
+    map = get(input$maptype, "package:KLINK")
+    linkageMap(map)
+  })
 
   # Change map file
   observeEvent(input$mapfile, {
-    if (getOption("KLINK.debug")) print("mapfile")
+    debug("mapfile")
     path = req(input$mapfile$datapath)
-    header = readLines(path, n = 1) |> startsWith("Pair")
+    header = grepl("marker", readLines(path, n = 1), ignore.case = TRUE)
     map = utils::read.table(path, header = header, sep="\t")
 
     linkageMap(map)
@@ -272,12 +372,14 @@ server = function(input, output, session) {
     updateTabsetPanel(session, "tabs", selected = "Linkage map")
   })
 
+  output$karyo = renderPlot(KLINK:::karyogram(linkageMapSubset(),
+                                              linkedPairs = linkedPairs()))
+
   # Print loaded genetic map
   output$linkage_table = render_gt({
-    gt(req(linkageMap())) |> opt_stylize(6) |>
-      tab_options(data_row.padding = px(3)) |>
-      tab_style(style = cell_text(whitespace = "nowrap"),
-                locations = cells_body())
+    debug("linkage map table")
+    map = req(linkageMapSubset())
+    KLINK:::prettyLinkageMap(map, linkedPairs())
   }, width = "100%", align = "left")
 
 
@@ -286,61 +388,50 @@ server = function(input, output, session) {
 
   output$download = downloadHandler(
     filename = function() {
-      fam = famfilename()
+      fam = famfile$famname
       paste0("KLINK-", if(!is.null(fam)) sub(".fam", "", fam), ".xlsx")
     },
     content = function(file) {
-      if (getOption("KLINK.debug")) print("download")
+      debug("download")
+
+      settings = list("KLINK version" = VERSION,
+                      "Database" = famfile$params$dbName,
+                      "Map function" = input$mapfunction,
+                      "Genetic map" = input$maptype,
+                      "Max distance" = input$maxdist)
 
       KLINK::writeResult(
         resultTable(),
         pedigrees = pedigrees$reduced,
-        linkageMap = linkageMap(),
+        linkageMap = linkageMapSubset(),
         markerData = markerData(),
         outfile = file,
         notes = NOTES(),
-        fam = famfilename())
+        famname = famfile$famname,
+        settings = settings,
+        XML = XML())
     },
     contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   )
 
 
-  # Mask / unmask -----------------------------------------------------------
+  # Reset -------------------------------------------------------------------
 
-  output$mask = downloadHandler(
-    filename = function() {
-      origfam = famfilename()
-      if(is.null(origfam))
-        origfam = "KLINK.fam"
-      sub(".fam", "_MASKED.zip", origfam, fixed = TRUE)
-    },
-    content = function(file) {
-      if (getOption("KLINK.debug")) print("mask")
+  observeEvent(input$reset, {
+    shinyjs::reset("famfile")
+    shinyjs::reset("xmlfile")
+    famfile$famname = famfile$params = NULL
+    NOTES(NULL)
+    XML(NULL)
+    updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
+    updateNumericInput(session, "maxdist", value = 1000)
+    updateRadioButtons(session, "mapfunction", selected = "Kosambi")
+    pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
+    markerData(NULL)
+    resultTable(NULL)
+  })
 
-      peds = req(pedigrees$complete)
-      origfam = basename(req(famfilename()))
-      if(is.null(origfam))
-        return()
-      tmp = tempdir()
-      fam = sub(".fam", "_MASKED.fam", origfam, fixed = TRUE)
-      map = sub(".fam", "_MASKED-map.txt", origfam, fixed = TRUE)
-      key = sub(".fam", "_MASKED-keys.txt", origfam, fixed = TRUE)
 
-      # Write .fam file with masked data
-      keys = KLINK:::writeMasked(file.path(tmp, fam), peds = peds, params = famparams())
-
-      # Masked linkage map
-      mm = KLINK:::maskMap(map = linkageMap(), keys = keys)
-      write.table(mm, file = file.path(tmp, map), quote = FALSE, sep = "\t", col.names = TRUE, row.names = FALSE)
-
-      # Write keys to file
-      KLINK:::writeKeys(keys, file = file.path(tmp, key))
-
-      # Zip
-      zip::zip(zipfile = file, files = c(fam, map, key), root = tmp)
-    },
-    contentType = "application/zip"
-  )
 }
 
 # Run the application
