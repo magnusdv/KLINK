@@ -27,6 +27,7 @@ Imports:
     shinydashboard,
     verbalisr,
     zip
+    xml2
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
