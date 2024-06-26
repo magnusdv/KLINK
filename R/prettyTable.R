@@ -1,25 +1,27 @@
-prettyTable = function(restable, style = 6) {
+prettyResultTable = function(restable, style = 6) {
 
   if(nrow(restable) == 0)
-    return("Nothin to show")
+    return("Nothing to show")
 
   LRcols = c("LRnolink", "LRlinked", "LRnomut")
+  gcols = (match("Marker", names(restable)) + 1):(match("PosCM", names(restable)) - 1)
 
   restable |>
     gt(groupname_col = "Pair") |>
     opt_stylize(style = style) |>
+    tab_options(
+      row_group.padding = px(1),
+      data_row.padding = px(0),
+      table.font.size = px(14)
+    ) |>
     cols_hide(columns = c(Gindex, Gsize, PosCM)) |>
     tab_style(
-      style = cell_text(size = pct(95)),
-      locations = cells_body(columns = starts_with("Person"))
+      style = cell_text(size = pct(90)),
+      locations = cells_body(columns = gcols)
     ) |>
     tab_style(
       style = cell_text(size = pct(85), weight = "bold", style = "italic"),
       locations = cells_row_groups()
-    ) |>
-    tab_options(
-      row_group.padding = px(1),
-      data_row.padding = px(0)
     ) |>
     cols_label(
       LRsingle ~ "LR",
@@ -54,10 +56,6 @@ prettyTable = function(restable, style = 6) {
         cells_stub_grand_summary()
       )
     ) |>
-    # tab_style(
-    #   style = cell_text(color = "cyan"), #gray50
-    #   locations = cells_body(rows = Gsize == 1)
-    # ) |>
     tab_style(
       style = cell_text(size = pct(110)),
       locations = list(cells_grand_summary(), cells_stub_grand_summary())
@@ -68,23 +66,68 @@ prettyTable = function(restable, style = 6) {
 }
 
 
-prettyMarkerTable = function(mtab) {
-  mtab |> gt() |>
+prettyMarkerTable = function(mtab, linkedPairs = NULL) {
+  mtab = cbind(Pair = factor(lp2vec(mtab$Marker, linkedPairs)),
+               No = "",
+               mtab)
+
+  tab = gt(mtab) |>
     opt_stylize(6) |>
-    tab_options(data_row.padding = px(2)) |>
-    tab_style(style = cell_text(weight = if(anyNA(mtab$Pair)) 500),
-              locations = cells_body(rows = !is.na(Pair))) |>
+    tab_options(data_row.padding = px(1),
+                table.font.size = if(nrow(mtab) > 32) "90%" else "95%") |>
     sub_missing(missing_text = "") |>
-    tab_style(
-      style = cell_borders(sides = "left", style = "dashed"),
-      locations = cells_body(columns = "Marker")
-    ) |>
     tab_style(style = cell_text(whitespace = "nowrap"),
               locations = cells_body()) |>
-    tab_spanner(
-      label = "Mutation model",
-      columns = match("Model", names(mtab)):ncol(mtab)
+    tab_style_body(
+      columns = "Marker",
+      style = cell_text(size = "80%"),
+      values = "D22GATA198B05") |>
+    cols_hide("Pair") |>
+    cols_label(No = "") |>
+    cols_width(No ~ px(10), Alleles ~ px(10)) |>
+    fmt_number("PIC", decimals = 3)
+
+  if(any(!is.na(mtab$Pair)))
+    tab = data_color(tab,
+      columns = Pair,
+      target_columns = No,
+      rows = !is.na(Pair),
+      palette = KARYOPALETTE
     )
+
+  tab
 }
 
-utils::globalVariables(c("PosCM","Gindex","Gsize","LRlinked","LRsingle","Pair"))
+prettyLinkageMap = function(map, linkedPairs = NULL) {
+  #linkedPairs = getLinkedPairs(map$Marker, map)
+  map = cbind(Pair = factor(lp2vec(map$Marker, linkedPairs)),
+              No = seq_along(map$Marker),
+              map)
+
+  tab = gt(map) |>
+    opt_stylize(6) |>
+    tab_options(data_row.padding = px(1),
+                table.font.size = if(nrow(map) > 32) "90%" else "95%") |>
+    tab_style(style = list(cell_text(size = "80%", align = "center"),
+                           "padding-right:2px;padding-left:2px;"),
+              locations = cells_body(columns = No)) |>
+    tab_style(style = cell_text(whitespace = "nowrap"),
+              locations = cells_body()) |>
+    tab_style_body(columns = "Marker",
+                   style = cell_text(size = "80%"),
+                   values = "D22GATA198B05") |>
+    cols_hide("Pair") |>
+    cols_label(No = "")
+
+  if(any(!is.na(map$Pair)))
+    tab = data_color(tab,
+      columns = Pair,
+      target_columns = No,
+      rows = !is.na(Pair),
+      palette = KARYOPALETTE
+    )
+
+  tab
+}
+
+utils::globalVariables(c("PosCM","Gindex","Gsize","LRlinked","LRsingle","Pair", "No"))
