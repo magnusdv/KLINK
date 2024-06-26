@@ -1,3 +1,20 @@
+# KLINK 1.0.0
+
+This version is a major update of both the KLINK package and the shiny app.
+
+* Expanded built-in genetic map covering 50 common STR markers, up from 18. Unlike the previous version, where linkage pairs were hard coded, the markers are now dynamically paired up after data is loaded, ensuring more optimal use of the data.
+
+* The user may set a maximum linkage distance (cM), with the effect that markers farther than this are considered unlinked.
+
+* Improved karyogram plot for clearer visualisation of markers and linkage.
+
+* Improved readability of tables, using colours to indicate linked markers.
+
+* New button "Reset" resetting all fields of the shiny app.
+
+* New XML input field allowing the user to integrate data from other sources (particularly: Amelogenin genotypes and ID initials).
+
+
 # KLINK 0.7.3
 
 * Update **pedprobr** version to 0.9.3, giving much faster likelihood calculations in many cases.
