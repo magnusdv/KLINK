@@ -11,7 +11,9 @@ writeResult(
   markerData,
   outfile,
   notes = NULL,
-  fam = NULL
+  famname = NULL,
+  settings = NULL,
+  XML = NULL
 )
 }
 \arguments{
@@ -27,7 +29,11 @@ writeResult(
 
 \item{notes}{A character vector.}
 
-\item{fam}{The name of the input \code{.fam} file.}
+\item{famname}{The name of the input \code{.fam} file.}
+
+\item{settings}{A list of KLINK settings to be included in the output}
+
+\item{XML}{Optional data from .xml file.}
 }
 \description{
 This function produces an Excel document containing the genotype data and
@@ -38,7 +44,7 @@ various LR tables.
 # Built-in dataset `paternity`
 peds = paternity
 map = LINKAGEMAP
-mdata = markerSummary(peds, map)
+mdata = markerSummary(peds)
 
 # Result table
 LRtab = linkedLR(pedigrees = peds, linkageMap = map, markerData = mdata)
