@@ -2,16 +2,12 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @rawNamespace import(shiny, except = c(singleton, is.singleton))
-#' @import gt
+#' @rawNamespace import(shiny, except = c(singleton, is.singleton, runExample))
+#' @rawNamespace import(gt, except = c(html))
 #' @import openxlsx
 #' @import pedtools
 #' @import shinydashboard
+#' @import shinyjs
 ## usethis namespace: end
 NULL
 
-
-# Hack to avoid CRAN note. (load_all is only used in app.R which is in Rbuildignore.)
-ignore_unused_imports = function() {
-  zip::zip
-}
