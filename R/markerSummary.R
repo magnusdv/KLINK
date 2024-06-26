@@ -1,7 +1,8 @@
 #' Generate table of marker data
 #'
 #' @param pedigrees A list of 2 pedigrees.
-#' @param linkageMap A data frame.
+#' @param replaceNames A logical, indicating if IDs should be changed to
+#'   Person1, Person2, ...
 #'
 #' @return A data frame.
 #'
@@ -9,16 +10,17 @@
 #' markerSummary(paternity)
 #'
 #' @export
-markerSummary = function(pedigrees, linkageMap = NULL) {
+markerSummary = function(pedigrees, replaceNames = FALSE) {
   ped1 = pedigrees[[1]]
-  ped2 = pedigrees[[2]]
+  # ped2 = pedigrees[[2]] # not used?
 
   # Check if special (founder-type) lumping applies to all markers
   specLump = specialLumpability(pedigrees)
 
   # Genotypes
   geno = t.default(pedtools::getGenotypes(ped1, ids = typedMembers(ped1)))
-  colnames(geno) = paste0("Person", 1:ncol(geno))
+  if(replaceNames)
+    colnames(geno) = paste0("Person", 1:ncol(geno))
 
   # List of lists: Marker attributes
   locAttrs = pedtools::getLocusAttributes(ped1)
@@ -37,6 +39,7 @@ markerSummary = function(pedigrees, linkageMap = NULL) {
     }
     cbind.data.frame(Marker = a$name,
                      Alleles = length(a$alleles),
+                     PIC = PIC(a$afreq),
                      MinFreq = sprintf("%.2g", min(a$afreq)),
                      geno[a$name, , drop = FALSE],
                      pars, Stationary = stattxt, Lumpable = lumptxt)
@@ -47,12 +50,9 @@ markerSummary = function(pedigrees, linkageMap = NULL) {
   if(any(grepl("/", res$Rate, fixed = TRUE)))
     colnames(res)[colnames(res) == "Rate"] = "Rate (f/m)"
 
-  if(!is.null(linkageMap)) {
-    pairNo = linkageMap$Pair[match(res$Marker, linkageMap$Marker)]
-    res = cbind(Pair = pairNo, res)
-  }
-
   rownames(res) = NULL
   res
 }
 
+# Polymorphic information content
+PIC = function(afr) 1 - sum(afr^2) - sum(afr^2)^2 + sum(afr^4)

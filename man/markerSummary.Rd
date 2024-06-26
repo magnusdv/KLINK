@@ -4,12 +4,13 @@
 \alias{markerSummary}
 \title{Generate table of marker data}
 \usage{
-markerSummary(pedigrees, linkageMap = NULL)
+markerSummary(pedigrees, replaceNames = FALSE)
 }
 \arguments{
 \item{pedigrees}{A list of 2 pedigrees.}
 
-\item{linkageMap}{A data frame.}
+\item{replaceNames}{A logical, indicating if IDs should be changed to
+Person1, Person2, ...}
 }
 \value{
 A data frame.
