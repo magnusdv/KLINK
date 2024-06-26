@@ -5,12 +5,13 @@
 \alias{LINKAGEMAP}
 \title{Built-in linkage map}
 \format{
-A data frame with 18 rows and 5 columns.
+A data frame with 50 rows and 4 columns: \code{Marker}, \code{Kit}, \code{Chrom},
+\code{PosCM}.
 }
 \usage{
 LINKAGEMAP
 }
 \description{
-A genetic map including 9 pairs of linked STR markers.
+A genetic map including 50 autosomal STR markers.
 }
 \keyword{datasets}

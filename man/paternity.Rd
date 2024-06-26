@@ -17,6 +17,8 @@ markers, with allele frequencies from \code{forrel::NorwegianFrequencies}.
 }
 \examples{
 pedtools::plotPedList(paternity, marker = "SE33")
+markerSummary(paternity)
+
 forrel::kinshipLR(paternity)
 }
 \keyword{datasets}

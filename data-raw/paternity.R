@@ -2,7 +2,7 @@
 library(pedsuite)
 library(ibdsim2)
 
-# Markers in builtin LINKAGEMAP also appearing in NorwegianFrequencies
+# Markers in built-in LINKAGEMAP also appearing in NorwegianFrequencies
 mmap = subset(LINKAGEMAP, Marker %in% names(NorwegianFrequencies))
 db = NorwegianFrequencies[mmap$Marker]
 ids = c("AF", "CH")

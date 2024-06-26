@@ -1,8 +1,9 @@
 #' Built-in linkage map
 #'
-#' A genetic map including 9 pairs of linked STR markers.
+#' A genetic map including 50 autosomal STR markers.
 #'
-#' @format A data frame with 18 rows and 5 columns.
+#' @format A data frame with 50 rows and 4 columns: `Marker`, `Kit`, `Chrom`,
+#'   `PosCM`.
 #'
 "LINKAGEMAP"
 
@@ -17,5 +18,7 @@
 #'
 #' @examples
 #' pedtools::plotPedList(paternity, marker = "SE33")
+#' markerSummary(paternity)
+#'
 #' forrel::kinshipLR(paternity)
 "paternity"
