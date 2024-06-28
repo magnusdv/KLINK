@@ -57,7 +57,7 @@ ui = dashboardPage(title = "KLINK",
     tags$head(tags$style(HTML("
         #hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
         #selectmarker .selectize-input {padding: 3px 6px; min-height: 0px; font-size: smaller}
-        #selectmarker .selectize-dropdown {padding: 3px 6px; font-size: smaller}
+        #selectmarker .selectize-dropdown-content {padding: 0px; font-size: smaller}
         #shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
         .shiny-notification {opacity:1}
         .fa-triangle-exclamation {font-size:24px; padding-bottom:5px;}
@@ -189,10 +189,10 @@ server = function(input, output, session) {
 
     # Typed members in the Familias file
     peds = pedigrees$complete
-    famids = if(!is.null(peds)) typedMembers(peds[[1]]) else NULL
+    famids = if(!is.null(peds)) pedtools::typedMembers(peds[[1]]) else NULL
 
     xmldat = tryCatch(
-      KLINK:::parseXML(fil, famname = famfile$famname, famids = famids),
+      KLINK::parseXML(fil, famname = famfile$famname, famids = famids),
       error = showNote)
 
     if(is.null(xmldat)) {
@@ -202,7 +202,7 @@ server = function(input, output, session) {
 
     # Check AMEL
     amelsex = match(xmldat$AMEL, c("X-Y", "X-X"))
-    sex = getSex(peds[[1]], famids)
+    sex = pedtools::getSex(peds[[1]], famids)
     if(!identical(amelsex, sex))
       showNote("Warning: AMEL genotypes do not match sex given in .fam file",
                type = "warning")
