@@ -12,6 +12,9 @@ VERSION = packageDescription("KLINK")$Version
 
 debug = function(x) {if (getOption("KLINK.debug")) print(x)}
 
+if(Sys.getlocale("LC_CTYPE") == "C")
+  Sys.setlocale("LC_CTYPE", locale = "en_US.UTF-8")
+
 # Define UI
 ui = dashboardPage(title = "KLINK",
 

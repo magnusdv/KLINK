@@ -115,6 +115,7 @@ writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
   report2 = report
   if(norsk)
     names(report2)[names(report2) == "Marker"] = "Mark\u00F8r"
+
   writeData(wb, sheet, report2, startRow = 2, borders = "all", borderColour = "gray85",
             headerStyle = createStyle(textDecoration = "bold", border = "LeftRight",
                                       borderColour = "gray85"))
