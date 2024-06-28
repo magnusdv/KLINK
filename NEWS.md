@@ -1,4 +1,4 @@
-# KLINK 1.0.0
+# KLINK 1.0.1
 
 This version is a major update of both the KLINK package and the shiny app.
 

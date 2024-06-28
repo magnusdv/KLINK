@@ -1,6 +1,6 @@
 Package: KLINK
 Title: Kinship Analysis with Linked Markers
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-9134-4962"))
@@ -26,7 +26,7 @@ Imports:
     shiny (>= 1.8.0),
     shinydashboard,
     shinyjs,
-    verbalisr,
+    verbalisr (>= 0.6.0),
     xml2
 Encoding: UTF-8
 Language: en-GB
