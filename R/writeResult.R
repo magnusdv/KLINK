@@ -57,16 +57,23 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
     return()
   }
 
+  ped1 = pedigrees[[1]]
+  resNms = names(resultTable)
+
   if(!is.null(XML)) {
     idsLong = XML$ID
-    idsShort = XML$Initials # = typedMembers(pedigrees[[1]])
+    idsShort = XML$Initials
   }
   else {
-    idsLong = idsShort = typedMembers(pedigrees[[1]])
-    if("Person1" %in% names(resultTable)) {
-      idsShort = paste0("Person", seq_along(idsLong))
-      pedigrees = lapply(pedigrees, relabel, old = idsLong, new = idsShort) # for rels
-    }
+    idsLong = idsShort = typedMembers(ped1)
+  }
+
+  # Double check ID labels (for rels)
+  idsOk = isTRUE(identical(idsShort, typedMembers(ped1)) && all(idsShort %in% resNms))
+  pers = paste0("Person", seq_along(idsLong))
+  if(!idsOk && all(pers %in% resNms)) {
+    idsShort = pers
+    pedigrees = lapply(pedigrees, relabel, old = idsLong, new = idsShort)
   }
 
   # By now, table and pedigrees all have short names; long names only exist here:

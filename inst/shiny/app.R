@@ -190,32 +190,52 @@ server = function(input, output, session) {
     debug("xmlfile")
     fil = req(input$xmlfile)
 
-    # Typed members in the Familias file
+    famname = famfile$famname
     peds = pedigrees$complete
     famids = if(!is.null(peds)) pedtools::typedMembers(peds[[1]]) else NULL
 
-    xmldat = tryCatch(
-      KLINK::parseXML(fil, famname = famfile$famname, famids = famids),
-      error = showNote)
+    xmldat = tryCatch(error = showNote, {
+      if(is.null(famname))
+        stop2("Familias file must be loaded first")
+      if(sub(".xml", "", fil$name) != sub(".fam", "", famname))
+        stop2(paste("File names do not match", fil$name, famname, sep = "<br>"))
+
+      dat = KLINK::parseXML(fil)
+
+      # Check that IDs match the Familias file
+      xmlids = dat$ID
+      if(!setequal(famids, xmlids))
+        stop2(paste(c("Individuals in XML file do not match .fam file", xmlids), collapse = "<br>"))
+
+      # Enforce same order
+      dat[match(famids, xmlids), , drop = FALSE]
+    })
 
     if(is.null(xmldat)) {
       shinyjs::reset("xmlfile")
       return()
     }
 
+    warn = function(...) showNote(..., type = "warning")
+
     # Check AMEL
     amelsex = match(xmldat$AMEL, c("X-Y", "X-X"))
     sex = pedtools::getSex(peds[[1]], famids)
     if(!identical(amelsex, sex))
-      showNote("Warning: AMEL genotypes do not match sex given in .fam file",
-               type = "warning")
+      warn("Warning: AMEL genotypes do not match sex given in .fam file")
 
-    # Rename typed individuals
-    newpeds = lapply(peds, function(ped)
-      pedtools::relabel(ped, old = xmldat$ID, new = xmldat$Initials))
+    # Rename using initials found in XML
+    inits = xmldat$Initials
+    if(any(inits == ""))
+      warn("Warning: Missing initials in XML file; cannot rename individuals")
+    else if(anyDuplicated(inits))
+      warn("Warning: Duplicated initials in XML file; cannot rename individuals")
+    else {
+      newpeds = lapply(peds, function(ped)
+        pedtools::relabel(ped, old = xmldat$ID, new = inits))
+      pedigrees$complete = newpeds
+    }
 
-    # Update reacives
-    pedigrees$complete = newpeds
     XML(xmldat)
   })
 
