@@ -18,7 +18,7 @@ plotPed = function(x, cex = 1.2, marker = NULL, margins = c(2,3,2,3), ...) {
     }
     tryCatch({
       plot(x, marker = marker, hatched = typedMembers, frames = FALSE,
-           labs = nonmiss, foldLabs = 10, col = list(red = miss), showEmpty = TRUE,
+           labs = nonmiss, foldLabs = 10, col = list(red = miss), showEmpty = typedMembers,
            lwd = list("2" = miss), lty = list(dashed = miss),
            cex = cex, autoScale = TRUE, minsize = 0.2, margins = margins, ...)
       tryAgain = FALSE
