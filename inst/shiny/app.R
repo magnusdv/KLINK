@@ -52,41 +52,18 @@ ui = dashboardPage(title = "KLINK",
     hr(),
     actionButton("compute", "Calculate LR", class = "btn-lg btn-danger", onclick = "buttonClick('compute')",
                  style = "margin-top:20px;background-color:#FF5c5c")
- ),
+  ),
 
   body = dashboardBody(
-    useShinyjs(),
+   useShinyjs(),
+   includeCSS("www/custom.css"),
+   tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
 
-    tags$head(tags$style(HTML("
-        #hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
-        #selectmarker .selectize-input {padding: 3px 6px; min-height: 0px; font-size: smaller}
-        #selectmarker .selectize-dropdown-content {padding: 0px; font-size: smaller}
-        #shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
-        .shiny-notification {opacity:1}
-        .fa-triangle-exclamation {font-size:24px; padding-bottom:5px;}
-        .main-header .navbar-custom-menu {float:left;}
-        #notificationMenu span.label.label-warning {font-size:14px;}
-        #notificationMenu a.dropdown-toggle {padding-bottom:5px;}
-        .sidebar-toggle {display: none !important;}
-        #notificationMenu .dropdown-menu {width:380px;}
-        #notificationMenu .dropdown-menu > li .menu > li > a {white-space:normal !important;}
-        .form-group.shiny-input-container {margin-bottom:0px}
-        .progress {margin-bottom:0px}
-        .wait-cursor { cursor: wait !important; }
-    ")),
-
-    tags$script(HTML("
-      Shiny.addCustomMessageHandler('waitCursor', function(message) {
-        if(message) {
-          $('body').addClass('wait-cursor');
-        } else {
-          $('body').removeClass('wait-cursor');
-        }
-      });
-    ")),
-
-    includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))
-   ),
+   tags$script(HTML("
+     Shiny.addCustomMessageHandler('waitCursor', function(message) {
+      if(message) { $('body').addClass('wait-cursor');}
+      else { $('body').removeClass('wait-cursor');}
+     });")),
 
    fluidRow(
      column(width = 4,
@@ -97,7 +74,6 @@ ui = dashboardPage(title = "KLINK",
                 width = NULL, status = "info", solidHeader = TRUE,
                 plotOutput("pedplot1", height = "315px")),
             box(
-              #title = "Ped 2", width = NULL, status = "info", solidHeader = TRUE,
               title = tagList("Ped 2",
                                tags$div(selectInput("showmarker", NULL, choices = c("Marker" = "")),
                                         id = "selectmarker",
@@ -133,7 +109,12 @@ ui = dashboardPage(title = "KLINK",
 # Define server
 server = function(input, output, session) {
 
+  famfile = reactiveValues(famname = NULL, params = NULL)
+  pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
+  XML = reactiveVal(NULL)
+  NOTES = reactiveVal(NULL)
   shinyjs::disable("download")
+
   # Error utility
   showNote = function(..., type = "error") {
     debug("showNote")
@@ -141,11 +122,7 @@ server = function(input, output, session) {
     invisible(NULL)
   }
 
-  famfile = reactiveValues(famname = NULL, params = NULL)
-  pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
-  XML = reactiveVal(NULL)
-  NOTES = reactiveVal(NULL)
-
+  # Notifications shown in header
   addNote = function(...) {
     oldnotes = NOTES()
     newnote = HTML(paste(..., sep = "<br>"))
@@ -313,9 +290,10 @@ server = function(input, output, session) {
   # Compute LR
   observeEvent(input$compute, {
     debug("compute LR")
+    peds = req(pedigrees$reduced)
 
     session$sendCustomMessage(type = 'waitCursor', message = TRUE)
-    res = KLINK::linkedLR(pedigrees = req(pedigrees$reduced),
+    res = KLINK::linkedLR(pedigrees = peds,
                           linkageMap = linkageMap(),
                           linkedPairs = linkedPairs(),
                           markerData = markerData(),
@@ -456,7 +434,6 @@ server = function(input, output, session) {
     resultTable(NULL)
     shinyjs::disable("download")
   })
-
 
 }
 

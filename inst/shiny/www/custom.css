@@ -1,0 +1,24 @@
+
+#hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
+
+#selectmarker .selectize-input {padding: 3px 6px; min-height: 0px; font-size: smaller}
+#selectmarker .selectize-dropdown-content {padding: 0px; font-size: smaller}
+
+#shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
+.shiny-notification {opacity:1}
+
+.fa-triangle-exclamation {font-size:24px; padding-bottom:5px;}
+.main-header .navbar-custom-menu {float:left;}
+
+#notificationMenu span.label.label-warning {font-size:14px;}
+#notificationMenu a.dropdown-toggle {padding-bottom:5px;}
+#notificationMenu .dropdown-menu {width:380px;}
+#notificationMenu .dropdown-menu > li .menu > li > a {white-space:normal !important;}
+
+.sidebar-toggle {display: none !important;}
+
+.form-group.shiny-input-container {margin-bottom:0px}
+
+.progress {margin-bottom:0px}
+
+.wait-cursor { cursor: wait !important; }
