@@ -4,16 +4,10 @@
 \alias{parseXML}
 \title{Parse XML file associated with .fam file}
 \usage{
-parseXML(xml, famname = NULL, famids = NULL)
+parseXML(xml)
 }
 \arguments{
 \item{xml}{Path to a file with extension .xml.}
-
-\item{famname}{(Optional) The basename of the associated .fam file, used to
-test that the files belong together.}
-
-\item{famids}{(Optional) A character of the ID strings recorded in the .fam
-file. These should also be present in the XML file.}
 }
 \description{
 Parse XML file associated with .fam file

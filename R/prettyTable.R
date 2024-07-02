@@ -80,7 +80,7 @@ prettyMarkerTable = function(mtab, linkedPairs = NULL) {
               locations = cells_body()) |>
     tab_style_body(
       columns = "Marker",
-      style = cell_text(size = "80%"),
+      style = cell_text(size = "87%"),
       values = "D22GATA198B05") |>
     cols_hide("Pair") |>
     cols_label(No = "") |>
