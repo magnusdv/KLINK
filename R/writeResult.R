@@ -159,8 +159,8 @@ writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
   addSt(c = 2, r = 2:nr, borderStyle = "thin", border = "left")
 
   setColWidths(wb, sheet, c(1,nc), "auto", ignoreMergedCells = TRUE)
-  setColWidths(wb, sheet, 2, "13.00")
-  setColWidths(wb, sheet, 3:LRcol, "10.00")
+  setColWidths(wb, sheet, 2, if("D22GATA198B05" %in% report$Marker) "14.71" else "13.00")
+  setColWidths(wb, sheet, 3:LRcol, "10.00") # todo: 3:
 
   ### Additional legends
   legendRw = 2
