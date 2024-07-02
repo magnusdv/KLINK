@@ -172,6 +172,9 @@ server = function(input, output, session) {
     peds = pedigrees$complete
     famids = if(!is.null(peds)) pedtools::typedMembers(peds[[1]]) else NULL
 
+    stop2 = KLINK:::stop2
+    warn = function(...) showNote(..., type = "warning")
+
     xmldat = tryCatch(error = showNote, {
       if(is.null(famname))
         stop2("Familias file must be loaded first")
@@ -193,8 +196,6 @@ server = function(input, output, session) {
       shinyjs::reset("xmlfile")
       return()
     }
-
-    warn = function(...) showNote(..., type = "warning")
 
     # Check AMEL
     amelsex = match(xmldat$AMEL, c("X-Y", "X-X"))
