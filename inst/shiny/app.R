@@ -133,6 +133,7 @@ ui = dashboardPage(title = "KLINK",
 # Define server
 server = function(input, output, session) {
 
+  shinyjs::disable("download")
   # Error utility
   showNote = function(..., type = "error") {
     debug("showNote")
@@ -324,6 +325,7 @@ server = function(input, output, session) {
 
     resultTable(res)
     updateTabsetPanel(session, "tabs", selected = "LR table")
+    shinyjs::enable("download")
   })
 
   # Reset when changing map function
@@ -452,6 +454,7 @@ server = function(input, output, session) {
     pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
     markerData(NULL)
     resultTable(NULL)
+    shinyjs::disable("download")
   })
 
 
