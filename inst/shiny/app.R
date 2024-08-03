@@ -4,7 +4,6 @@ suppressPackageStartupMessages({
   library(shinydashboard)
   library(gt)
   library(KLINK)
-  library(zip)
 })
 
 

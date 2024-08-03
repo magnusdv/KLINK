@@ -1,8 +1,8 @@
 
-#hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0px; padding:0px;}
+#hideEmptyCheck .checkbox {position:absolute; right:5px; top:5px; margin:0; padding:0;}
 
-#selectmarker .selectize-input {padding: 3px 6px; min-height: 0px; font-size: smaller}
-#selectmarker .selectize-dropdown-content {padding: 0px; font-size: smaller}
+#selectmarker .selectize-input {padding: 3px 6px; min-height: 0; font-size: smaller}
+#selectmarker .selectize-dropdown-content {padding: 0; font-size: smaller}
 
 #shiny-notification-panel {top:20%; left:30%; width:100%; max-width:580px;font-size:20px;}
 .shiny-notification {opacity:1}
@@ -17,8 +17,8 @@
 
 .sidebar-toggle {display: none !important;}
 
-.form-group.shiny-input-container {margin-bottom:0px}
+.form-group.shiny-input-container {margin-bottom:0}
 
-.progress {margin-bottom:0px}
+.progress {margin-bottom:0}
 
 .wait-cursor { cursor: wait !important; }
