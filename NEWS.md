@@ -1,3 +1,7 @@
+# KLINK 1.0.1
+
+* Modified the selection of markers for the `Unlinked report`. Within each pair, the marker with highest PIC value is chosen. For consistency, the PIC values used in this calculation are now always based on the same database (NorskDB_2024).
+
 # KLINK 1.0.0
 
 This version is a major update of both the KLINK package and the shiny app.
