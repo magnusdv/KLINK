@@ -11,6 +11,7 @@ prettyResultTable = function(restable, style = 6) {
     opt_stylize(style = style) |>
     tab_options(
       row_group.padding = px(1),
+      container.padding.y = px(3),
       data_row.padding = px(0),
       table.font.size = px(14)
     ) |>
@@ -74,6 +75,7 @@ prettyMarkerTable = function(mtab, linkedPairs = NULL) {
   tab = gt(mtab) |>
     opt_stylize(6) |>
     tab_options(data_row.padding = px(1),
+                container.padding.y = px(3),
                 table.font.size = if(nrow(mtab) > 32) "90%" else "95%") |>
     sub_missing(missing_text = "") |>
     tab_style(style = cell_text(whitespace = "nowrap"),
@@ -107,6 +109,7 @@ prettyLinkageMap = function(map, linkedPairs = NULL) {
   tab = gt(map) |>
     opt_stylize(6) |>
     tab_options(data_row.padding = px(1),
+                container.padding.y = px(3),
                 table.font.size = if(nrow(map) > 32) "90%" else "95%") |>
     tab_style(style = list(cell_text(size = "80%", align = "center"),
                            "padding-right:2px;padding-left:2px;"),
