@@ -83,8 +83,11 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
   report = outputLRreport(resultTable, gcols = idsShort, AMEL = XML$AMEL)
   writeReportSheet(wb, "Full report", report, pedigrees, famname, nameKeys, settings, notes, linked = TRUE)
 
-  # Similar report with only unlinked markers
-  pic = setnames(markerData$PIC, markerData$Marker)
+  # PIC values used to choose markers for unlinked report
+  # NB: no longer using pics based on input db. Always using NorskDB_2024 (for consistency)
+  pic = PICnor # setnames(markerData$PIC, markerData$Marker)
+
+  # Report with only unlinked markers
   reportUnl = outputLRunlinked(resultTable, gcols = idsShort, AMEL = XML$AMEL, pic = pic)
   writeReportSheet(wb, "Unlinked report", reportUnl, pedigrees, famname, nameKeys, settings, notes, linked = FALSE)
 
