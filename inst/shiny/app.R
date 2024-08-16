@@ -38,7 +38,7 @@ ui = dashboardPage(title = "KLINK",
 
     hr(),
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
-    radioButtons("mapfunction", "Mapping function", choices = c("Haldane", "Kosambi"),
+    radioButtons("mapfunction", "Mapping function", choices = c("Kosambi", "Haldane"),
                  selected = "Kosambi", inline = TRUE),
     radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
                  choices = c("Built-in" = "LINKAGEMAP", "Custom" = "custom")),
@@ -47,7 +47,7 @@ ui = dashboardPage(title = "KLINK",
       fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
                 accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
     ),
-    numericInput("maxdist", label = "Ignore linkage above (cM)", value = 1000, min = 0, step = 5),
+    numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     hr(),
     actionButton("compute", "Calculate LR", class = "btn-lg btn-danger", onclick = "buttonClick('compute')",
                  style = "margin-top:20px;background-color:#FF5c5c")
@@ -427,7 +427,7 @@ server = function(input, output, session) {
     NOTES(NULL)
     XML(NULL)
     updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
-    updateNumericInput(session, "maxdist", value = 1000)
+    updateNumericInput(session, "maxdist", value = 200)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")
     pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
     markerData(NULL)
