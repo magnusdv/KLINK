@@ -7,13 +7,18 @@
 \usage{
 launchApp()
 
-runKLINK()
+runKLINK(version)
+}
+\arguments{
+\item{version}{A character, e.g. "1.0.0". If the installed version of KLINK
+differs from this, the program aborts with an error.}
 }
 \value{
 No return value, called for side effects.
 }
 \description{
-This launches the KLINK app. \code{runKLINK()} is a synonym for \code{launchApp()}.
+This launches the KLINK app. \code{runKLINK()} is a synonym for \code{launchApp()}, but
+with an additional argument \code{version}.
 }
 \examples{
 
