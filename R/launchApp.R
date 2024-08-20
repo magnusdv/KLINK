@@ -21,16 +21,13 @@ launchApp = function() {
 
 #' @export
 #' @rdname launchApp
-runKLINK = function(version) {
-  supplied = as.package_version(version)
+runKLINK = function(version = NULL) {
   inst = utils::packageVersion("KLINK")
-  if(inst != supplied) {
-    msg = c("",
-      sprintf("The supplied version number (%s) differs from the installed version (%s)", supplied, inst), "",
-      sprintf("To install KLINK v%s, try restarting R and running this command:", supplied),
-      sprintf('> remotes::install_version("KLINK", version = "%s")', supplied)
-    )
-    stop2(paste0(msg, collapse = "\n"))
+  supplied = as.package_version(version)
+  if(length(supplied) && !identical(inst, supplied)) {
+    msg = sprintf("The supplied version (%s) differs from the installed version (%s)\n",
+                  supplied, inst)
+    stop2(msg)
   }
 
   shiny::runApp(system.file("shiny", package = "KLINK"))

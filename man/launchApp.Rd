@@ -7,7 +7,7 @@
 \usage{
 launchApp()
 
-runKLINK(version)
+runKLINK(version = NULL)
 }
 \arguments{
 \item{version}{A character, e.g. "1.0.0". If the installed version of KLINK
