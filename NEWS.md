@@ -1,3 +1,8 @@
+# KLINK 1.0.2
+
+* Fixed bug affecting download when XML initials contain hyphens.
+
+
 # KLINK 1.0.1
 
 * Modified the selection of markers for the `Unlinked report`. Within each pair, the marker with highest PIC value is chosen. For consistency, the PIC values used in this calculation are now always based on the same database (NorskDB_2024).
