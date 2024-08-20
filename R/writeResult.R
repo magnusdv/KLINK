@@ -331,7 +331,9 @@ addAMEL = function(report, AMEL) {
   amelRow = c(NA, "AMELOGENIN", AMEL)
   length(amelRow) = ncol(report)
   names(amelRow) = names(report)
-  rbind(as.data.frame(as.list(amelRow)), report)
+  res = rbind(as.data.frame(as.list(amelRow), check.names = FALSE), report)
+  #print(res)
+  res
 }
 
 outputNotes = function(notes) {

@@ -43,5 +43,5 @@ parseXML = function(xml) {
   alldata = lapply(specimens, parsedata)
 
   # Convert to data frame
-  do.call(rbind, alldata) |> as.data.frame()
+  do.call(rbind, alldata) |> as.data.frame(check.names = FALSE)
 }
