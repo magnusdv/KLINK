@@ -97,10 +97,10 @@ ui = dashboardPage(title = "KLINK",
    p("This is KLINK version", VERSION, "(",
      a("changelog", href = "https://github.com/magnusdv/KLINK/blob/master/NEWS.md", target="_blank", .noWS = "outside"), " | ",
      a("official releases", href = "https://github.com/magnusdv/KLINK/releases", target="_blank", .noWS = "outside"), ").",
-     "If you find something that isn't working properly, please file a ",
+     "If you encounter problems, please file a ",
      a("bug report", href = "https://github.com/magnusdv/KLINK/issues", target="_blank", .noWS = "outside"),
-     ". For more information about the R packages on which KLINK is based, see the",
-     a("pedsuite", href = "https://magnusdv.github.io/pedsuite", target="_blank"), "homepage.")
+     ". See also the ",
+     a("KLINK homepage", href = "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html", target="_blank"), "for more information.")
    )
 )
 
