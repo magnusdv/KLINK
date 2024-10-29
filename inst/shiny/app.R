@@ -55,9 +55,14 @@ ui = dashboardPage(title = "KLINK",
 
   body = dashboardBody(
    useShinyjs(),
-   useBusyIndicators(spinners = FALSE, pulse = TRUE),
    includeCSS("www/custom.css"),
    tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
+   useBusyIndicators(spinners = FALSE, pulse = TRUE),
+
+   # Embed JS here; cannot send gmail attachment with script.js
+   tags$script(HTML("
+     window.onbeforeunload = function(){ Shiny.onInputChange('browserClosed', Math.random()); };
+   ")),
 
    fluidRow(
      column(width = 4,
@@ -102,10 +107,15 @@ ui = dashboardPage(title = "KLINK",
 # Define server
 server = function(input, output, session) {
 
+  # Close app when browser closes
+  observeEvent(input$browserClosed, stopApp())
+
+  # Main reactive variables
   famfile = reactiveValues(famname = NULL, params = NULL)
   pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
   XML = reactiveVal(NULL)
   NOTES = reactiveVal(NULL)
+
   shinyjs::disable("download")
 
   # Error utility
