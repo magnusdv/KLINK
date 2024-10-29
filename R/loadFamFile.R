@@ -1,6 +1,6 @@
-#' Load .fam file
+#' Load `.fam` file
 #'
-#' @param path The path to a .fam file.
+#' @param path The path to a `.fam` file.
 #' @param fallbackModel The name of a mutation model; passed on to
 #'   [pedFamilias::readFam()].
 #' @param withParams A logical indicating if the Familias parameters should be

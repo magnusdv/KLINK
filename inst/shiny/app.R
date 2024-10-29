@@ -86,7 +86,7 @@ ui = dashboardPage(title = "KLINK",
                    tabPanel("Linkage map",
                             fluidRow(
                               column(6, class = "col-lg-5", gt::gt_output("linkage_table")),
-                              column(6, class = "col-lg-7", plotOutput("karyo", height = "680px"))
+                              column(6, class = "col-lg-7", plotOutput("karyo", height = "700px")) # todo:680?
                             )
                    ),
                    tabPanel("Marker data", gt::gt_output("marker_table")),
@@ -184,7 +184,7 @@ server = function(input, output, session) {
       # Check that IDs match the Familias file
       xmlids = dat$ID
       if(!setequal(famids, xmlids))
-        stop2(paste(c("Individuals in XML file do not match .fam file", xmlids), collapse = "<br>"))
+        stop2(paste(c("Individuals in XML file do not match `.fam` file", xmlids), collapse = "<br>"))
 
       # Enforce same order
       dat[match(famids, xmlids), , drop = FALSE]
@@ -199,14 +199,14 @@ server = function(input, output, session) {
     amelsex = match(xmldat$AMEL, c("X-Y", "X-X"))
     sex = pedtools::getSex(peds[[1]], famids)
     if(!identical(amelsex, sex))
-      warn("Warning: AMEL genotypes do not match sex given in .fam file")
+      warn("Warning: AMEL genotypes do not match sex given in `.fam` file")
 
     # Rename using initials found in XML
     inits = xmldat$Initials
     if(any(inits == ""))
-      warn("Warning: Missing initials in XML file; cannot rename individuals")
+      warn("Warning: Missing initials in `XML` file; cannot rename individuals")
     else if(anyDuplicated(inits))
-      warn("Warning: Duplicated initials in XML file; cannot rename individuals")
+      warn("Warning: Duplicated initials in `XML` file; cannot rename individuals")
     else {
       newpeds = lapply(peds, function(ped)
         pedtools::relabel(ped, old = xmldat$ID, new = inits))

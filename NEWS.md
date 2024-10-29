@@ -55,7 +55,7 @@ This version is a major update of both the KLINK package and the shiny app.
 
 * New button "Mask" for downloading a masked version of the dataset.
 
-* Reading/writing .fam files is now handled by the new package `pedFamilias()`, which has been split out from `forrel`.
+* Reading/writing `.fam` files is now handled by the new package `pedFamilias()`, which has been split out from `forrel`.
 
 * Added R option `KLINK.debug` which can be set to TRUE for debugging (only when running KLINK from R). 
 

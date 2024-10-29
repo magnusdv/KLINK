@@ -1,6 +1,6 @@
-#' Parse XML file associated with .fam file
+#' Parse `XML` file associated with `.fam` file
 #'
-#' @param xml Path to a file with extension .xml.
+#' @param xml Path to a file with extension `.xml`.
 #'
 #' @examples
 #' # (No example included)
