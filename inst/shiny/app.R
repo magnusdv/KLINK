@@ -55,14 +55,9 @@ ui = dashboardPage(title = "KLINK",
 
   body = dashboardBody(
    useShinyjs(),
+   useBusyIndicators(spinners = FALSE, pulse = TRUE),
    includeCSS("www/custom.css"),
    tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
-
-   tags$script(HTML("
-     Shiny.addCustomMessageHandler('waitCursor', function(message) {
-      if(message) { $('body').addClass('wait-cursor');}
-      else { $('body').removeClass('wait-cursor');}
-     });")),
 
    fluidRow(
      column(width = 4,
@@ -291,14 +286,12 @@ server = function(input, output, session) {
     debug("compute LR")
     peds = req(pedigrees$reduced)
 
-    session$sendCustomMessage(type = 'waitCursor', message = TRUE)
     res = KLINK::linkedLR(pedigrees = peds,
                           linkageMap = linkageMap(),
                           linkedPairs = linkedPairs(),
                           markerData = markerData(),
                           mapfun = input$mapfunction,
                           lumpSpecial = TRUE)
-    session$sendCustomMessage(type = 'waitCursor', message = FALSE)
 
     resultTable(res)
     updateTabsetPanel(session, "tabs", selected = "LR table")
