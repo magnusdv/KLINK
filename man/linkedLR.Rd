@@ -11,7 +11,8 @@ linkedLR(
   maxdist = Inf,
   markerData = NULL,
   mapfun = "Kosambi",
-  lumpSpecial = TRUE
+  lumpSpecial = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -32,7 +33,9 @@ NULL.}
 \item{mapfun}{Name of the map function to be used; either "Haldane" or
 "Kosambi" (default).}
 
-\item{lumpSpecial}{A logical, by default TRUE.}
+\item{lumpSpecial}{A logical, by default FALSE.}
+
+\item{verbose}{A logical, by default FALSE.}
 }
 \value{
 A data frame with detailed LR results.

@@ -13,7 +13,8 @@
 #'   `markerSummary(pedigrees)`.
 #' @param mapfun Name of the map function to be used; either "Haldane" or
 #'   "Kosambi" (default).
-#' @param lumpSpecial A logical, by default TRUE.
+#' @param lumpSpecial A logical, by default FALSE.
+#' @param verbose A logical, by default FALSE.
 #'
 #' @return A data frame with detailed LR results.
 #'
@@ -35,8 +36,13 @@
 #'
 #' @export
 linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
-                    markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE) {
-  if (getOption("KLINK.debug")) print("linkedLR")
+                    markerData = NULL, mapfun = "Kosambi", lumpSpecial = FALSE, verbose = FALSE) {
+  if (getOption("KLINK.debug")) {
+    print("linkedLR")
+    verbose = TRUE
+  }
+
+  st = Sys.time()
 
   if(is.null(markerData)) {
     markerData = markerSummary(pedigrees)
@@ -76,15 +82,21 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   # Index within each group (do after ordering!)
   res$Gindex = stats::ave(1:nr, res$Pair, FUN = seq_along)
 
-  # Special lumping
+  # Special lumping # TODO!
+  if(lumpSpecial)
+    warning("Special lumping may give a small bias\n", call. = FALSE)
   if(lumpSpecial && specialLumpability(pedigrees))
-    pedigrees = lapply(pedigrees, lumpAllSpecial)
+    pedigrees = lapply(pedigrees, lumpAllSpecial, verbose = verbose)
 
   # Single-point LR
+  if(verbose)
+    cat("Computing single-point LRs\n")
   lr1 = forrel::kinshipLR(pedigrees, markers = res$Marker)
   res$LRsingle = lr1$LRperMarker[,1]
 
   # No-mutation versions
+  if(verbose)
+    cat("Computing no-mutation LRs\n")
   pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL))
   LRnomut = forrel::kinshipLR(pedsNomut, markers = res$Marker)$LRperMarker[, 1]
 
@@ -99,11 +111,17 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   res$LRlinked = NA_real_
   res$LRnomut  = NA_real_
 
+  if(verbose)
+    cat("Looping through linkage pairs:\n")
+
   for(pp in pairs) {
     m = pp$Marker
     idx1 = match(m[1], res$Marker)
 
     if(nrow(pp) == 2) {
+      ped1 = pedigrees[[1]]
+      if(verbose)
+        cat(sprintf("* %s (%d) - %s (%d)\n", m[1], nAlleles(ped1, m[1]), m[2], nAlleles(ped1, m[2])))
       res$LRnolink[idx1] = prod(pp$LRsingle)
       res$LRlinked[idx1] = .linkedLR(pedigrees, m, cmpos = pp$PosCM, mapfun = MAPFUN)$LR
       res$LRnomut[idx1]  = .linkedLR(pedsNomut, m, cmpos = pp$PosCM, mapfun = MAPFUN)$LR
@@ -117,6 +135,9 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   # Repair "Pair" column
   res$Pair = ifelse(res$Gsize > 1, paste("Pair", res$Pair), "Unpaired")
 
+  if(verbose)
+    cat("Time elapsed: ", format(Sys.time() - st, digits = 3), "\n")
+
   res
 }
 
@@ -125,6 +146,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 .linkedLR = function(peds, markerpair, cmpos = NULL, mapfun = "Kosambi",
                      linkageMap = NULL, disableMut = FALSE) {
   if (getOption("KLINK.debug")) print(paste(".linkedLR:", paste(markerpair, collapse = ", ")))
+
   if(length(markerpair) < 2)
     return(NA_real_)
 

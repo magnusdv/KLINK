@@ -34,7 +34,7 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
       lumptxt = stattxt = "-"
     }
     else {
-      lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else if (specLump) "Yes" else "No"
+      lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else if (specLump) "Special" else "No"
       stattxt = if(pedmut::isStationary(mut)) "Yes" else "No"
     }
     cbind.data.frame(Marker = a$name,
