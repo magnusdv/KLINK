@@ -47,7 +47,8 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
                 "LR table" = LRtable,
                 Notifications = outputNotes(notes),
                 "Full report" = NULL,
-                "Unlinked report" = NULL)
+                "Unlinked report" = NULL,
+                Plots = NULL)
 
   hs = createStyle(textDecoration = "bold")
   wb = buildWorkbook(sheets, headerStyle = hs, colWidths = "auto")
@@ -56,6 +57,9 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
     saveWorkbook(wb, file = outfile)
     return()
   }
+
+  # Pedigree sheet
+  writePlots(wb, "Plots", pedigrees)
 
   ped1 = pedigrees[[1]]
   resNms = names(resultTable)
@@ -95,7 +99,28 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
   addUnlinkedColumn(wb, LRtable, reportUnl, hs = hs)
 
   activeSheet(wb) = "Full report"
-  saveWorkbook(wb, file = outfile, overwrite = T)
+  saveWorkbook(wb, file = outfile, overwrite = TRUE)
+}
+
+
+#' @importFrom grDevices png dev.off
+writePlots = function(wb, sheet, peds) {
+  fil1 = tempfile(fileext = ".png")
+  fil2 = tempfile(fileext = ".png")
+
+  png(fil1, width = 4.5, height = 3.5, units = "in", res = 300)
+  plotPed(peds[[1]], cex = 1, title = "Ped 1", margins = c(1,2,3,2))
+  graphics::box("outer")
+  dev.off()
+
+  png(fil2, width = 4.5, height = 3.5, units = "in", res = 300)
+  plotPed(peds[[2]], cex = 1, title = "Ped 2", margins = c(1,2,3,2))
+  graphics::box("outer")
+  dev.off()
+
+  # Write to Excel
+  insertImage(wb, "Plots", file = fil1, width = 4.5, height = 3.5, startRow = 3, startCol = 2)
+  insertImage(wb, "Plots", file = fil2, width = 4.5, height = 3.5, startRow = 21, startCol = 2)
 }
 
 writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
