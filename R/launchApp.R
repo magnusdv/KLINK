@@ -16,7 +16,9 @@
 #'
 #' @export
 launchApp = function() {
-  shiny::runApp(system.file("shiny", package = "KLINK"))
+  suppressPackageStartupMessages({
+    shiny::runApp(system.file("shiny", package = "KLINK"))
+  })
 }
 
 #' @export
@@ -30,5 +32,7 @@ runKLINK = function(version = NULL) {
     stop2(msg)
   }
 
-  shiny::runApp(system.file("shiny", package = "KLINK"))
+  suppressPackageStartupMessages({
+    shiny::runApp(system.file("shiny", package = "KLINK"))
+  })
 }

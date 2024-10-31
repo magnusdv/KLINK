@@ -2,12 +2,12 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @rawNamespace import(shiny, except = c(singleton, is.singleton, runExample))
 #' @rawNamespace import(gt, except = c(html))
+#' @importFrom shiny runApp
+#' @importFrom shinyjs useShinyjs
 #' @import openxlsx
 #' @import pedtools
-#' @import shinydashboard
-#' @import shinyjs
+#' @importFrom shinydashboard dashboardPage
 ## usethis namespace: end
 NULL
 

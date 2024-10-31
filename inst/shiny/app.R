@@ -1,11 +1,10 @@
 suppressPackageStartupMessages({
+  library(KLINK)
   library(shiny)
   library(shinyjs)
   library(shinydashboard)
   library(gt)
-  library(KLINK)
 })
-
 
 VERSION = packageDescription("KLINK")$Version
 
