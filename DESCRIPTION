@@ -16,17 +16,17 @@ BugReports: https://github.com/magnusdv/KLINK/issues
 Depends: 
     R (>= 4.1)
 Imports: 
-    forrel (>= 1.6.0),
+    forrel (>= 1.7.0),
     gt (>= 0.10.0),
     openxlsx,
     pedFamilias,
     pedmut (>= 0.7.1),
     pedprobr (>= 0.9.3),
-    pedtools (>= 2.6.0),
-    shiny (>= 1.8.0),
+    pedtools (>= 2.7.1),
+    shiny (>= 1.9.1),
     shinydashboard,
     shinyjs,
-    verbalisr (>= 0.6.0),
+    verbalisr (>= 0.7.1),
     xml2
 Encoding: UTF-8
 Language: en-GB
