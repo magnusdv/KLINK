@@ -2,12 +2,12 @@
 % Please edit documentation in R/loadFamFile.R
 \name{loadFamFile}
 \alias{loadFamFile}
-\title{Load .fam file}
+\title{Load \code{.fam} file}
 \usage{
 loadFamFile(path, fallbackModel = "equal", withParams = FALSE)
 }
 \arguments{
-\item{path}{The path to a .fam file.}
+\item{path}{The path to a \code{.fam} file.}
 
 \item{fallbackModel}{The name of a mutation model; passed on to
 \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.}
@@ -19,7 +19,7 @@ included in the output. (See \code{\link[pedFamilias:readFam]{pedFamilias::readF
 A list of two \code{ped} objects.
 }
 \description{
-Load .fam file
+Load \code{.fam} file
 }
 \examples{
 fam = system.file("extdata/halfsib-test.fam", package = "KLINK")

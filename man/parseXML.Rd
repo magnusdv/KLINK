@@ -2,15 +2,15 @@
 % Please edit documentation in R/parseXML.R
 \name{parseXML}
 \alias{parseXML}
-\title{Parse XML file associated with .fam file}
+\title{Parse \code{XML} file associated with \code{.fam} file}
 \usage{
 parseXML(xml)
 }
 \arguments{
-\item{xml}{Path to a file with extension .xml.}
+\item{xml}{Path to a file with extension \code{.xml}.}
 }
 \description{
-Parse XML file associated with .fam file
+Parse \code{XML} file associated with \code{.fam} file
 }
 \examples{
 # (No example included)

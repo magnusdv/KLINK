@@ -46,6 +46,7 @@ ui = dashboardPage(title = "KLINK",
       fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
                 accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
     ),
+    checkboxInput("speclump", "Special lumping"),
     numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     hr(),
     actionButton("compute", "Calculate LR", class = "btn-lg btn-danger", onclick = "buttonClick('compute')",
@@ -141,6 +142,7 @@ server = function(input, output, session) {
     debug("famfile")
     fil = req(input$famfile)
     famfile$famname = fil$name
+    shinyjs::reset("xmlfile")
     XML(NULL)
     NOTES(NULL)
 
@@ -300,7 +302,7 @@ server = function(input, output, session) {
                           linkedPairs = linkedPairs(),
                           markerData = markerData(),
                           mapfun = input$mapfunction,
-                          lumpSpecial = TRUE)
+                          lumpSpecial = input$speclump)
 
     resultTable(res)
     updateTabsetPanel(session, "tabs", selected = "LR table")

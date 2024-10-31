@@ -58,7 +58,8 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
     x = x[1:2]
   }
 
-  if(!specialLumpability(x)) {
+  # TODO: Temporarily switch off special lumping
+  if(TRUE) { # !specialLumpability(x)) {
     alwLumpable = vapply(1:nMarkers(x[[1]]), FUN.VALUE = FALSE, function(i)
       is.null(mut <- mutmod(x[[1]], i)) || pedmut::alwaysLumpable(mut))
     if(!all(alwLumpable)) {
