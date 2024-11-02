@@ -66,7 +66,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   res$Gsize = stats::ave(1:nr, res$Pair, FUN = function(a) rep(length(a), length(a)))
 
   # Put (intact) pairs on top
-  res = res[order(-res$Gsize, res$Pair, res$PosCM), , drop = FALSE]
+  #res = res[order(-res$Gsize, res$Pair, res$PosCM), , drop = FALSE]
 
   # Index within each group (do after ordering!)
   res$Gindex = stats::ave(1:nr, res$Pair, FUN = seq_along)

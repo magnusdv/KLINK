@@ -289,7 +289,7 @@ server = function(input, output, session) {
     debug("LR table")
     res = resultTable()
     validate(need(!is.null(res), "No likelihood ratios have been calculated yet."))
-    KLINK:::prettyResultTable(res)
+    KLINK:::prettyResultTable(res, linkedPairs())
   }, width = "100%", align = "left")
 
   # Compute LR
