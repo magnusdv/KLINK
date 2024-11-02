@@ -131,8 +131,7 @@ writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
 
   # Styling utility
   addSt = function(rows, cols, stack = TRUE, ...) {
-    style = createStyle(...)
-    addStyle(wb, sheet, style, rows = rows, cols = cols,
+    addStyle(wb, sheet, style = createStyle(...), rows = rows, cols = cols,
              gridExpand = TRUE, stack = stack)
   }
 
@@ -237,16 +236,15 @@ outputLRreport = function(resultTable, gcols, AMEL = NULL) {
   # Remove missing & handle linkage pairs
   res = removeMissing(resultTable, gcols)
 
-  # Mute single-LR column for unlinked markers
-  res$LRsingle[res$Gsize == 1] = NA
+  # Mute LRsingle for unlinked markers, and round
+  res$LRsingle = ifelse(res$Gsize == 1, NA_character_, sprintf("%.3f", res$LRsingle))
 
   # Prepare merge
   res$LRlinked[res$Gindex > 1] = NA
 
   # Select columns
-  res$Idx = 1:nrow(res)
-  res = res[c("Idx", "Marker", gcols, "LRlinked", "LRsingle")]
-  names(res)[names(res) == "LRlinked"] = "LR"
+  nr = nrow(res)
+  res = cbind(Idx = 1:nr, res["Marker"], res[gcols], LR = res$LRlinked, res["LRsingle"])
 
   # Change allele separators to "-"
   res[gcols] = lapply(res[gcols], \(x) sub("/", "-", x))
@@ -257,9 +255,8 @@ outputLRreport = function(resultTable, gcols, AMEL = NULL) {
   # Round
   res$LR = c(sprintf("%.3f", res$LR[1:nr]), sprintf("%.4g", res$LR[nr+1])) |> fixNA()
 
-  # Add AMEL?
-  if(!is.null(AMEL))
-    res = addAMEL(res, AMEL)
+  # Add AMEL if given
+  res = addAMEL(res, AMEL)
 
   # Fix names
   names(res)[c(1,ncol(res))] = ""
@@ -286,11 +283,8 @@ outputLRunlinked = function(resultTable, gcols, AMEL = NULL, pic) {
   if(nr == 0)
     return("No markers to report")
 
-  # Columns
-  res$Idx = 1:nrow(res)
-  res = res[c("Idx", "Marker", gcols, "LRsingle")]
-  names(res)[ncol(res)] = "LR"
-
+  # Columns¨
+  res = cbind(Idx = 1:nr, res["Marker"], res[gcols], LR = res$LRsingle)
 
   # Change allele separator to "-"
   res[gcols] = lapply(res[gcols], \(x) sub("/", "-", x))
@@ -301,9 +295,8 @@ outputLRunlinked = function(resultTable, gcols, AMEL = NULL, pic) {
   # Round
   res$LR = c(sprintf("%.3f", res$LR[1:nr]), sprintf("%.4g", res$LR[nr+1])) |> fixNA()
 
-  # Add AMEL?
-  if(!is.null(AMEL))
-    res = addAMEL(res, AMEL)
+  # Add AMEL if given
+  res = addAMEL(res, AMEL)
 
   names(res)[1] = ""
   rownames(res) = NULL
@@ -338,6 +331,8 @@ removeMissing = function(resTable, gcols) {
 
 
 addAMEL = function(report, AMEL) {
+  if(is.null(AMEL))
+    return(report)
   amelRow = c(NA, "AMELOGENIN", AMEL)
   length(amelRow) = ncol(report)
   names(amelRow) = names(report)
