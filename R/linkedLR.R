@@ -41,8 +41,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   }
 
   # Genotype columns
-  colnms = names(markerData)
-  gcols = colnms[(match("MinFreq", colnms) + 1):(match("Model", colnms) - 1)]
+  gcols = colsBetween(markerData, "MinFreq", "Model")
 
   # Find linked pairs, if not supplied
   if(is.null(linkedPairs))
