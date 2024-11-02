@@ -226,13 +226,8 @@ outputLRcomplete = function(resultTable) {
   res[res$Gindex > 1, LRcols] = NA
   res$Gindex = res$Gsize = NULL
 
-  # add totals row
-  res = rbind(res, NA)
-  res[nrow(res), LRcols] = apply(res[LRcols], 2, prod, na.rm = TRUE)
-  res[nrow(res), 1] = "Total LR"
-
-  # Return
-  res
+  # Add totals
+  addTotals(res, LRcols)
 }
 
 
@@ -248,9 +243,6 @@ outputLRreport = function(resultTable, gcols, AMEL = NULL) {
   # Prepare merge
   res$LRlinked[res$Gindex > 1] = NA
 
-  # Total (to be added below)
-  total = prod(res$LRlinked, na.rm = TRUE)
-
   # Select columns
   res$Idx = 1:nrow(res)
   res = res[c("Idx", "Marker", gcols, "LRlinked", "LRsingle")]
@@ -259,14 +251,11 @@ outputLRreport = function(resultTable, gcols, AMEL = NULL) {
   # Change allele separators to "-"
   res[gcols] = lapply(res[gcols], \(x) sub("/", "-", x))
 
-  # Round to 3 decimals
-  res$LR = ifelse(is.na(res$LR), NA_character_, sprintf("%.3f", res$LR))
-  res$LRsingle = ifelse(is.na(res$LRsingle), NA_character_, sprintf("%.3f", res$LRsingle))
+  # Add LR total
+  res = addTotals(res, "LR")
 
-  # Add total
-  res = rbind(res, NA)
-  res$Marker[nrow(res)] = "Total LR"
-  res$LR[nrow(res)] = sprintf("%.4g", total)
+  # Round
+  res$LR = c(sprintf("%.3f", res$LR[1:nr]), sprintf("%.4g", res$LR[nr+1])) |> fixNA()
 
   # Add AMEL?
   if(!is.null(AMEL))
@@ -302,19 +291,15 @@ outputLRunlinked = function(resultTable, gcols, AMEL = NULL, pic) {
   res = res[c("Idx", "Marker", gcols, "LRsingle")]
   names(res)[ncol(res)] = "LR"
 
-  # Total (to be added below)
-  total = prod(res$LR, na.rm = TRUE)
 
   # Change allele separator to "-"
   res[gcols] = lapply(res[gcols], \(x) sub("/", "-", x))
 
-  # Round to 3 decimals
-  res$LR = ifelse(is.na(res$LR), NA_character_, sprintf("%.3f", res$LR))
+  # Add totals
+  res = addTotals(res, "LR")
 
-  # Add totals row
-  res = rbind(res, NA)
-  res$Marker[nrow(res)] = "Total LR"
-  res$LR[nrow(res)] = sprintf("%.4g", total)
+  # Round
+  res$LR = c(sprintf("%.3f", res$LR[1:nr]), sprintf("%.4g", res$LR[nr+1])) |> fixNA()
 
   # Add AMEL?
   if(!is.null(AMEL))
