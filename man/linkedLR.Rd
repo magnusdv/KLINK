@@ -44,19 +44,9 @@ A data frame with detailed LR results.
 This function does the main LR calculations of the KLINK app.
 }
 \examples{
-library(forrel)
-
-ped1 = nuclearPed(fa = "AF", child = "CH") |>
-  profileSim(markers = NorwegianFrequencies)
-
-ped2 = singletons(c("AF", "CH")) |>
-  transferMarkers(from = ped1, to = _)
-
-pedigrees = list(ped1, ped2)
-
-linkedLR(pedigrees, KLINK::LINKAGEMAP)
+linkedLR(paternity, KLINK::LINKAGEMAP)
 
 # For testing
-# .linkedLR(pedigrees, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
+# .linkedLR(paternity, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
 
 }

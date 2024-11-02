@@ -19,20 +19,10 @@
 #' @return A data frame with detailed LR results.
 #'
 #' @examples
-#' library(forrel)
-#'
-#' ped1 = nuclearPed(fa = "AF", child = "CH") |>
-#'   profileSim(markers = NorwegianFrequencies)
-#'
-#' ped2 = singletons(c("AF", "CH")) |>
-#'   transferMarkers(from = ped1, to = _)
-#'
-#' pedigrees = list(ped1, ped2)
-#'
-#' linkedLR(pedigrees, KLINK::LINKAGEMAP)
+#' linkedLR(paternity, KLINK::LINKAGEMAP)
 #'
 #' # For testing
-#' # .linkedLR(pedigrees, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
+#' # .linkedLR(paternity, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
 #'
 #' @export
 linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
@@ -162,6 +152,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   H1 = pedtools::selectMarkers(peds[[1]], markerpair)
   H2 = pedtools::selectMarkers(peds[[2]], markerpair)
 
+  # Not used, but useful for debugging
   if(disableMut) {
     H1 = H1 |> setMutmod(model = NULL)
     H2 = H2 |> setMutmod(model = NULL)
@@ -170,5 +161,6 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
   denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho)
   LR = numer/denom
+
   list(lnLik1 = log(numer), lnLik2 = log(denom), LR = LR)
 }
