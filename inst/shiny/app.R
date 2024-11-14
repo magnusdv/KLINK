@@ -24,17 +24,17 @@ ui = dashboardPage(title = "KLINK",
 
   sidebar = dashboardSidebar(
     fluidRow(style = "padding: 5px 15px 0px 15px",
-             column(4, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
-             column(4, align = "right",
-                    actionButton("loadex",  "Example", class = "btn-sm btn btn-success",
-                                 style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
-             column(4, align = "right",
-                    actionButton("reset",  "Reset",width = "100%", class = "btn-sm btn btn-warning",
-                                  style = "padding: 1px 8px; margin: 8px 0px 0px 0px;")),
+             column(6, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
+             column(6, align = "right",
+                    actionButton("reset",  "RESET",  class = "btn-sm btn-warning",
+                                  style = "font-weight:bolder; padding:0px 8px; margin: 8px 0px 0px 0px;")),
     ),
     tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
     tags$div(class = "loadfile", fileInput("xmlfile", "(Optional) .xml", buttonLabel = icon("folder-open"), accept = ".xml")),
-
+    fluidRow(style = "padding: 0px 15px 0px 15px",
+      column(6, actionButton("loadex1",  "Example 1", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
+      column(6, align = "right", actionButton("loadex2",  "Example 2", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90"))
+    ),
     hr(),
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
     radioButtons("mapfunction", "Mapping function", choices = c("Kosambi", "Haldane"),
@@ -222,15 +222,20 @@ server = function(input, output, session) {
     XML(xmldat)
   })
 
-  observeEvent(input$loadex, {
-    debug("loadex")
-    fil = system.file("extdata", "halfsib-test.fam", package = "KLINK")
+  exampleFile = reactiveVal(NULL)
+
+  observeEvent(input$loadex1, exampleFile("sibship.fam"))
+  observeEvent(input$loadex2, exampleFile("halfsib.fam"))
+  observeEvent(exampleFile(), {
+    debug("load example")
+    filename = exampleFile()
+    path = system.file("extdata", filename, package = "KLINK")
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
     NOTES(NULL)
     XML(NULL)
-    pedigrees$complete = KLINK::loadFamFile(fil)
-    famfile$famname = "halfsib-test.fam"
+    pedigrees$complete = KLINK::loadFamFile(path)
+    famfile$famname = filename
   })
 
   observeEvent(pedigrees$complete, {
