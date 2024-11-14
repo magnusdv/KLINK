@@ -321,8 +321,8 @@ outputLRunlinked = function(resultTable, gcols, AMEL = NULL, pic) {
 
 
 # Removes markers with no data after sorting. (Ensures same order in both REFA reports.)
-removeMissing = function(resTable, gcols) {
-  res = resTable
+removeMissing = function(restab, gcols) {
+  res = restab
 
   # Identify markers with missing data
   res$miss = apply(res, 1, function(v) all(v[gcols] == "-/-"))
@@ -330,6 +330,9 @@ removeMissing = function(resTable, gcols) {
   # Incomplete pairs ...
   miss2 = res$miss & res$Gsize == 2
   incomp = res$Pair %in% unique(res$Pair[miss2])
+
+  # TODO: Is this still necessary?
+  if(any(miss2)) message("Download message: Yes, incomplete pairs are still handled")
 
   # ... convert to singlepoint
   if(any(miss2)) {
@@ -388,7 +391,7 @@ getIdLegend = function(nameKeys) {
 
 getRelLegend = function(pedigrees, ids) {
   if(length(ids) != 2)
-    return(data.frame(Relationship = "No output (only for 2 individuals)"))
+    return(data.frame(Relationship = "No output (only for 2 individuals)", row.names = " "))
 
   rels = lapply(pedigrees, function(ped) {
     s = verbalisr::verbalise(ped, ids) |>
@@ -402,12 +405,13 @@ getRelLegend = function(pedigrees, ids) {
 
 getNoteLegend = function(notes) {
   data.frame("Notifications " = notes %||% "No notifications recorded",
-             check.names = FALSE)
+             check.names = FALSE,
+             row.names = if(is.null(notes)) " " else seq_along(notes))
 }
 
 getSettingsLegend = function(settings) {
   if(is.null(settings))
-    return(data.frame("Settings " = "No settings included", check.names = FALSE))
+    return(data.frame("Settings " = "No settings included", row.names = " ", check.names = FALSE))
 
   # A few tweaks
   if(!is.null(dist <- settings[["Max distance"]]))
@@ -424,9 +428,7 @@ getSettingsLegend = function(settings) {
 
 addUnlinkedColumn = function(wb, LRtable, reportUnl, hs = NULL) {
   lrs = setnames(reportUnl$LR, reportUnl$Marker)
-  newcol = lrs[LRtable$Marker]
-  newcol[length(newcol)] = lrs["Total LR"]
-  df = data.frame("LR.unl.report" = newcol)
+  df = data.frame("LR.unl.report" = as.character(lrs[LRtable$Marker]))
 
   # Insert two columns away
   sheet = "LR table"

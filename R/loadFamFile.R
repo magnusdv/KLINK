@@ -84,9 +84,10 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
 
 
 removeEmpty = function(x) {
-  if (getOption("KLINK.debug")) print("removeEmpty")
+  if (getOption("KLINK.debug")) print("remove empty comps and/or markers")
   if(is.null(x))
     return(NULL)
+
   for(pedname in names(x)) {
     ped = x[[pedname]]
     empty = vapply(ped, function(comp) !any(unlist(comp$MARKERS)), FALSE)

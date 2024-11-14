@@ -12,7 +12,6 @@
 #' @export
 markerSummary = function(pedigrees, replaceNames = FALSE) {
   ped1 = pedigrees[[1]]
-  # ped2 = pedigrees[[2]] # not used?
 
   # Check if special (founder-type) lumping applies to all markers
   specLump = specialLumpability(pedigrees)
@@ -22,13 +21,15 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
   if(replaceNames)
     colnames(geno) = paste0("Person", 1:ncol(geno))
 
+
   # List of lists: Marker attributes
   locAttrs = pedtools::getLocusAttributes(ped1)
 
   reslist = lapply(locAttrs, function(a) {
+    gg = geno[a$name, , drop = FALSE]
     mut = a$mutmod
     pars = pedmut::getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
-    colnames(pars) = c("Model", "Rate", "Range", "Rate2")
+    colnames(pars) = c("Model", "Rate (f/m)", "Range", "Rate2")
 
     if(is.null(mut)) {
       lumptxt = stattxt = "-"
@@ -38,17 +39,14 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
       stattxt = if(pedmut::isStationary(mut)) "Yes" else "No"
     }
     cbind.data.frame(Marker = a$name,
+                     gg, Typed = sum(gg != "-/-"),
                      Alleles = length(a$alleles),
                      PIC = PIC(a$afreq),
                      MinFreq = sprintf("%.2g", min(a$afreq)),
-                     geno[a$name, , drop = FALSE],
                      pars, Stationary = stattxt, Lumpable = lumptxt)
   })
 
   res = do.call(rbind, reslist)
-
-  if(any(grepl("/", res$Rate, fixed = TRUE)))
-    colnames(res)[colnames(res) == "Rate"] = "Rate (f/m)"
 
   rownames(res) = NULL
   res
@@ -61,5 +59,8 @@ PIC = function(afr) 1 - sum(afr^2) - sum(afr^2)^2 + sum(afr^4)
 lp2vec = function(markers, linkedPairs) {
   pairvec = rep(seq_along(linkedPairs), each = 2)
   names(pairvec) = unlist(linkedPairs)
-  as.integer(pairvec[markers])
+  vec = as.integer(pairvec[markers])
+  singles = which(tabulate(vec) == 1)
+  vec[vec %in% singles] = NA
+  vec
 }

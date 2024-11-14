@@ -312,15 +312,25 @@ server = function(input, output, session) {
                           linkedPairs = linkedPairs(),
                           markerData = markerData(),
                           mapfun = input$mapfunction,
-                          lumpSpecial = input$speclump)
+                          lumpSpecial = FALSE) #input$speclump)
 
     resultTable(res)
     updateTabsetPanel(session, "tabs", selected = "LR table")
     shinyjs::enable("download")
   })
 
-  # Reset when changing map function
-  observeEvent(input$mapfunction, resultTable(NULL))
+  # Reset LR table
+  observe({input$mapfunction; resultTable(NULL)})
+
+  prevLinkedPairs = reactiveVal(NULL)
+
+  observe({
+    currentPairs = linkedPairs()
+    if(!identical(currentPairs, prevLinkedPairs())) {
+      resultTable(NULL)
+      prevLinkedPairs(currentPairs)
+    }
+  })
 
   # Marker data table -------------------------------------------------------
 
@@ -362,11 +372,9 @@ server = function(input, output, session) {
   })
 
   # Linked pairs
-  linkedPairs = reactive({
-    debug("linked pairs")
-    mdat = markerData()
-    getLinkedPairs(mdat$Marker, linkageMap(), maxdist = req(input$maxdist))
-  })
+  linkedPairs = reactive(
+    getLinkedPairs(markerData()$Marker, linkageMap(), maxdist = req(input$maxdist))
+  )
 
   # React to Marker map radio selection
   observeEvent(input$maptype, {

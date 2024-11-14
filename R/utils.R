@@ -6,7 +6,8 @@ stop2 = function(...) {
 
 safelog = function(v) {
   res = rep(NA_real_, length(v))
-  res[v > 0] = log(v[v > 0])
+  pos = !is.na(v) & v > 0
+  res[pos] = log(v[pos])
   res
 }
 
@@ -14,7 +15,7 @@ safelog = function(v) {
   if(is.null(x)) y else x
 }
 
-setnames = function(x, nms) {
+setnames = function(x, nms = x) {
   names(x) = nms
   x
 }
