@@ -1,6 +1,6 @@
 Package: KLINK
 Title: Kinship Analysis with Linked Markers
-Version: 1.0.3
+Version: 1.0.3.9000
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-9134-4962"))

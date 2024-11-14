@@ -1,3 +1,28 @@
+# dev version
+
+## New features
+* Added new datasets `sibship` and `halfsib`. In the app, these are available as `Example1` and `Example2`, respectively.
+
+* The **LR table** shown in the app has a new look, now using the same layout and marker order as the other tables. 
+The "LR table" sheet of the Excel download also uses this marker order. 
+*Note*: The *Report* sheets has not changed.
+
+* New app controls `Empty markers` (hide/show) and `Likelihoods` (hide/show/loglik) 
+for the LR table in the app and the Excel download.
+
+* The Excel download includes a new sheet, `Plots`, containing the two pedigree plots.
+
+* Added tooltips explaining app controls and table columns.
+
+* A pulsating effect is now shown when the app is busy.
+
+## Minor changes and fixes
+
+* Empty the `.xml` field when a new `.fam` file is loaded.
+
+* RStudio now stops the app when the user closes the browser.
+
+
 # KLINK 1.0.2
 
 * Fixed bug affecting download when XML initials contain hyphens.
