@@ -13,7 +13,7 @@
 #'   `markerSummary(pedigrees)`.
 #' @param mapfun Name of the map function to be used; either "Haldane" or
 #'   "Kosambi" (default).
-#' @param lumpSpecial A logical, by default FALSE.
+#' @param lumpSpecial A logical, by default TRUE.
 #' @param verbose A logical, by default FALSE.
 #'
 #' @return A data frame with detailed LR results.
@@ -26,7 +26,8 @@
 #'
 #' @export
 linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
-                    markerData = NULL, mapfun = "Kosambi", lumpSpecial = FALSE, verbose = FALSE) {
+                    markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE,
+                    verbose = FALSE) {
   if (getOption("KLINK.debug")) {
     print("linkedLR")
     verbose = TRUE
@@ -34,42 +35,13 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   st = Sys.time()
 
+  MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
+
   if(is.null(markerData)) {
     markerData = markerSummary(pedigrees)
     ord = order(match(markerData$Marker, linkageMap$Marker))
     markerData = markerData[ord, , drop = FALSE]
   }
-
-  # Genotype columns
-  gcols = colsBetween(markerData, "MinFreq", "Model")
-
-  # Find linked pairs, if not supplied
-  if(is.null(linkedPairs))
-    linkedPairs = getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)
-
-  markerData$Pair = lp2vec(markerData$Marker, linkedPairs)
-
-  MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
-
-  # Initialise table: Pair, Marker, Geno
-  res = markerData[c("Pair", "Marker", gcols)]
-  nr = nrow(res)
-
-  # Add cM positions
-  res$PosCM = linkageMap$PosCM[match(res$Marker, linkageMap$Marker)]
-
-  # Replace missing pairs with dummy 1001, 1002, ... (otherwise lost in split)
-  if(any(NApair <- is.na(res$Pair)))
-    res$Pair[NApair] = 1000 + seq_along(which(NApair))
-
-  # Group size (1 or 2)
-  res$Gsize = stats::ave(1:nr, res$Pair, FUN = function(a) rep(length(a), length(a)))
-
-  # Put (intact) pairs on top
-  #res = res[order(-res$Gsize, res$Pair, res$PosCM), , drop = FALSE]
-
-  # Index within each group (do after ordering!)
-  res$Gindex = stats::ave(1:nr, res$Pair, FUN = seq_along)
 
   # Special lumping # TODO!
   if(lumpSpecial)
@@ -77,56 +49,95 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   if(lumpSpecial && specialLumpability(pedigrees))
     pedigrees = lapply(pedigrees, lumpAllSpecial, verbose = verbose)
 
+  ped1 = pedigrees[[1]]
+  mvec = markerData$Marker
+
+  # Genotype columns
+  gcols = colsBetween(markerData, "Marker", "Typed")
+
+  # Find linked pairs, if not supplied
+  if(is.null(linkedPairs))
+    linkedPairs = getLinkedPairs(mvec, linkageMap, maxdist = maxdist)
+
+  # Remove pairings involving markers with less than 2 typed
+  good = (markerData$Typed >= 2) |> setnames(mvec)
+  linkedPairs = Filter(\(x) all(good[x]), linkedPairs)
+
+  # Pairing index
+  pair = lp2vec(mvec, linkedPairs)
+  cmpos = linkageMap$PosCM[match(mvec, linkageMap$Marker)] |> setnames(mvec)
+
+  # Initialise result table
+  res = cbind.data.frame(Pair = pair, markerData[c("Marker", gcols, "Typed")])
+  nr = nrow(res)
+
+  # Fix NAs in pair
+  pair[is.na(pair)] = 1000L + seq_along(which(is.na(pair)))
+
+  # Group size (1 or 2)
+  res$Gsize = stats::ave(1:nr, pair, FUN = function(a) rep(length(a), length(a)))
+
+  # Index within each group
+  res$Gindex = stats::ave(1:nr, pair, FUN = seq_along)
+
   # Single-point LR
   if(verbose)
     cat("Computing single-point LRs\n")
-  lr1 = forrel::kinshipLR(pedigrees, markers = res$Marker)
-  res$LRsingle = lr1$LRperMarker[,1]
+  lr1 = forrel::kinshipLR(pedigrees, markers = mvec)
+  LRsingle = lr1$LRperMarker[,1]
+  liks = lr1$likelihoodsPerMarker
 
   # No-mutation versions
   if(verbose)
     cat("Computing no-mutation LRs\n")
   pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL))
-  LRnomut = forrel::kinshipLR(pedsNomut, markers = res$Marker)$LRperMarker[, 1]
+  LRnomut = forrel::kinshipLR(pedsNomut, markers = mvec)$LRperMarker[, 1]
 
   # Fix lost names when only 1 marker
   if(is.null(names(LRnomut)))
-    names(LRnomut) = res$Marker
+    names(LRnomut) = mvec
 
-  # Split linkage groups
-  pairs = split(res, res$Pair)
-
+  res$LRsingle = LRsingle
   res$LRnolink = NA_real_
-  res$LRlinked = NA_real_
   res$LRnomut  = NA_real_
+  res$LRlinked = NA_real_
+  res$Lik1 = NA_real_
+  res$Lik2 = NA_real_
 
   if(verbose)
     cat("Looping through linkage pairs:\n")
 
-  for(pp in pairs) {
-    m = pp$Marker
-    idx1 = match(m[1], res$Marker)
+  # Loop over linkage groups and fill in results
+  for(lg in split(mvec, pair)) {
 
-    if(nrow(pp) == 2) {
-      ped1 = pedigrees[[1]]
-      if(verbose)
-        cat(sprintf("* %s (%d) - %s (%d)\n", m[1], nAlleles(ped1, m[1]), m[2], nAlleles(ped1, m[2])))
-      res$LRnolink[idx1] = prod(pp$LRsingle)
-      res$LRlinked[idx1] = .linkedLR(pedigrees, m, cmpos = pp$PosCM, mapfun = MAPFUN)$LR
-      res$LRnomut[idx1]  = .linkedLR(pedsNomut, m, cmpos = pp$PosCM, mapfun = MAPFUN)$LR
+    if(verbose)
+      cat(sprintf("* %s (# alleles = %s)\n", toString(lg), toString(nAlleles(ped1, lg))))
+
+    idx1 = match(lg[1], res$Marker)
+
+    if(length(lg) == 2) {
+      res$LRnolink[idx1] = prod(LRsingle[lg])
+      res$LRnomut[idx1]  = .linkedLR(pedsNomut, lg, cmpos = cmpos[lg], mapfun = MAPFUN)$LR
+
+      linkLR = .linkedLR(pedigrees, lg, cmpos = cmpos[lg], mapfun = MAPFUN)
+      res$LRlinked[idx1] = linkLR$LR
+      res$Lik1[idx1] = linkLR$lik1
+      res$Lik2[idx1] = linkLR$lik2
+
     }
     else {
-      res$LRnolink[idx1] = res$LRlinked[idx1] = pp$LRsingle
-      res$LRnomut[idx1] = LRnomut[[m]]
+      res$LRnolink[idx1] = res$LRlinked[idx1] = LRsingle[[lg]]
+      res$LRnomut[idx1] = LRnomut[[lg]]
+      res$Lik1[idx1] = liks[lg, 1]
+      res$Lik2[idx1] = liks[lg, 2]
     }
   }
-
-  # Repair "Pair" column
-  res$Pair = ifelse(res$Gsize > 1, paste("Pair", res$Pair), "Unpaired")
 
   if(verbose)
     cat("Time elapsed: ", format(Sys.time() - st, digits = 3), "\n")
 
+  res$Loglik1 = safelog(res$Lik1)
+  res$Loglik2 = safelog(res$Lik2)
   res
 }
 
@@ -151,7 +162,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   H1 = pedtools::selectMarkers(peds[[1]], markerpair)
   H2 = pedtools::selectMarkers(peds[[2]], markerpair)
 
-  # Not used, but useful for debugging
+  # Not used in app, but useful for debugging
   if(disableMut) {
     H1 = H1 |> setMutmod(model = NULL)
     H2 = H2 |> setMutmod(model = NULL)
@@ -159,7 +170,6 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
   denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho)
-  LR = numer/denom
 
-  list(lnLik1 = log(numer), lnLik2 = log(denom), LR = LR)
+  list(lik1 = numer, lik2 = denom, LR = numer/denom)
 }
