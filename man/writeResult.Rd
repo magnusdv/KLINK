@@ -12,6 +12,7 @@ writeResult(
   outfile,
   notes = NULL,
   famname = NULL,
+  hideEmpty = FALSE,
   settings = NULL,
   XML = NULL
 )
@@ -30,6 +31,8 @@ writeResult(
 \item{notes}{A character vector.}
 
 \item{famname}{The name of the input \code{.fam} file.}
+
+\item{hideEmpty}{A logical, indicating if untyped markers should be dropped.}
 
 \item{settings}{A list of KLINK settings to be included in the output}
 

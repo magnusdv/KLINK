@@ -46,11 +46,17 @@ ui = dashboardPage(title = "KLINK",
       fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
                 accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
     ),
-    checkboxInput("speclump", "Special lumping"),
+    #checkboxInput("speclump", "Special lumping"),
+    radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
+                 choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
+    radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
+                 choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
     numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     hr(),
-    actionButton("compute", "Calculate LR", class = "btn-lg btn-danger", onclick = "buttonClick('compute')",
-                 style = "margin-top:20px;background-color:#FF5c5c")
+    div(style = "margin-top:20px;padding-right:30px",
+        actionButton("compute", "Calculate LR", width = "100%", class = "btn-lg btn-danger",
+                 onclick = "buttonClick('compute')", style = "background-color:#FF5c5c;font-size:150%")
+        )
   ),
 
   body = dashboardBody(
@@ -68,7 +74,7 @@ ui = dashboardPage(title = "KLINK",
      column(width = 4,
             box(title = tagList("Ped 1",
                                 tags$div(id = "hideEmptyCheck",
-                                         checkboxInput("hideEmpty", HTML("Hide untyped<br>components"), value = TRUE))),
+                                         checkboxInput("hideEmptyComps", HTML("Hide untyped<br>components"), value = TRUE))),
                 width = NULL, status = "info", solidHeader = TRUE,
                 plotOutput("pedplot1", height = "315px")),
             box(
@@ -243,11 +249,8 @@ server = function(input, output, session) {
     peds = pedigrees$complete
     pedred = KLINK:::removeEmpty(peds)
     pedigrees$reduced = pedred
-    pedigrees$active = if(input$hideEmpty) pedred else peds
-
-    # Reset main table
+    pedigrees$active = if(input$hideEmptyComps) pedred else peds
     resultTable(NULL)
-
     # Update dropdown marker list
     markers = c("Marker" = "",  "(none)", pedtools::name(peds[[1]]))
     updateSelectInput(session, "showmarker", choices = markers)
@@ -280,8 +283,8 @@ server = function(input, output, session) {
     KLINK:::plotPed(ped2, marker = selectedMarker(), cex = 1.2)
   }, execOnResize = TRUE)
 
-  observeEvent(input$hideEmpty, {
-    pedigrees$active = if(input$hideEmpty) pedigrees$reduced else pedigrees$complete
+  observeEvent(input$hideEmptyComps, {
+    pedigrees$active = if(input$hideEmptyComps) pedigrees$reduced else pedigrees$complete
   })
 
 
@@ -293,8 +296,10 @@ server = function(input, output, session) {
   output$result_table = render_gt({
     debug("LR table")
     res = resultTable()
-    validate(need(!is.null(res), "No likelihood ratios have been calculated yet."))
-    KLINK:::prettyResultTable(res, linkedPairs())
+    validate(need(!is.null(res), "No LRs have been calculated yet."))
+    KLINK:::prettyResultTable(res, linkedPairs(),
+                              hide = input$emptymarkers == "hide",
+                              likelihoods = input$likelihoods)
   }, width = "100%", align = "left")
 
   # Compute LR
@@ -337,7 +342,7 @@ server = function(input, output, session) {
     debug("marker table")
     mtab = markerData()
     validate(need(!is.null(mtab), "No data has been loaded."))
-    KLINK:::prettyMarkerTable(mtab, linkedPairs())
+    KLINK:::prettyMarkerTable(mtab, linkedPairs(), hide = input$emptymarkers == "hide")
   }, width = "100%", align = "left")
 
 
@@ -377,7 +382,6 @@ server = function(input, output, session) {
     path = req(input$mapfile$datapath)
     header = grepl("marker", readLines(path, n = 1), ignore.case = TRUE)
     map = utils::read.table(path, header = header, sep="\t")
-
     linkageMap(map)
     resultTable(NULL)
     updateTabsetPanel(session, "tabs", selected = "Linkage map")
@@ -390,7 +394,7 @@ server = function(input, output, session) {
   output$linkage_table = render_gt({
     debug("linkage map table")
     map = req(linkageMapSubset())
-    KLINK:::prettyLinkageMap(map, linkedPairs())
+    KLINK:::prettyLinkageMap(map, linkedPairs(), hide = input$emptymarkers == "hide")
   }, width = "100%", align = "left")
 
 
@@ -419,6 +423,7 @@ server = function(input, output, session) {
         outfile = file,
         notes = NOTES(),
         famname = famfile$famname,
+        hideEmpty = input$emptymarkers == "hide",
         settings = settings,
         XML = XML())
     },
@@ -437,6 +442,8 @@ server = function(input, output, session) {
     updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
     updateNumericInput(session, "maxdist", value = 200)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")
+    updateRadioButtons(session, "emptymarkers", selected = "hide")
+    updateRadioButtons(session, "likelihoods", selected = "hide")
     pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
     markerData(NULL)
     resultTable(NULL)

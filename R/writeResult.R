@@ -10,6 +10,7 @@
 #' @param notes A character vector.
 #' @param outfile The output file name.
 #' @param famname The name of the input `.fam` file.
+#' @param hideEmpty A logical, indicating if untyped markers should be dropped.
 #' @param settings A list of KLINK settings to be included in the output
 #' @param XML Optional data from .xml file.
 #'
@@ -37,13 +38,13 @@
 #' }
 #' @export
 writeResult = function(resultTable, pedigrees, linkageMap, markerData,
-                       outfile, notes = NULL, famname = NULL,
+                       outfile, notes = NULL, famname = NULL, hideEmpty = FALSE,
                        settings = NULL, XML = NULL) {
 
-  LRtable = outputLRcomplete(resultTable)
+  LRtable = outputLRcomplete(resultTable, hide = hideEmpty)
 
   sheets = list("Linkage map" = linkageMap,
-                "Marker data" = markerData %||% "No marker data loaded",
+                "Marker data" = outputMdata(markerData, hide = hideEmpty),
                 "LR table" = LRtable,
                 Notifications = outputNotes(notes),
                 "Full report" = NULL,
@@ -102,6 +103,16 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
   saveWorkbook(wb, file = outfile, overwrite = TRUE)
 }
 
+outputMdata = function(markerData, hide = FALSE) {
+  if(is.null(markerData))
+    return("No marker data loaded")
+
+  if(hide)
+    markerData = markerData[markerData$Typed > 0, , drop = FALSE]
+
+  markerData$Typed = NULL
+  markerData
+}
 
 #' @importFrom grDevices png dev.off
 writePlots = function(wb, sheet, peds) {
@@ -217,13 +228,16 @@ writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
   setColWidths(wb, sheet, legendCl + 0:1, "auto")
 }
 
-outputLRcomplete = function(resultTable) {
+outputLRcomplete = function(resultTable, hide = FALSE) {
   if(is.null(res <- resultTable))
     return()
 
+  if(hide)
+    res = res[res$Typed > 0, , drop = FALSE]
+
   LRcols = c("LRnolink",	"LRlinked",	"LRnomut")
   res[res$Gindex > 1, LRcols] = NA
-  res$Gindex = res$Gsize = NULL
+  res$Gindex = res$Gsize = res$Typed = NULL
 
   # Add totals
   addTotals(res, LRcols)
