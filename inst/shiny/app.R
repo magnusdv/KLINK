@@ -2,6 +2,7 @@ suppressMessages(suppressPackageStartupMessages({
   library(KLINK)
   library(shiny)
   library(shinyjs)
+  library(shinyBS)
   library(shinydashboard)
   library(gt)
 }))
@@ -13,13 +14,14 @@ debug = function(x) {if (getOption("KLINK.debug")) print(x)}
 if(Sys.getlocale("LC_CTYPE") == "C")
   Sys.setlocale("LC_CTYPE", locale = "en_US.UTF-8")
 
-# Define UI
+
 ui = dashboardPage(title = "KLINK",
 
   header = dashboardHeader(
     title = HTML("<b>KLINK:</b> Kinship with pairwise linked markers"),
     titleWidth = 500,
-    dropdownMenuOutput("notificationMenu")
+    dropdownMenuOutput("notificationMenu"),
+    tags$li(class = "dropdown", uiOutput("banner"))
   ),
 
   sidebar = dashboardSidebar(
@@ -104,20 +106,34 @@ ui = dashboardPage(title = "KLINK",
      ),
    ),
    p("This is KLINK version", VERSION, "(",
-     a("changelog", href = "https://github.com/magnusdv/KLINK/blob/master/NEWS.md", target="_blank", .noWS = "outside"), " | ",
-     a("official releases", href = "https://github.com/magnusdv/KLINK/releases", target="_blank", .noWS = "outside"), ").",
+     mylink("changelog", "https://github.com/magnusdv/KLINK/blob/master/NEWS.md"), " | ",
+     mylink("official releases", "https://github.com/magnusdv/KLINK/releases"), ").",
      "If you encounter problems, please file a ",
-     a("bug report", href = "https://github.com/magnusdv/KLINK/issues", target="_blank", .noWS = "outside"),
-     ". See also the ",
-     a("KLINK homepage", href = "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html", target="_blank"), "for more information.")
+     mylink("bug report", "https://github.com/magnusdv/KLINK/issues"), ". See also the ",
+     mylink("KLINK homepage", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html"),
+     "for more information.")
    )
 )
 
-# Define server
+
 server = function(input, output, session) {
+
 
   # Close app when browser closes
   observeEvent(input$browserClosed, stopApp())
+
+  # Show banner with warning on shinyapps.io
+  output$banner = renderUI({
+    isShinyAppsIO = grepl("shinyapps.io", session$clientData$url_hostname)
+    if(!sShinyAppsIO) {
+      div(style = "display:flex; align-items: center; color: black; background-color: #fff3cd; margin: 5px 10px 5px 150px; padding: 5px; font-weight: bold; border-radius: 10px; text-align: center; line-height: 95%; font-size:110%",
+          icon("circle-exclamation", style = "margin: 0 10px; color:red; font-size: 25px;"),
+          div(HTML("Avoid uploading sensitive data online.<br>To run KLINK locally, see instructions"),
+              mylink("here", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html")),
+          icon("circle-exclamation", style = "margin: 0 10px; color:red; font-size: 25px;")
+      )
+      }
+    })
 
   # Main reactive variables
   famfile = reactiveValues(famname = NULL, params = NULL)
