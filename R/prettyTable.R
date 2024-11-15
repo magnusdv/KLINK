@@ -122,6 +122,11 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
                    cell_text(size = pct(110))),
       locations = cells_body(rows = length(Marker))
     ) |>
+    tab_style_body(
+      style = cell_text(color = "red"),
+      columns = matches("^LR"),
+      values = 0
+    ) |>
     sub_values(matches("^LR"), fn = is.nan, replacement = "\u2014") |>
     addTooltips()
 }
