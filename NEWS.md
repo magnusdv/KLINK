@@ -1,6 +1,7 @@
 # dev version
 
 ## New features
+
 * Added new datasets `sibship` and `halfsib`. In the app, these are available as `Example1` and `Example2`, respectively.
 
 * The **LR table** shown in the app has a new look, now using the same layout and marker order as the other tables. 
@@ -14,7 +15,9 @@ for the LR table in the app and the Excel download.
 
 * Added tooltips explaining app controls and table columns.
 
-* A pulsating effect is now shown when the app is busy.
+* Busy indicator: A pulsating effect is now shown when the app is busy.
+
+* Only on shinyapp.io: Show banner warning about uploading sensitive data.
 
 ## Minor changes and fixes
 
