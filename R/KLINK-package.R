@@ -2,7 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @rawNamespace import(gt, except = c(html))
+#' @rawNamespace import(gt, except = html)
 #' @importFrom shiny runApp
 #' @importFrom shinyjs useShinyjs
 #' @import openxlsx
