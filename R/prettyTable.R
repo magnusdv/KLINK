@@ -96,7 +96,7 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
   restab = addTotals(restab, LRcols)
 
   prepTable(restab, linkedPairs, hide = hide) |>
-    cols_label("LRsingle" = "LR", "LRnolink" = "Unlinked",
+    cols_label("LRsingle" = "LR", "LRnolink" = "No link",
                "LRlinked" = "Linked", "LRnomut" = "No mut") |>
     cols_hide(columns = c("Gindex", "Gsize", hideCols)) |>
     fmt_number(matches("^LR|^Loglik"), decimals = 3, rows = seq_len(length(Marker) - 1)) |>

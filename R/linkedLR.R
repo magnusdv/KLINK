@@ -98,9 +98,9 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
     names(LRnomut) = mvec
 
   res$LRsingle = LRsingle
+  res$LRlinked = NA_real_
   res$LRnolink = NA_real_
   res$LRnomut  = NA_real_
-  res$LRlinked = NA_real_
   res$Lik1 = NA_real_
   res$Lik2 = NA_real_
 
