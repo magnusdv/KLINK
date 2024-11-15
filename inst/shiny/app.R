@@ -49,14 +49,17 @@ ui = dashboardPage(title = "KLINK",
     #checkboxInput("speclump", "Special lumping"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
+    bsTooltip("emptymarkers", TT$emptymarkers, placement = "right"),
     radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
+    bsTooltip("likelihoods", TT$likelihoods, placement = "right"),
     numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     hr(),
     div(style = "margin-top:20px;padding-right:30px",
         actionButton("compute", "Calculate LR", width = "100%", class = "btn-lg btn-danger",
                  onclick = "buttonClick('compute')", style = "background-color:#FF5c5c;font-size:150%")
         )
+
   ),
 
   body = dashboardBody(
