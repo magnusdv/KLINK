@@ -19,10 +19,7 @@ TT = list(
   Lik1 = "Likelihood for Ped 1 (with linkage and mutations)",
   Lik2 = "Likelihood for Ped 2 (with linkage and mutations)",
   Loglik1 = "Log-likelihood for Ped 1 (with linkage and mutations)",
-  Loglik2 = "Log-likelihood for Ped 2 (with linkage and mutations)",
-  #
-  emptymarkers = "Hide or show markers with no genotype information. (Affects the 'LR table' in the app and in the Excel download.)",
-  likelihoods = "Hide or show likelihood columns? (Only affects the 'LR table' in the app.)"
+  Loglik2 = "Log-likelihood for Ped 2 (with linkage and mutations)"
 )
 
 addTooltips = function(gt_table) {

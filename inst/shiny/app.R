@@ -51,10 +51,11 @@ ui = dashboardPage(title = "KLINK",
     #checkboxInput("speclump", "Special lumping"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
-    bsTooltip("emptymarkers", TT$emptymarkers, placement = "right"),
+    bsTooltip("emptymarkers",
+              "Hide or show markers with no genotype information. (Affects the 'LR table' in the app and in the Excel download.)"),
     radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
-    bsTooltip("likelihoods", TT$likelihoods, placement = "right"),
+    bsTooltip("likelihoods", "Hide or show likelihood columns? (Only affects the 'LR table' in the app.)"),
     numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     hr(),
     div(style = "margin-top:20px;padding-right:30px",
@@ -125,11 +126,12 @@ server = function(input, output, session) {
   # Show banner with warning on shinyapps.io
   output$banner = renderUI({
     isShinyAppsIO = grepl("shinyapps.io", session$clientData$url_hostname)
-    if(!sShinyAppsIO) {
-      div(style = "display:flex; align-items: center; color: black; background-color: #fff3cd; margin: 5px 10px 5px 150px; padding: 5px; font-weight: bold; border-radius: 10px; text-align: center; line-height: 95%; font-size:110%",
+    if(isShinyAppsIO) {
+      div(style = "display:flex; align-items: center; color: black; background-color: #fff3cd;
+          margin: 5px 10px 5px 150px; padding: 5px; border-radius: 10px; text-align: center; line-height:100%",
           icon("circle-exclamation", style = "margin: 0 10px; color:red; font-size: 25px;"),
-          div(HTML("Avoid uploading sensitive data online.<br>To run KLINK locally, see instructions"),
-              mylink("here", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html")),
+          div(HTML("Avoid uploading sensitive data online.<br>To run KLINK locally, see instructions "),
+              mylink("here", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html"), "."),
           icon("circle-exclamation", style = "margin: 0 10px; color:red; font-size: 25px;")
       )
       }
