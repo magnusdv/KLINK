@@ -97,6 +97,8 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   LRnomut = forrel::kinshipLR(pedsNomut, markers = mvec)$LRperMarker[, 1]
 
   # Fix lost names when only 1 marker
+  if(is.null(names(LRsingle)))
+    names(LRsingle) = mvec
   if(is.null(names(LRnomut)))
     names(LRnomut) = mvec
 
