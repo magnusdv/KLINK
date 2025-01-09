@@ -55,6 +55,9 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   # Genotype columns
   gcols = colsBetween(markerData, "Marker", "Typed")
 
+  if(!length(gcols))
+    stop2("No genotyped individuals")
+
   # Find linked pairs, if not supplied
   if(is.null(linkedPairs))
     linkedPairs = getLinkedPairs(mvec, linkageMap, maxdist = maxdist)

@@ -92,8 +92,9 @@ removeEmpty = function(x) {
     ped = x[[pedname]]
     empty = vapply(ped, function(comp) !any(unlist(comp$MARKERS)), FALSE)
     if(all(empty))
-      stop2(sprintf("Pedigree '%s' has no typed members", pedname))
-    x[[pedname]] = ped[!empty]
+      warning(sprintf("Pedigree '%s' has no typed members", pedname))
+    else
+      x[[pedname]] = ped[!empty]
   }
   x
 }

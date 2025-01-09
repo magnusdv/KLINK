@@ -43,11 +43,10 @@ fixNA = function(x) {
 # Extract column names between two columns
 colsBetween = function(x, a, b) {
   nms = names(x)
-  from = match(a, nms) + 1
-  to = match(b, nms) - 1
-  if(is.na(from) || is.na(to))
-    stop2("Column not found")
-  if(from > to)
+  aidx = match(a, nms)
+  bidx = match(b, nms)
+  n = bidx - aidx - 1
+  if(is.na(n) || n < 0)
     stop2("Columns out of order")
-  nms[from:to]
+  nms[aidx + seq_len(n)]
 }

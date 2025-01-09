@@ -17,8 +17,9 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
   specLump = specialLumpability(pedigrees)
 
   # Genotypes
-  geno = t.default(pedtools::getGenotypes(ped1, ids = typedMembers(ped1)))
-  if(replaceNames)
+  typed = typedMembers(ped1)
+  geno = t.default(pedtools::getGenotypes(ped1, ids = typed))
+  if(replaceNames && length(typed) > 0)
     colnames(geno) = paste0("Person", 1:ncol(geno))
 
 
