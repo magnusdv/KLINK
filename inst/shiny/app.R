@@ -70,6 +70,7 @@ ui = dashboardPage(title = "KLINK",
    includeCSS("www/custom.css"),
    tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
    useBusyIndicators(spinners = FALSE, pulse = TRUE),
+  busyIndicatorOptions(pulse_height = "10px"),
 
    # Embed JS here; cannot send gmail attachment with script.js
    tags$script(HTML("
