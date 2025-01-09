@@ -14,6 +14,9 @@ karyogram = function(linkageMap, linkedPairs = NULL, bgcol = "gray92") {
 
   # Linked pairs
   m = linkageMap$Marker
+  if(length(m) == 0)
+    return()
+
   if(is.null(linkedPairs))
     linkedPairs = getLinkedPairs(m, linkageMap)
 
