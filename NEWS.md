@@ -22,8 +22,9 @@ for the LR table in the app and the Excel download.
 ## Minor changes and fixes
 
 * Empty the `.xml` field when a new `.fam` file is loaded.
-
 * RStudio now stops the app when the user closes the browser.
+* Graceful handling of input without data.
+* Fixed a bug appearing when the input file contains an unmapped single marker.
 
 
 # KLINK 1.0.2
