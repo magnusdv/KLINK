@@ -21,6 +21,8 @@
 
 .form-group.shiny-input-container {margin-bottom:0}
 
+.form-control {height:auto}
+
 .progress {margin-bottom:0}
 
 .wait-cursor { cursor: wait !important; }
