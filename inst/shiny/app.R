@@ -328,17 +328,18 @@ server = function(input, output, session) {
   observeEvent(input$compute, {
     debug("compute LR")
     peds = req(pedigrees$reduced)
+    tryCatch(error = showNote, {
+      res = KLINK::linkedLR(pedigrees = peds,
+                            linkageMap = linkageMap(),
+                            linkedPairs = linkedPairs(),
+                            markerData = markerData(),
+                            mapfun = input$mapfunction,
+                            lumpSpecial = FALSE) #input$speclump)
 
-    res = KLINK::linkedLR(pedigrees = peds,
-                          linkageMap = linkageMap(),
-                          linkedPairs = linkedPairs(),
-                          markerData = markerData(),
-                          mapfun = input$mapfunction,
-                          lumpSpecial = FALSE) #input$speclump)
-
-    resultTable(res)
-    updateTabsetPanel(session, "tabs", selected = "LR table")
-    shinyjs::enable("download")
+      resultTable(res)
+      updateTabsetPanel(session, "tabs", selected = "LR table")
+      shinyjs::enable("download")
+    })
   })
 
   # Reset LR table
