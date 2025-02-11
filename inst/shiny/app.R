@@ -113,7 +113,7 @@ ui = dashboardPage(title = "KLINK",
      "If you encounter problems, please file a ",
      mylink("bug report", "https://github.com/magnusdv/KLINK/issues"), ". See also the ",
      mylink("KLINK homepage", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html"),
-     "for more information.")
+     " for more information.")
    )
 )
 
@@ -410,12 +410,12 @@ server = function(input, output, session) {
   # Change map file
   observeEvent(input$mapfile, {
     debug("mapfile")
-    path = req(input$mapfile$datapath)
-    header = grepl("marker", readLines(path, n = 1), ignore.case = TRUE)
-    map = utils::read.table(path, header = header, sep="\t")
-    linkageMap(map)
-    resultTable(NULL)
-    updateTabsetPanel(session, "tabs", selected = "Linkage map")
+    tryCatch(error = showNote, {
+      map = KLINK::loadMap(req(input$mapfile$datapath))
+      linkageMap(map)
+      resultTable(NULL)
+      updateTabsetPanel(session, "tabs", selected = "Linkage map")
+    })
   })
 
   output$karyo = renderPlot(KLINK:::karyogram(linkageMapSubset(),
