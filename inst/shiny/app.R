@@ -33,6 +33,13 @@ ui = dashboardPage(title = "KLINK",
     ),
     tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
     tags$div(class = "loadfile", fileInput("xmlfile", "(Optional) .xml", buttonLabel = icon("folder-open"), accept = ".xml")),
+    radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
+                 choices = c("Built-in" = "LINKAGEMAP", "Custom" = "custom")),
+    conditionalPanel(
+      condition = "input.maptype == 'custom'",
+      fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
+                accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
+    ),
     fluidRow(style = "padding: 0px 15px 0px 15px",
       column(6, actionButton("loadex1",  "Example 1", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
       column(6, align = "right", actionButton("loadex2",  "Example 2", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90"))
@@ -41,13 +48,6 @@ ui = dashboardPage(title = "KLINK",
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
     radioButtons("mapfunction", "Mapping function", choices = c("Kosambi", "Haldane"),
                  selected = "Kosambi", inline = TRUE),
-    radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
-                 choices = c("Built-in" = "LINKAGEMAP", "Custom" = "custom")),
-    conditionalPanel(
-      condition = "input.maptype == 'custom'",
-      fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
-                accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
-    ),
     #checkboxInput("speclump", "Special lumping"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
