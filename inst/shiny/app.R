@@ -56,8 +56,8 @@ ui = dashboardPage(title = "KLINK",
     radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
     bsTooltip("likelihoods", "Hide or show likelihood columns? (Only affects the 'LR table' in the app.)"),
-    numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     numericInput("decimals", label = "Decimals", value = 3, min = 1, step = 1),
+    numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
     hr(),
     div(style = "margin-top:20px;padding-right:30px",
         actionButton("compute", "Calculate LR", width = "100%", class = "btn-lg btn-danger",
@@ -261,6 +261,7 @@ server = function(input, output, session) {
     path = system.file("extdata", filename, package = "KLINK")
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
+    updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
     NOTES(NULL)
     XML(NULL)
     pedigrees$complete = KLINK::loadFamFile(path)
