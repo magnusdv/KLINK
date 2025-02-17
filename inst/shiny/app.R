@@ -57,6 +57,7 @@ ui = dashboardPage(title = "KLINK",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
     bsTooltip("likelihoods", "Hide or show likelihood columns? (Only affects the 'LR table' in the app.)"),
     numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
+    numericInput("decimals", label = "Decimals", value = 3, min = 1, step = 1),
     hr(),
     div(style = "margin-top:20px;padding-right:30px",
         actionButton("compute", "Calculate LR", width = "100%", class = "btn-lg btn-danger",
@@ -321,7 +322,7 @@ server = function(input, output, session) {
     validate(need(!is.null(res), "No LRs have been calculated yet."))
     KLINK:::prettyResultTable(res, linkedPairs(),
                               hide = input$emptymarkers == "hide",
-                              likelihoods = input$likelihoods)
+                              likelihoods = input$likelihoods, extraDec = input$decimals - 3)
   }, width = "100%", align = "left")
 
   # Compute LR

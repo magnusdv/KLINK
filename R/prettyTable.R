@@ -76,7 +76,7 @@ prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE) {
     addTooltips()
 }
 
-prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoods = "show") {
+prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoods = "show", extraDec = 0) {
   if(is.null(restab) || nrow(restab) == 0)
     return("Nothing to show")
 
@@ -99,16 +99,16 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
     cols_label("LRsingle" = "LR", "LRnolink" = "No link",
                "LRlinked" = "Linked", "LRnomut" = "No mut") |>
     cols_hide(columns = c("Gindex", "Gsize", hideCols)) |>
-    fmt_number(matches("^LR|^Loglik"), decimals = 3, rows = seq_len(length(Marker) - 1)) |>
-    fmt_scientific(matches("^Lik[12]"), n_sigfig = 4, exp_style = "e") |>
+    fmt_number(matches("^LR|^Loglik"), decimals = 3 + extraDec, rows = seq_len(length(Marker) - 1)) |>
+    fmt_scientific(matches("^Lik[12]"), n_sigfig = 4 + extraDec, exp_style = "e") |>
     fmt(
       columns = LRcols, rows = length(Marker),
       fns = function(x) {
         if(!is.finite(x) || x <= 0)
           return(x)
         ifelse(abs(log10(x)) >= 4,
-               vec_fmt_scientific(x, decimals = 2, output = "html"),
-               vec_fmt_number(x, n_sigfig = 4, use_seps = FALSE, output = "html"))
+               vec_fmt_scientific(x, decimals = max(1,2 + extraDec), output = "html"),
+               vec_fmt_number(x, n_sigfig = 4 + extraDec, use_seps = FALSE, output = "html"))
       }) |>
     tab_style(
       style = cell_text(weight = "bold"),
