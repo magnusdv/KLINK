@@ -24,7 +24,7 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
     ) |>
     sub_missing(missing_text = "") |>
     tab_style(style = cell_text(whitespace = "nowrap"),
-              locations = cells_body()) |>
+              locations = list(cells_body(), cells_column_labels())) |>
     tab_style(
       locations = cells_body(rows = Typed == 0),
       style = cell_text(color = "gray")
@@ -57,22 +57,23 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
 # Actual tables -----------------------------------------------------------
 
 
-prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, typed = NULL) {
+prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, typed = NULL, decimals = 3) {
   # First column annot: Index
   map$annot = seq_len(nrow(map))
   map$Typed = NA_integer_
 
   prepTable(map, linkedPairs, hide = hide) |>
+    fmt_number("PosCM", decimals = decimals) |>
     addTooltips()
 }
 
-prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE) {
+prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE, decimals = 3) {
   # First column annot: Uninformative for linkage
   uninf = mtab$Typed < 2 & mtab$Marker %in% unlist(linkedPairs)
   mtab$annot = ifelse(uninf, "u", "")
 
   prepTable(mtab, linkedPairs, hide = hide) |>
-    fmt_number("PIC", decimals = 3) |>
+    fmt_number("PIC", decimals = decimals) |>
     addTooltips()
 }
 

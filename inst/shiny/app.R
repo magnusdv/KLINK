@@ -399,9 +399,10 @@ server = function(input, output, session) {
   })
 
   # Linked pairs
-  linkedPairs = reactive(
+  linkedPairs = reactive({
+    debug("linked pairs")
     getLinkedPairs(markerData()$Marker, linkageMap(), maxdist = req(input$maxdist))
-  )
+  })
 
   # React to Marker map radio selection
   observeEvent(input$maptype, {
@@ -429,7 +430,7 @@ server = function(input, output, session) {
   output$linkage_table = render_gt({
     debug("linkage map table")
     map = req(linkageMapSubset())
-    KLINK:::prettyLinkageMap(map, linkedPairs(), hide = input$emptymarkers == "hide")
+    KLINK:::prettyLinkageMap(map, linkedPairs(), hide = input$emptymarkers == "hide", decimals = input$decimals)
   }, width = "100%", align = "left")
 
 
