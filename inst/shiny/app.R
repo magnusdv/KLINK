@@ -359,18 +359,20 @@ server = function(input, output, session) {
 
   # Marker data table -------------------------------------------------------
 
-  markerData = reactiveVal(NULL)
-
-  observeEvent(pedigrees$complete, {
+  markerData = reactive({
     debug("markerData")
-    mtab = KLINK::markerSummary(pedigrees$complete, replaceNames = is.null(XML()))
-    req(mtab)
+    if(is.null(peds <- pedigrees$complete))
+      return(NULL)
+    mdat = KLINK::markerSummary(peds, replaceNames = is.null(XML()))
+    req(mdat)
 
-    # Sort according to map
-    mtab = mtab[order(match(mtab$Marker, linkageMap()$Marker)), , drop = FALSE]
-    markerData(mtab)
-    updateTabsetPanel(session, "tabs", selected = "Marker data")
+    # Sort according to map (NB: use normalised marker names to avoid Penta D/Penta.D/PentaD)
+    ord = order(KLINK:::matchMarkernames(mdat$Marker, linkageMap()$Marker))
+    mdat[ord, , drop = FALSE]
   })
+
+  observeEvent(pedigrees$complete,
+    updateTabsetPanel(session, "tabs", selected = "Marker data"))
 
   # Print loaded marker data
   output$marker_table = render_gt({
@@ -478,7 +480,6 @@ server = function(input, output, session) {
     updateRadioButtons(session, "emptymarkers", selected = "hide")
     updateRadioButtons(session, "likelihoods", selected = "hide")
     pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
-    markerData(NULL)
     resultTable(NULL)
     shinyjs::disable("download")
   })
