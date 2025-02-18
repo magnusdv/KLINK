@@ -39,7 +39,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   if(is.null(markerData)) {
     markerData = markerSummary(pedigrees)
-    ord = order(match(markerData$Marker, linkageMap$Marker))
+    ord = order(matchMarkernames(markerData$Marker, linkageMap$Marker))
     markerData = markerData[ord, , drop = FALSE]
   }
 
@@ -68,7 +68,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   # Pairing index
   pair = lp2vec(mvec, linkedPairs)
-  cmpos = linkageMap$PosCM[match(mvec, linkageMap$Marker)] |> setnames(mvec)
+  cmpos = linkageMap$PosCM[matchMarkernames(mvec, linkageMap$Marker)] |> setnames(mvec)
 
   # Initialise result table
   res = cbind.data.frame(Pair = pair, markerData[c("Marker", gcols, "Typed")])

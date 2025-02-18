@@ -47,7 +47,7 @@ maskParams = function(params, keys) {
 
 maskMap = function(map, keys) {
   oldnames = names(keys$markerNames)
-  mp = map[match(oldnames, map$Marker, nomatch = 0L), , drop = FALSE]
+  mp = map[matchMarkernames(oldnames, map$Marker, nomatch = 0L), , drop = FALSE]
   mp$Marker = keys$markerNames[mp$Marker]
 
   # Chromosomes -> 1,2, ...

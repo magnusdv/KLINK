@@ -50,3 +50,13 @@ colsBetween = function(x, a, b) {
     stop2("Columns out of order")
   nms[aidx + seq_len(n)]
 }
+
+# Normalise marker names, for safe matching (below)
+normalise = function(x) {
+  tolower(gsub("[-._ ]", "", x))
+}
+
+# Safe matching of marker names
+matchMarkernames = function(m1, m2, ...) {
+  match(normalise(m1), normalise(m2), ...)
+}
