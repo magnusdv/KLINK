@@ -30,7 +30,7 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
     gg = geno[a$name, , drop = FALSE]
     mut = a$mutmod
     pars = pedmut::getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
-    colnames(pars) = c("Model", "Rate (f/m)", "Range", "Rate2")
+    colnames(pars) = c("Model", "Rate", "Range", "Rate2")
 
     if(is.null(mut)) {
       lumptxt = stattxt = "-"
