@@ -26,9 +26,9 @@ karyogram = function(linkageMap, linkedPairs = NULL, bgcol = "gray92") {
   pair2 = islinked & duplicated(pp)
 
   # Positions
-  chr = linkageMap$Chrom
+  chr = linkageMap$Chr
   y = chr + h/2
-  x = pmin(linkageMap$PosCM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
+  x = pmin(linkageMap$cM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
 
   # Segments first, to hide endpoints
   segments(x0 = x[pair1], x1 = x[pair2], y0 = y[pair1], y1 = y[pair2], col = 1, lwd = 1.3)

@@ -1,7 +1,7 @@
 #' Load genetic map
 #'
-#' @param path Path to a map file, which should contain columns `Marker`,
-#'   `Chrom`, `PosCM`. (Slight variations are allowed.)
+#' @param path Path to a map file, which should contain columns `Marker`, `Chr`,
+#'   `cM`. (Slight variations are allowed.)
 #'
 #' @returns A data frame.
 #'
@@ -18,7 +18,7 @@ loadMap = function(path) {
   map = utils::read.table(path, header = TRUE, sep = "\t")
 
   # Required columns
-  req = c(Marker = "^marker", Chrom = "^chr", PosCM = "^(pos|cm)")
+  req = c(Marker = "^marker", Chr = "^chr", cM = "^(pos|cm)")
 
   # Check/fix column names
   lownames = tolower(names(map))
@@ -28,8 +28,8 @@ loadMap = function(path) {
     names(map)[i[1]] = cc
   }
 
-  if(!is.numeric(map$PosCM))
-    stop2("Position column is not numeric; please check the map file")
+  if(!is.numeric(map$cM))
+    stop2("Column `cM` is not numeric; please check the map file")
 
   # Return df with standardised column names
   map

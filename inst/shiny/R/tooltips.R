@@ -11,7 +11,7 @@
 #   #
 #   Pair = "Linkage pair",
 #   Marker = "Marker name",
-#   PosCM = "Genetic position (cM)",
+#   cM = "Genetic position in centiMorgans",
 #   LRsingle = "LR for each individual marker",
 #   LRnolink = "LR assuming no linkage. For the linked pairs, this is the product of the individual LRs",
 #   LRnomut = "LR assuming no mutations (but with linkage)",

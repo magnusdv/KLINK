@@ -2,8 +2,8 @@
 #'
 #' A genetic map including 50 autosomal STR markers.
 #'
-#' @format A data frame with 50 rows and 4 columns: `Marker`, `Kit`, `Chrom`,
-#'   `PosCM`.
+#' @format A data frame with 50 rows and 4 columns: `Marker`, `Kit`, `Chr`,
+#'   `cM`.
 #'
 "LINKAGEMAP"
 

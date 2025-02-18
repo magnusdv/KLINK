@@ -5,8 +5,8 @@
 \alias{LINKAGEMAP}
 \title{Built-in linkage map}
 \format{
-A data frame with 50 rows and 4 columns: \code{Marker}, \code{Kit}, \code{Chrom},
-\code{PosCM}.
+A data frame with 50 rows and 4 columns: \code{Marker}, \code{Kit}, \code{Chr},
+\code{cM}.
 }
 \usage{
 LINKAGEMAP

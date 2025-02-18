@@ -9,8 +9,8 @@ getLinkedPairs(markers, linkageMap, maxdist = Inf)
 \arguments{
 \item{markers}{A character vector containing marker names.}
 
-\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chrom} and
-\code{PosCM}.}
+\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chr} and
+\code{cM}.}
 
 \item{maxdist}{A positive number indicating the maximum linkage distance (in
 cM). Markers further apart than this are considered unlinked.}

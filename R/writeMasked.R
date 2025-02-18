@@ -51,12 +51,12 @@ maskMap = function(map, keys) {
   mp$Marker = keys$markerNames[mp$Marker]
 
   # Chromosomes -> 1,2, ...
-  mp$Chrom = mp$Chrom |> factor(levels = unique.default(mp$Chrom)) |> as.integer()
-  mp = mp[order(mp$Chrom, mp$PosCM), , drop = FALSE]
+  mp$Chr = mp$Chr |> factor(levels = unique.default(mp$Chr)) |> as.integer()
+  mp = mp[order(mp$Chr, mp$cM), , drop = FALSE]
 
   # Move markers to beginning of chrom
-  minpos = tapply(mp$PosCM, mp$Chrom, min, simplify = TRUE)
-  mp$PosCM = mp$PosCM - minpos[as.character(mp$Chrom)]
+  minpos = tapply(mp$cM, mp$Chr, min, simplify = TRUE)
+  mp$cM = mp$cM - minpos[as.character(mp$Chr)]
 
   # Relabel pairs
   mp$Pair = mp$Pair |> factor(levels = unique.default(mp$Pair)) |> as.integer()

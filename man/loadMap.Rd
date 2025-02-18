@@ -7,8 +7,8 @@
 loadMap(path)
 }
 \arguments{
-\item{path}{Path to a map file, which should contain columns \code{Marker},
-\code{Chrom}, \code{PosCM}. (Slight variations are allowed.)}
+\item{path}{Path to a map file, which should contain columns \code{Marker}, \code{Chr},
+\code{cM}. (Slight variations are allowed.)}
 }
 \value{
 A data frame.

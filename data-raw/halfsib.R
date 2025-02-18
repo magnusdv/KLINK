@@ -7,9 +7,9 @@ db = pedFamilias::readFam("data-raw/NorskDB_2023.fam", verbose = F)
 
 map = KLINK::LINKAGEMAP
 
-map$Mb = ibdsim2::convertPos(chrom = map$Chrom, cM = map$PosCM)
+map$Mb = ibdsim2::convertPos(chrom = map$Chr, cM = map$cM)
 nas = which(is.na(map$Mb))
-map$Mb[nas] = sapply(loadMap(), physRange)[map$Chrom[nas]]
+map$Mb[nas] = sapply(loadMap(), physRange)[map$Chr[nas]]
 as.data.frame(map)
 
 # True pedigree: Half sibling
@@ -17,7 +17,7 @@ ids = LETTERS[1:3]
 ped = halfSibPed(2, 1) |>
   relabel(4:6, new = ids) |>
   setMarkers(locusAttributes = db) |>
-  setMap(map[c("Chrom", "Marker", "Mb")])
+  setMap(map[c("Chr", "Marker", "Mb")])
 
 ibd = ibdsim2::ibdsim(ped, ids = ids, seed = 1729)
 

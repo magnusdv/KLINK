@@ -18,8 +18,8 @@ linkedLR(
 \arguments{
 \item{pedigrees}{A list of two pedigrees.}
 
-\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chrom} and
-\code{PosCM}.}
+\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chr} and
+\code{cM}.}
 
 \item{linkedPairs}{A list of marker pairs. If not supplied, calculated as
 \code{getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)}.}

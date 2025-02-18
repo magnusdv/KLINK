@@ -63,7 +63,7 @@ prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, typed = NULL,
   map$Typed = NA_integer_
 
   prepTable(map, linkedPairs, hide = hide) |>
-    fmt_number("PosCM", decimals = decimals) |>
+    fmt_number("cM", decimals = decimals) |>
     addTooltips()
 }
 

@@ -96,7 +96,7 @@ ui = dashboardPage(title = "KLINK",
      column(width = 8,
             tabBox(id = "tabs", width = NULL, selected = "Linkage map",
                    title = tagList(downloadButton('download', class = "btn btn-warning",
-                                                  style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
+                      style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
                    tabPanel("Linkage map",
                             fluidRow(
                               column(6, class = "col-lg-5", gt::gt_output("linkage_table")),

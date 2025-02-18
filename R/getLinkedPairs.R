@@ -6,8 +6,8 @@
 #' closest markers on each chromosome.
 #'
 #' @param markers A character vector containing marker names.
-#' @param linkageMap A data frame with columns including `Marker`, `Chrom` and
-#'   `PosCM`.
+#' @param linkageMap A data frame with columns including `Marker`, `Chr` and
+#'   `cM`.
 #' @param maxdist A positive number indicating the maximum linkage distance (in
 #'   cM). Markers further apart than this are considered unlinked.
 #'
@@ -29,9 +29,9 @@ getLinkedPairs = function(markers, linkageMap, maxdist = Inf) {
 
   x = linkageMap[linkageMap$Marker %in% markers, , drop = FALSE]
 
-  for(i in unique.default(x$Chrom)) {
-    xi = x[x$Chrom == i, , drop = FALSE]
-    idxList = closestPairs(xi$PosCM, maxdist = maxdist)
+  for(i in unique.default(x$Chr)) {
+    xi = x[x$Chr == i, , drop = FALSE]
+    idxList = closestPairs(xi$cM, maxdist = maxdist)
     idxList = idxList[order(sapply(idxList, sum))] # sort in order
     resi = lapply(idxList, function(idx) xi$Marker[idx])
     res = c(res, resi)

@@ -3,8 +3,8 @@
 #' This function does the main LR calculations of the KLINK app.
 #'
 #' @param pedigrees A list of two pedigrees.
-#' @param linkageMap A data frame with columns including `Marker`, `Chrom` and
-#'   `PosCM`.
+#' @param linkageMap A data frame with columns including `Marker`, `Chr` and
+#'   `cM`.
 #' @param linkedPairs A list of marker pairs. If not supplied, calculated as
 #'   `getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)`.
 #' @param maxdist A number, passed onto `getLinkedMarkers()` if `linkedPairs` is
@@ -68,7 +68,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   # Pairing index
   pair = lp2vec(mvec, linkedPairs)
-  cmpos = linkageMap$PosCM[matchMarkernames(mvec, linkageMap$Marker)] |> setnames(mvec)
+  cmpos = linkageMap$cM[matchMarkernames(mvec, linkageMap$Marker)] |> setnames(mvec)
 
   # Initialise result table
   res = cbind.data.frame(Pair = pair, markerData[c("Marker", gcols, "Typed")])
@@ -157,7 +157,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   # For testing purposes
   if(is.null(cmpos))
-    cmpos = linkageMap$PosCM[match(markerpair, linkageMap$Marker)]
+    cmpos = linkageMap$cM[match(markerpair, linkageMap$Marker)]
   if(is.character(mapfun))
     mapfun = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi,
                     stop2("Illegal map function: ", mapfun))
