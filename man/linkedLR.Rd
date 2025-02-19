@@ -12,7 +12,8 @@ linkedLR(
   markerData = NULL,
   mapfun = "Kosambi",
   lumpSpecial = TRUE,
-  verbose = FALSE
+  verbose = TRUE,
+  debug = FALSE
 )
 }
 \arguments{
@@ -35,7 +36,9 @@ NULL.}
 
 \item{lumpSpecial}{A logical, by default TRUE.}
 
-\item{verbose}{A logical, by default FALSE.}
+\item{verbose}{A logical, by default TRUE.}
+
+\item{debug}{A logical, by default FALSE.}
 }
 \value{
 A data frame with detailed LR results.

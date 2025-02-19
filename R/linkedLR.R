@@ -14,7 +14,8 @@
 #' @param mapfun Name of the map function to be used; either "Haldane" or
 #'   "Kosambi" (default).
 #' @param lumpSpecial A logical, by default TRUE.
-#' @param verbose A logical, by default FALSE.
+#' @param verbose A logical, by default TRUE.
+#' @param debug A logical, by default FALSE.
 #'
 #' @return A data frame with detailed LR results.
 #'
@@ -27,15 +28,15 @@
 #' @export
 linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
                     markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE,
-                    verbose = FALSE) {
+                    verbose = TRUE, debug = FALSE) {
   if (getOption("KLINK.debug")) {
     print("linkedLR")
-    verbose = TRUE
+    verbose = debug = TRUE
   }
 
   st = Sys.time()
 
-  MAPFUN = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi)
+  MAPFUN = switch(tolower(mapfun), haldane = pedprobr::haldane, kosambi = pedprobr::kosambi)
 
   if(is.null(markerData)) {
     markerData = markerSummary(pedigrees)
@@ -43,13 +44,6 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
     markerData = markerData[ord, , drop = FALSE]
   }
 
-  # Special lumping # TODO!
-  if(lumpSpecial)
-    warning("Special lumping may give a small bias\n", call. = FALSE)
-  if(lumpSpecial && specialLumpability(pedigrees))
-    pedigrees = lapply(pedigrees, lumpAllSpecial, verbose = verbose)
-
-  ped1 = pedigrees[[1]]
   mvec = markerData$Marker
 
   # Genotype columns
@@ -65,6 +59,12 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   # Remove pairings involving markers with less than 2 typed
   good = (markerData$Typed >= 2) |> setnames(mvec)
   linkedPairs = Filter(\(x) all(good[x]), linkedPairs)
+
+  if(verbose) {
+    cat("Map function:", mapfun, "\n")
+    cat("Max distance considered:", maxdist, "cM\n")
+    cat("Effective linkage pairs:", length(linkedPairs), "\n")
+  }
 
   # Pairing index
   pair = lp2vec(mvec, linkedPairs)
@@ -82,6 +82,14 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   # Index within each group
   res$Gindex = stats::ave(1:nr, pair, FUN = seq_along)
+
+  # Special lumping # TODO!
+  #if(lumpSpecial)
+  #  warning("Special lumping may give a small bias\n", call. = FALSE)
+  if(lumpSpecial && specialLumpability(pedigrees))
+    pedigrees = lapply(pedigrees, lumpAllSpecial, verbose = debug)
+
+  ped1 = pedigrees[[1]]
 
   # Single-point LR
   if(verbose)
@@ -159,7 +167,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   if(is.null(cmpos))
     cmpos = linkageMap$cM[match(markerpair, linkageMap$Marker)]
   if(is.character(mapfun))
-    mapfun = switch(mapfun, Haldane = pedprobr::haldane, Kosambi = pedprobr::kosambi,
+    mapfun = switch(tolower(mapfun), haldane = pedprobr::haldane, kosambi = pedprobr::kosambi,
                     stop2("Illegal map function: ", mapfun))
 
   rho = mapfun(diff(cmpos))

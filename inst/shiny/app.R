@@ -344,6 +344,7 @@ server = function(input, output, session) {
                             linkedPairs = linkedPairs(),
                             markerData = markerData(),
                             mapfun = input$mapfunction,
+                            verbose = FALSE,
                             lumpSpecial = FALSE) #input$speclump)
 
       resultTable(res)

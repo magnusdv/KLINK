@@ -26,7 +26,7 @@ ped2 = halfSibPed(type = "m") |>
 
 sibship = list(FS = ped1, HS = ped2)
 
-# linkedLR(sibship, LINKAGEMAP, lumpSpecial = T) |> KLINK::addTotals(c("LRnolink", "LRnomut","LRlinked"))
+# linkedLR(sibship, LINKAGEMAP, lumpSpecial = T) |> KLINK::addTotals()
 
 usethis::use_data(sibship, overwrite = TRUE)
 

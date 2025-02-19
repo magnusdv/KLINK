@@ -24,7 +24,7 @@
 #' mdata = markerSummary(peds)
 #'
 #' # Result table
-#' LRtab = linkedLR(pedigrees = peds, linkageMap = map, markerData = mdata)
+#' LRtab = linkedLR(pedigrees = peds, linkageMap = map, markerData = mdata, verbose = FALSE)
 #'
 #' # Write to excel
 #' tmp = paste0(tempfile(), ".xlsx")
