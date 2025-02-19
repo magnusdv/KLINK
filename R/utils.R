@@ -20,21 +20,6 @@ setnames = function(x, nms = x) {
   x
 }
 
-addTotals = function(x, cols) {
-  # Add totals row
-  y = rbind(x, NA)
-
-  # Loop through columns
-  for(cc in cols) {
-    v = x[[cc]]
-    tot = prod(v, na.rm = TRUE)
-    y[[cc]] = c(v, tot)
-  }
-
-  y[nrow(y), "Marker"] = "Total LR"
-  y
-}
-
 fixNA = function(x) {
   x[x == "NA"] = NA_character_
   x

@@ -32,7 +32,7 @@ ped2 = list(nuclearPed(children = ids[1:2]), singleton("C")) |>
 
 halfsib = list(ped1, ped2)
 
-# linkedLR(halfsib, LINKAGEMAP, lumpSpecial = T) |>  KLINK:::addTotals(c("LRnolink", "LRnomut","LRlinked"))
+# linkedLR(halfsib, LINKAGEMAP, lumpSpecial = T) |>  KLINK::addTotals(c("LRnolink", "LRnomut","LRlinked"))
 
 usethis::use_data(halfsib, overwrite = TRUE)
 
