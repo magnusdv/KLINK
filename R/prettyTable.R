@@ -73,6 +73,14 @@ prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE, decimals = 
   uninf = mtab$Typed < 2 & mtab$Marker %in% unlist(linkedPairs)
   mtab$annot = ifelse(uninf, "u", "")
 
+  if(all(is.na(mtab$Model))) {
+    mtab$Model = "none"
+    mtab$Rate = mtab$Range = mtab$Rate2 = mtab$Stationary = mtab$Lumpable = NULL
+  }
+  else if(!any(mtab$Model == "stepwise", na.rm = TRUE)) {
+    mtab$Range = mtab$Rate2 = NULL
+  }
+
   prepTable(mtab, linkedPairs, hide = hide) |>
     fmt_number("PIC", decimals = decimals) |>
     addTooltips()
@@ -82,7 +90,7 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
   if(is.null(restab) || nrow(restab) == 0)
     return("Nothing to show")
 
-  LRcols = c("LRnolink", "LRlinked", "LRnomut")
+  LRcols = c("LRlinked", "LRnolink", "LRnomut")
 
   # Which likelihood columns to *hide*
   hideCols = switch(likelihoods,
