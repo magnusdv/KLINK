@@ -15,6 +15,8 @@ if(Sys.getlocale("LC_CTYPE") == "C")
   Sys.setlocale("LC_CTYPE", locale = "en_US.UTF-8")
 
 
+# UI ----------------------------------------------------------------------
+
 ui = dashboardPage(title = "KLINK",
 
   header = dashboardHeader(
@@ -32,7 +34,7 @@ ui = dashboardPage(title = "KLINK",
                                   style = "font-weight:bolder; padding:0px 8px; margin: 8px 0px 0px 0px;")),
     ),
     tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
-    tags$div(class = "loadfile", fileInput("xmlfile", "(Optional) .xml", buttonLabel = icon("folder-open"), accept = ".xml")),
+
     radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
                  choices = c("Built-in" = "LINKAGEMAP", "Custom" = "custom")),
     conditionalPanel(
@@ -40,6 +42,9 @@ ui = dashboardPage(title = "KLINK",
       fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
                 accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
     ),
+
+    tags$div(class = "loadfile", fileInput("xmlfile", "(Optional) .xml", buttonLabel = icon("folder-open"), accept = ".xml")),
+
     fluidRow(style = "padding: 0px 15px 0px 15px",
       column(6, actionButton("loadex1",  "Example 1", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
       column(6, align = "right", actionButton("loadex2",  "Example 2", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90"))
@@ -118,6 +123,8 @@ ui = dashboardPage(title = "KLINK",
    )
 )
 
+
+# SERVER ------------------------------------------------------------------
 
 server = function(input, output, session) {
 
@@ -262,6 +269,7 @@ server = function(input, output, session) {
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
     updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
+    shinyjs::reset("mapfile")
     NOTES(NULL)
     XML(NULL)
     pedigrees$complete = KLINK::loadFamFile(path)
@@ -473,6 +481,7 @@ server = function(input, output, session) {
   observeEvent(input$reset, {
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
+    shinyjs::reset("mapfile")
     famfile$famname = famfile$params = NULL
     NOTES(NULL)
     XML(NULL)
