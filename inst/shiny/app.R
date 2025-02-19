@@ -403,7 +403,7 @@ server = function(input, output, session) {
     mdat = markerData()
     if(is.null(mdat))
       return(fullmap)
-    idx = matchMarkernames(fullmap$Marker, mdat$Marker, nomatch = 0)
+    idx = KLINK:::matchMarkernames(fullmap$Marker, mdat$Marker, nomatch = 0)
     fullmap[idx > 0, , drop = FALSE]
   })
 

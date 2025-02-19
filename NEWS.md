@@ -4,12 +4,18 @@
 
 * Added new datasets `sibship` and `halfsib`. In the app, these are available as `Example1` and `Example2`, respectively.
 
+* Renamed columns in the linkage map: `Chrom` -> `Chr` and `PosCM` -> `cM`. When loading custom maps, variations of these names are accepted.
+
 * The **LR table** shown in the app has a new look, now using the same layout and marker order as the other tables. 
 The "LR table" sheet of the Excel download also uses this marker order. 
 *Note*: The *Report* sheets has not changed.
 
 * New app controls `Empty markers` (hide/show) and `Likelihoods` (hide/show/loglik) 
 for the LR table in the app and the Excel download.
+
+* New app control `Decimals` for setting the number of decimals in displayed tables.
+
+* The `Marker data` table now excludes unused mutation model columns (app only).
 
 * The Excel download includes a new sheet, `Plots`, containing the two pedigree plots.
 
@@ -25,6 +31,7 @@ for the LR table in the app and the Excel download.
 * RStudio now stops the app when the user closes the browser.
 * Graceful handling of input without data.
 * Fixed a bug appearing when the input file contains an unmapped single marker.
+* The `Marker map` control has been moved up to the `Input` app region.
 
 
 # KLINK 1.0.2
