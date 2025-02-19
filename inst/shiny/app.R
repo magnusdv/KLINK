@@ -323,7 +323,7 @@ server = function(input, output, session) {
     validate(need(!is.null(res), "No LRs have been calculated yet."))
     KLINK:::prettyResultTable(res, linkedPairs(),
                               hide = input$emptymarkers == "hide",
-                              likelihoods = input$likelihoods, extraDec = input$decimals - 3)
+                              likelihoods = input$likelihoods, decimals = input$decimals)
   }, width = "100%", align = "left")
 
   # Compute LR
@@ -395,7 +395,8 @@ server = function(input, output, session) {
     mdat = markerData()
     if(is.null(mdat))
       return(fullmap)
-    fullmap[fullmap$Marker %in% mdat$Marker, , drop = FALSE]
+    idx = matchMarkernames(fullmap$Marker, mdat$Marker, nomatch = 0)
+    fullmap[idx > 0, , drop = FALSE]
   })
 
   # Linked pairs

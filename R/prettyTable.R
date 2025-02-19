@@ -17,7 +17,8 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
     opt_stylize(6) |>
     tab_options(data_row.padding = px(1),
                 container.padding.y = px(3),
-                table.font.size = size) |>
+                table.font.size = size,
+                table.additional_css = ".gt_table {width: max-content !important}") |>
     tab_style(
       style = cell_text(size = pct(105)),
       locations = cells_column_labels()
@@ -77,7 +78,7 @@ prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE, decimals = 
     addTooltips()
 }
 
-prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoods = "show", extraDec = 0) {
+prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoods = "show", decimals = 3) {
   if(is.null(restab) || nrow(restab) == 0)
     return("Nothing to show")
 
@@ -88,6 +89,8 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
     hide = c("Lik1", "Lik2", "Loglik1", "Loglik2"),
     show = c("Loglik1", "Loglik2"),
     loglik = c("Lik1", "Lik2"))
+
+  extraDec = decimals - 3
 
   # First column annot: Uninformative for linkage
   uninf = restab$Typed < 2 & restab$Marker %in% unlist(linkedPairs)

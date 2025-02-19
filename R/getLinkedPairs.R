@@ -27,7 +27,8 @@ getLinkedPairs = function(markers, linkageMap, maxdist = Inf) {
   if(!length(markers) || is.null(linkageMap))
     return(res)
 
-  x = linkageMap[linkageMap$Marker %in% markers, , drop = FALSE]
+  idx = matchMarkernames(linkageMap$Marker, markers, nomatch = 0)
+  x = linkageMap[idx > 0, , drop = FALSE]
 
   for(i in unique.default(x$Chr)) {
     xi = x[x$Chr == i, , drop = FALSE]
