@@ -70,7 +70,7 @@ prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, typed = NULL,
 
 prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE, decimals = 3) {
   # First column annot: Uninformative for linkage
-  uninf = mtab$Typed < 2 & mtab$Marker %in% unlist(linkedPairs)
+  uninf = mtab$Typed < 2 & matchMarkernames(mtab$Marker, unlist(linkedPairs), nomatch = 0L) > 0L
   mtab$annot = ifelse(uninf, "u", "")
 
   if(all(is.na(mtab$Model))) {

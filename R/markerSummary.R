@@ -60,7 +60,8 @@ PIC = function(afr) 1 - sum(afr^2) - sum(afr^2)^2 + sum(afr^4)
 lp2vec = function(markers, linkedPairs) {
   pairvec = rep(seq_along(linkedPairs), each = 2)
   names(pairvec) = unlist(linkedPairs)
-  vec = as.integer(pairvec[markers])
+  idx = matchMarkernames(markers, names(pairvec))
+  vec = as.integer(pairvec[idx])
   singles = which(tabulate(vec) == 1)
   vec[vec %in% singles] = NA
   vec

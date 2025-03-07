@@ -44,16 +44,19 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
     markerData = markerData[ord, , drop = FALSE]
   }
 
-  mvec = markerData$Marker
-
   # Genotype columns
   gcols = colsBetween(markerData, "Marker", "Typed")
 
   if(!length(gcols))
     stop2("No genotyped individuals")
 
-  # Find linked pairs, if not supplied
-  if(is.null(linkedPairs))
+  mvec = markerData$Marker
+
+  # Ensure map uses same marker spelling
+  linkageMap$Marker = fixMarkernames(linkageMap$Marker, mvec)
+  if(!is.null(linkedPairs))
+    linkedPairs = lapply(linkedPairs, fixMarkernames, mvec)
+  else
     linkedPairs = getLinkedPairs(mvec, linkageMap, maxdist = maxdist)
 
   # Remove pairings involving markers with less than 2 typed
@@ -68,7 +71,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   # Pairing index
   pair = lp2vec(mvec, linkedPairs)
-  cmpos = linkageMap$cM[matchMarkernames(mvec, linkageMap$Marker)] |> setnames(mvec)
+  cmpos = linkageMap$cM[match(mvec, linkageMap$Marker)] |> setnames(mvec)
 
   # Initialise result table
   res = cbind.data.frame(Pair = pair, markerData[c("Marker", gcols, "Typed")])
