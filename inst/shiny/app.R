@@ -270,7 +270,6 @@ server = function(input, output, session) {
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
     updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
-    shinyjs::reset("mapfile")
     NOTES(NULL)
     XML(NULL)
     pedigrees$complete = KLINK::loadFamFile(path)
@@ -284,6 +283,7 @@ server = function(input, output, session) {
     pedigrees$reduced = pedred
     pedigrees$active = if(input$hideEmptyComps) pedred else peds
     resultTable(NULL)
+
     # Update dropdown marker list
     markers = c("Marker" = "",  "(none)", pedtools::name(peds[[1]]))
     updateSelectInput(session, "showmarker", choices = markers)
@@ -340,6 +340,10 @@ server = function(input, output, session) {
   observeEvent(input$compute, {
     debug("compute LR")
     peds = req(pedigrees$reduced)
+
+    if(is.null(linkageMap()))
+      return(showNote("No marker map has been loaded."))
+
     tryCatch(error = showNote, {
       res = KLINK::linkedLR(pedigrees = peds,
                             linkageMap = linkageMap(),
@@ -398,6 +402,38 @@ server = function(input, output, session) {
 
   # Complete linkage map
   linkageMap = reactiveVal(NULL)
+  mapname = reactiveVal(NULL)
+
+  # Storage used when switching back to built-in
+  customMap = reactiveValues(map = NULL, name = NULL)
+
+  # React to Marker map radio selection
+  observeEvent(input$maptype, {
+    debug("maptype", input$maptype)
+
+    map = if(input$maptype == "custom") customMap$map else get(input$maptype, "package:KLINK")
+    name = if(input$maptype == "custom") customMap$name else "BUILT-IN"
+
+    linkageMap(map)
+    mapname(name)
+  })
+
+  # Change map file
+  observeEvent(input$mapfile, {
+    debug("mapfile")
+    tryCatch(error = showNote, {
+      map = KLINK::loadMap(req(input$mapfile$datapath))
+      name = input$mapfile$name
+      customMap$map = map
+      customMap$name = name
+
+      linkageMap(map)
+      mapname(name)
+
+      resultTable(NULL)
+      updateTabsetPanel(session, "tabs", selected = "Linkage map")
+    })
+  })
 
   # Subset where only observed markers are included
   linkageMapSubset = reactive({
@@ -416,32 +452,15 @@ server = function(input, output, session) {
     getLinkedPairs(markerData()$Marker, linkageMap(), maxdist = req(input$maxdist))
   })
 
-  # React to Marker map radio selection
-  observeEvent(input$maptype, {
-    debug("maptype")
-    req(input$maptype != "custom")
-    map = get(input$maptype, "package:KLINK")
-    linkageMap(map)
-  })
-
-  # Change map file
-  observeEvent(input$mapfile, {
-    debug("mapfile")
-    tryCatch(error = showNote, {
-      map = KLINK::loadMap(req(input$mapfile$datapath))
-      linkageMap(map)
-      resultTable(NULL)
-      updateTabsetPanel(session, "tabs", selected = "Linkage map")
-    })
-  })
-
+  # Karyogram plot
   output$karyo = renderPlot(KLINK:::karyogram(linkageMapSubset(),
                                               linkedPairs = linkedPairs()))
 
   # Print loaded genetic map
   output$linkage_table = render_gt({
     debug("linkage map table")
-    map = req(linkageMapSubset())
+    map = linkageMapSubset()
+    validate(need(!is.null(map), "No marker map has been loaded."))
     KLINK:::prettyLinkageMap(map, linkedPairs(), hide = input$emptymarkers == "hide", decimals = input$decimals)
   }, width = "100%", align = "left")
 
@@ -458,9 +477,10 @@ server = function(input, output, session) {
       debug("download")
 
       settings = list("KLINK version" = VERSION,
-                      "Database" = famfile$params$dbName,
+                      "Familias file" = famfile$famname,
+                      "Genetic map" = mapname(),
+                      "Database" = famfile$params$dbName %||% "unknown",
                       "Map function" = input$mapfunction,
-                      "Genetic map" = input$maptype,
                       "Max distance" = input$maxdist)
 
       KLINK::writeResult(
@@ -486,6 +506,7 @@ server = function(input, output, session) {
     shinyjs::reset("xmlfile")
     shinyjs::reset("mapfile")
     famfile$famname = famfile$params = NULL
+    customMap$map = customMap$name = NULL
     NOTES(NULL)
     XML(NULL)
     updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
