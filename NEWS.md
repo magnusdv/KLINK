@@ -15,6 +15,8 @@ for the LR table in the app and the Excel download.
 
 * New app control `Decimals` for setting the number of decimals in displayed tables.
 
+* Inconsistent marker names are handled more gracefully. For instance, `Penta D`, `Penta.D`, `PentaD`, `PENTA D` are now recognised as the same marker (similarly for other markers, notably `Penta E` and `vWA`).
+
 * The `Marker data` table now excludes unused mutation model columns (app only).
 
 * The Excel download includes a new sheet, `Plots`, containing the two pedigree plots.
