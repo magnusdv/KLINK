@@ -178,7 +178,7 @@ server = function(input, output, session) {
   observeEvent(input$famfile, {
     debug("famfile", input$famfile$name)
     fil = req(input$famfile)
-    famfile$famname = fil$name
+
     shinyjs::reset("xmlfile")
     XML(NULL)
     NOTES(NULL)
@@ -186,13 +186,23 @@ server = function(input, output, session) {
     peddata = tryCatch(
       error = showNote,
       withCallingHandlers(
-        warning = function(w) addNote(conditionMessage(w)),
-        KLINK::loadFamFile(fil$datapath, fallbackModel = "equal", withParams = TRUE)
+        warning = function(w) addNote(conditionMessage(w)), {
+          if(!endsWith(fil$name, ".fam"))
+            stop2("Input file must end with '.fam': ", fil$name)
+          KLINK::loadFamFile(fil$datapath, fallbackModel = "equal", withParams = TRUE)
+        }
       )
     )
 
-    peds = req(peddata$peds)
-    pedigrees$complete = peds
+    if(is.null(peddata)) {
+      famfile$famname = famfile$params = NULL
+      pedigrees$complete = NULL
+      shinyjs::reset("famfile")
+      return()
+    }
+
+    famfile$famname = fil$name
+    pedigrees$complete = peds = peddata$peds
     famfile$params = peddata$params
 
     allLabs = unlist(lapply(peds, labels), recursive = TRUE, use.names = FALSE)
@@ -233,10 +243,8 @@ server = function(input, output, session) {
       dat[match(famids, xmlids), , drop = FALSE]
     })
 
-    if(is.null(xmldat)) {
-      shinyjs::reset("xmlfile")
-      return()
-    }
+    if(is.null(xmldat))
+      return(shinyjs::reset("xmlfile"))
 
     # Check AMEL
     amelsex = match(xmldat$AMEL, c("X-Y", "X-X"))
@@ -421,18 +429,28 @@ server = function(input, output, session) {
   # Change map file
   observeEvent(input$mapfile, {
     debug("mapfile")
-    tryCatch(error = showNote, {
-      map = KLINK::loadMap(req(input$mapfile$datapath))
-      name = input$mapfile$name
-      customMap$map = map
-      customMap$name = name
 
-      linkageMap(map)
-      mapname(name)
-
-      resultTable(NULL)
-      updateTabsetPanel(session, "tabs", selected = "Linkage map")
+    map = tryCatch(error = showNote, {
+      KLINK::loadMap(req(input$mapfile$datapath))
     })
+
+    if(is.null(map)) {
+      customMap$map = customMap$name = NULL
+      linkageMap(NULL)
+      mapname(NULL)
+      shinyjs::reset("mapfile")
+      return()
+    }
+
+    name = input$mapfile$name
+    customMap$map = map
+    customMap$name = name
+
+    linkageMap(map)
+    mapname(name)
+
+    resultTable(NULL)
+    updateTabsetPanel(session, "tabs", selected = "Linkage map")
   })
 
   # Subset where only observed markers are included
@@ -510,6 +528,7 @@ server = function(input, output, session) {
     NOTES(NULL)
     XML(NULL)
     updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
+    updateNumericInput(session, "decimals", value = 3)
     updateNumericInput(session, "maxdist", value = 200)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")
     updateRadioButtons(session, "emptymarkers", selected = "hide")

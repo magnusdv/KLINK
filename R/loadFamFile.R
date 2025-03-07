@@ -16,6 +16,7 @@
 #' @export
 loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
   if (getOption("KLINK.debug")) print("loadFamFile")
+
   x0 = pedFamilias::readFam(path, useDVI = NA, verbose = FALSE,
                             prefixAdded = ":missing:", includeParams = TRUE,
                             fallbackModel = fallbackModel, simplify1 = FALSE)
