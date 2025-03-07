@@ -9,7 +9,7 @@ suppressMessages(suppressPackageStartupMessages({
 
 VERSION = packageDescription("KLINK")$Version
 
-debug = function(x) {if (getOption("KLINK.debug")) print(x)}
+debug = function(...) {if (getOption("KLINK.debug")) cat(..., "\n")}
 
 if(Sys.getlocale("LC_CTYPE") == "C")
   Sys.setlocale("LC_CTYPE", locale = "en_US.UTF-8")
@@ -51,7 +51,7 @@ ui = dashboardPage(title = "KLINK",
     ),
     hr(),
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
-    radioButtons("mapfunction", "Mapping function", choices = c("Kosambi", "Haldane"),
+    radioButtons("mapfunction", "Map function", choices = c("Kosambi", "Haldane"),
                  selected = "Kosambi", inline = TRUE),
     #checkboxInput("speclump", "Special lumping"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
@@ -72,16 +72,18 @@ ui = dashboardPage(title = "KLINK",
   ),
 
   body = dashboardBody(
-   useShinyjs(),
-   includeCSS("www/custom.css"),
-   tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
-   useBusyIndicators(spinners = FALSE, pulse = TRUE),
-  busyIndicatorOptions(pulse_height = "10px"),
 
-   # Embed JS here; cannot send gmail attachment with script.js
-   tags$script(HTML("
-     window.onbeforeunload = function(){ Shiny.onInputChange('browserClosed', Math.random()); };
-   ")),
+    # Various stuff
+    useShinyjs(),
+    includeCSS("www/custom.css"),
+    tags$head(includeHTML(system.file("shiny/www/GA.html", package = "KLINK"))),
+    useBusyIndicators(spinners = FALSE, pulse = TRUE),
+    busyIndicatorOptions(pulse_height = "10px"),
+
+    # Embed JS here; cannot send gmail attachment with script.js
+    tags$script(HTML("
+      window.onbeforeunload = function(){ Shiny.onInputChange('browserClosed', Math.random()); };
+    ")),
 
    fluidRow(
      column(width = 4,
@@ -127,7 +129,6 @@ ui = dashboardPage(title = "KLINK",
 # SERVER ------------------------------------------------------------------
 
 server = function(input, output, session) {
-
 
   # Close app when browser closes
   observeEvent(input$browserClosed, stopApp())
@@ -175,7 +176,7 @@ server = function(input, output, session) {
   })
 
   observeEvent(input$famfile, {
-    debug("famfile")
+    debug("famfile", input$famfile$name)
     fil = req(input$famfile)
     famfile$famname = fil$name
     shinyjs::reset("xmlfile")
@@ -205,7 +206,7 @@ server = function(input, output, session) {
   })
 
   observeEvent(input$xmlfile, {
-    debug("xmlfile")
+    debug("xmlfile", input$xmlfile$name)
     fil = req(input$xmlfile)
 
     famname = famfile$famname
@@ -292,6 +293,7 @@ server = function(input, output, session) {
   # Pedigree plots ----------------------------------------------------------
 
   selectedMarker = reactive(if(input$showmarker == "(none)") NULL else input$showmarker)
+
   observeEvent(input$showmarker, {
     if(input$showmarker == "(none)") {
       markers = c("Marker" = "",  "(none)", pedtools::name(pedigrees$complete[[1]]))
