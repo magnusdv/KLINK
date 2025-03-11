@@ -47,22 +47,42 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
       stop2("Unexpected content detected in the Familias file.")
   })
 
+  x1 = x[[1]]
+
+  nMark = nMarkers(x1)
+  if(nMark == 0)
+    stop2("No markers are included in the Familias file.")
+
+  typed = typedMembers(x1)
+  if(length(typed) == 0)
+    warning("No typed individuals found in the Familias file.", call. = FALSE)
+
   if(length(x) == 1) {
     warning("Only one pedigree found. Adding unrelated hypothesis", call. = FALSE)
-    un = singletons(typedMembers(x[[1]]))
-    un = transferMarkers(from = x[[1]], to = un)
+
+    if(length(typed) == 0)
+      stop2("The second pedigree is empty.")
+
+    un = singletons(typed)
+    un = transferMarkers(from = x1, to = un)
     x = c(x, list(un))
   }
 
   if(length(x) > 2) {
-    warning("This familias file contains more than two pedigrees; only the first two are used", call. = FALSE)
+    warning("This familias file contains more than two pedigrees; only the first two are used",
+            call. = FALSE)
     x = x[1:2]
   }
 
+  if(is.null(names(x)))
+    names(x) = c("Ped 1", "Ped 2")
+  else if(any(msnm <- names(x) == ""))
+    names(x)[msnm] = paste("Ped", which(msnm))
+
   # TODO: Temporarily switch off special lumping
   if(TRUE) { # !specialLumpability(x)) {
-    alwLumpable = vapply(1:nMarkers(x[[1]]), FUN.VALUE = FALSE, function(i)
-      is.null(mut <- mutmod(x[[1]], i)) || pedmut::alwaysLumpable(mut))
+    alwLumpable = vapply(seq_len(nMark), FUN.VALUE = FALSE, function(i)
+      is.null(mut <- mutmod(x1, i)) || pedmut::alwaysLumpable(mut))
     if(!all(alwLumpable)) {
       x = lapply(x, function(ped)
         setMutmod(ped, markers = !alwLumpable, model = fallbackModel, update = TRUE))
@@ -71,11 +91,6 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
       warning(msg, call. = FALSE)
     }
   }
-
-  if(is.null(names(x)))
-    names(x) = c("Ped 1", "Ped 2")
-  else if(any(msnm <- names(x) == ""))
-    names(x)[msnm] = paste("Ped", which(msnm))
 
   if(withParams)
     list(peds = x, params = params)
