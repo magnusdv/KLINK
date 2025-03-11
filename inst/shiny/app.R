@@ -153,7 +153,7 @@ server = function(input, output, session) {
   XML = reactiveVal(NULL)
   NOTES = reactiveVal(NULL)
 
-  shinyjs::disable("download")
+  shinyjs::delay(0, shinyjs::disable("download"))
 
   # Error utility
   showNote = function(..., type = "error") {
@@ -352,23 +352,30 @@ server = function(input, output, session) {
     if(is.null(linkageMap()))
       return(showNote("No marker map has been loaded."))
 
-    tryCatch(error = showNote, {
-      res = KLINK::linkedLR(pedigrees = peds,
-                            linkageMap = linkageMap(),
-                            linkedPairs = linkedPairs(),
-                            markerData = markerData(),
-                            mapfun = input$mapfunction,
-                            verbose = FALSE,
-                            lumpSpecial = FALSE) #input$speclump)
-
-      resultTable(res)
-      updateTabsetPanel(session, "tabs", selected = "LR table")
-      shinyjs::enable("download")
+    res = tryCatch(error = showNote, {
+      KLINK::linkedLR(pedigrees = peds,
+                      linkageMap = linkageMap(),
+                      linkedPairs = linkedPairs(),
+                      markerData = markerData(),
+                      mapfun = input$mapfunction,
+                      verbose = FALSE,
+                      lumpSpecial = FALSE) #input$speclump)
     })
+
+    resultTable(res)
+    updateTabsetPanel(session, "tabs", selected = "LR table")
   })
 
   # Reset LR table
   observe({input$mapfunction; resultTable(NULL)})
+
+  # Activate download button when LR table is ready
+  observeEvent(resultTable(), {
+    if(!is.null(resultTable()))
+      shinyjs::enable("download")
+    else
+      shinyjs::disable("download")
+  }, ignoreNULL = FALSE)
 
   prevLinkedPairs = reactiveVal(NULL)
 
@@ -535,7 +542,6 @@ server = function(input, output, session) {
     updateRadioButtons(session, "likelihoods", selected = "hide")
     pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
     resultTable(NULL)
-    shinyjs::disable("download")
   })
 
 }
