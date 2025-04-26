@@ -79,17 +79,14 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
   else if(any(msnm <- names(x) == ""))
     names(x)[msnm] = paste("Ped", which(msnm))
 
-  # TODO: Temporarily switch off special lumping
-  if(TRUE) { # !specialLumpability(x)) {
-    alwLumpable = vapply(seq_len(nMark), FUN.VALUE = FALSE, function(i)
-      is.null(mut <- mutmod(x1, i)) || pedmut::alwaysLumpable(mut))
-    if(!all(alwLumpable)) {
-      x = lapply(x, function(ped)
-        setMutmod(ped, markers = !alwLumpable, model = fallbackModel, update = TRUE))
-      msg = sprintf("Pedigree prohibits lumping of complex mutation models; changed these to '%s'",
-                    fallbackModel)
-      warning(msg, call. = FALSE)
-    }
+  # Check Lumpability
+  lumpable = checkLumpability(x[[1]]) & checkLumpability(x[[2]])
+  if(!all(lumpable)) {
+    msg = sprintf("Pedigree prohibits lumping for %d markers; changed models '%s'",
+                  sum(!lumpable), fallbackModel)
+    warning(msg, call. = FALSE)
+    x = lapply(x, function(ped)
+      setMutmod(ped, which(!lumpable), model = fallbackModel, update = TRUE))
   }
 
   if(withParams)
@@ -113,4 +110,39 @@ removeEmpty = function(x) {
       x[[pedname]] = ped[!empty]
   }
   x
+}
+
+checkLumpability = function(x) {
+
+  nMark = nMarkers(x)
+
+  # Regular lumpability
+  alwLumpable = vapply(seq_len(nMark), function(i)
+    pedmut::alwaysLumpable(mutmod(x, i)), FUN.VALUE = logical(1))
+
+  if(all(alwLumpable))
+    return(alwLumpable)
+
+  # For special lumping, check U-signature
+  untyped = untypedMembers(x)
+  usign = pedprobr:::uSignature(x, untyped = untyped)
+  if(usign[1] > 1 || (usign[3] + usign[4]) > 0)
+    return(rep(FALSE, nMark))
+
+  # If all markers have the same untyped, ok!
+  res = rep(TRUE, nMark)
+  gg = getGenotypes(x)
+  if(all(colSums(gg == "-/-") == length(untyped)))
+    return(res)
+
+  # Otherwise, check each marker
+  for(i in seq_len(nMark)) {
+    unt = names(which(gg[, i] == "-/-"))
+    us = if(setequal(unt, untyped)) usign else pedprobr:::uSignature(x, untyped = unt)
+    if(us[1] > 1 || (us[3] + us[4]) > 0)
+      res[i] = FALSE
+    else if(us[2] > 3 && nAlleles(x, i) > 20)
+      res[i] = FALSE
+  }
+  res
 }

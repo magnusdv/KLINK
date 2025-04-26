@@ -14,7 +14,7 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
   ped1 = pedigrees[[1]]
 
   # Check if special (founder-type) lumping applies to all markers
-  specLump = specialLumpability(pedigrees)
+  # specLump = specialLumpability(pedigrees)
 
   # Genotypes
   typed = typedMembers(ped1)
@@ -36,7 +36,7 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
       lumptxt = stattxt = "-"
     }
     else {
-      lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else if (specLump) "Special" else "No"
+      lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else "No"  #if (specLump) "Special" else
       stattxt = if(pedmut::isStationary(mut)) "Yes" else "No"
     }
     cbind.data.frame(Marker = a$name,

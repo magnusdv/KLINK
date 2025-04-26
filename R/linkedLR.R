@@ -28,7 +28,8 @@
 #' @export
 linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
                     markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE,
-                    verbose = TRUE, debug = FALSE) {
+                    alleleLimit = 12, verbose = TRUE, debug = FALSE) {
+
   if (getOption("KLINK.debug")) {
     print("linkedLR")
     verbose = debug = TRUE
@@ -67,6 +68,8 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
     cat("Map function:", mapfun, "\n")
     cat("Max distance considered:", maxdist, "cM\n")
     cat("Effective linkage pairs:", length(linkedPairs), "\n")
+    cat("Special lumping:", lumpSpecial, "\n")
+    cat("Allele limit:", alleleLimit, "\n")
   }
 
   # Pairing index
@@ -86,14 +89,6 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   # Index within each group
   res$Gindex = stats::ave(1:nr, pair, FUN = seq_along)
 
-  # Special lumping # TODO!
-  #if(lumpSpecial)
-  #  warning("Special lumping may give a small bias\n", call. = FALSE)
-  if(lumpSpecial && specialLumpability(pedigrees))
-    pedigrees = lapply(pedigrees, lumpAllSpecial, verbose = debug)
-
-  ped1 = pedigrees[[1]]
-
   # Single-point LR
   if(verbose)
     cat("Computing single-point LRs\n")
@@ -105,7 +100,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   if(verbose)
     cat("Computing no-mutation LRs\n")
   pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL))
-  LRnomut = forrel::kinshipLR(pedsNomut, markers = mvec)$LRperMarker[, 1]
+  LRnomut = forrel::kinshipLR(pedsNomut, markers = mvec, verbose = debug)$LRperMarker[, 1]
 
   # Fix lost names when only 1 marker
   if(is.null(names(LRsingle)))
@@ -120,6 +115,8 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   res$Lik1 = NA_real_
   res$Lik2 = NA_real_
 
+  ped1 = pedigrees[[1]]
+
   if(verbose)
     cat("Looping through linkage pairs:\n")
 
@@ -133,9 +130,13 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
     if(length(lg) == 2) {
       res$LRnolink[idx1] = prod(LRsingle[lg])
-      res$LRnomut[idx1]  = .linkedLR(pedsNomut, lg, cmpos = cmpos[lg], mapfun = MAPFUN)$LR
+      res$LRnomut[idx1]  = .linkedLR(pedsNomut, lg, cmpos = cmpos[lg],
+                                     mapfun = MAPFUN, verbose = debug)$LR
 
-      linkLR = .linkedLR(pedigrees, lg, cmpos = cmpos[lg], mapfun = MAPFUN)
+      linkLR = .linkedLR(pedigrees, lg, cmpos = cmpos[lg], mapfun = MAPFUN,
+                         lumpSpecial = lumpSpecial, alleleLimit = alleleLimit,
+                         verbose = debug)
+
       res$LRlinked[idx1] = linkLR$LR
       res$Lik1[idx1] = linkLR$lik1
       res$Lik2[idx1] = linkLR$lik2
@@ -160,8 +161,11 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
 # Normally not run by end user
 .linkedLR = function(peds, markerpair, cmpos = NULL, mapfun = "Kosambi",
-                     linkageMap = NULL, disableMut = FALSE) {
-  if (getOption("KLINK.debug")) print(paste(".linkedLR:", paste(markerpair, collapse = ", ")))
+                     linkageMap = NULL, lumpSpecial = TRUE, alleleLimit = 12,
+                     disableMut = FALSE, verbose = FALSE) {
+
+  if(getOption("KLINK.debug"))
+    print(paste(".linkedLR:", paste(markerpair, collapse = ", ")))
 
   if(length(markerpair) < 2)
     return(NA_real_)
@@ -184,8 +188,9 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
     H2 = H2 |> setMutmod(model = NULL)
   }
 
-  numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho)
-  denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho)
-
+  numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho, special = lumpSpecial,
+                                alleleLimit = alleleLimit, verbose = verbose)
+  denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho, special = lumpSpecial,
+                                alleleLimit = alleleLimit, verbose = verbose)
   list(lik1 = numer, lik2 = denom, LR = numer/denom)
 }
