@@ -58,5 +58,5 @@
 #' library(pedtools)
 #' plotPedList(halfsib, hatched = typedMembers)
 #' markerSummary(halfsib)
-#' linkedLR(halfsib, KLINK::LINKAGEMAP)
+#' # linkedLR(halfsib, KLINK::LINKAGEMAP)
 "halfsib"

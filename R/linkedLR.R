@@ -13,7 +13,11 @@
 #'   `markerSummary(pedigrees)`.
 #' @param mapfun Name of the map function to be used; either "Haldane" or
 #'   "Kosambi" (default).
-#' @param lumpSpecial A logical, by default TRUE.
+#' @param lumpSpecial A logical indicating if special lumping should be
+#'   activated. This is strongly recommended in all cases with linked STR
+#'   markers.
+#' @param alleleLimit A number, by default 12, passed on to
+#'   [pedprobr::likelihood2()].
 #' @param verbose A logical, by default TRUE.
 #' @param debug A logical, by default FALSE.
 #'
@@ -21,6 +25,9 @@
 #'
 #' @examples
 #' linkedLR(paternity, KLINK::LINKAGEMAP)
+#'
+#' # Detailed messages, including reports on lumping
+#' linkedLR(paternity, KLINK::LINKAGEMAP, debug = TRUE)
 #'
 #' # For testing
 #' # .linkedLR(paternity, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
@@ -92,7 +99,9 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   # Single-point LR
   if(verbose)
     cat("Computing single-point LRs\n")
-  lr1 = forrel::kinshipLR(pedigrees, markers = mvec)
+  lr1 = forrel::kinshipLR(pedigrees, markers = mvec,
+                          likArgs = list(special = lumpSpecial,
+                                         verbose = debug))
   LRsingle = lr1$LRperMarker[,1]
   liks = lr1$likelihoodsPerMarker
 
@@ -118,7 +127,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
   ped1 = pedigrees[[1]]
 
   if(verbose)
-    cat("Looping through linkage pairs:\n")
+    cat("\n===== PAIRWISE LINKAGE  =====\n\n")
 
   # Loop over linkage groups and fill in results
   for(lg in split(mvec, pair)) {

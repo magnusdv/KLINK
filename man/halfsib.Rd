@@ -25,6 +25,6 @@ The individuals are typed with 50 markers, but some genotypes are missing.
 library(pedtools)
 plotPedList(halfsib, hatched = typedMembers)
 markerSummary(halfsib)
-linkedLR(halfsib, KLINK::LINKAGEMAP)
+# linkedLR(halfsib, KLINK::LINKAGEMAP)
 }
 \keyword{datasets}

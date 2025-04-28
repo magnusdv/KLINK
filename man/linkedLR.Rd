@@ -12,6 +12,7 @@ linkedLR(
   markerData = NULL,
   mapfun = "Kosambi",
   lumpSpecial = TRUE,
+  alleleLimit = 12,
   verbose = TRUE,
   debug = FALSE
 )
@@ -34,7 +35,12 @@ NULL.}
 \item{mapfun}{Name of the map function to be used; either "Haldane" or
 "Kosambi" (default).}
 
-\item{lumpSpecial}{A logical, by default TRUE.}
+\item{lumpSpecial}{A logical indicating if special lumping should be
+activated. This is strongly recommended in all cases with linked STR
+markers.}
+
+\item{alleleLimit}{A number, by default 12, passed on to
+\code{\link[pedprobr:likelihood]{pedprobr::likelihood2()}}.}
 
 \item{verbose}{A logical, by default TRUE.}
 
@@ -48,6 +54,9 @@ This function does the main LR calculations of the KLINK app.
 }
 \examples{
 linkedLR(paternity, KLINK::LINKAGEMAP)
+
+# Detailed messages, including reports on lumping
+linkedLR(paternity, KLINK::LINKAGEMAP, debug = TRUE)
 
 # For testing
 # .linkedLR(paternity, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
