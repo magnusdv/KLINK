@@ -1,6 +1,6 @@
 Package: KLINK
 Title: Kinship Analysis with Linked Markers
-Version: 1.0.3.9004
+Version: 1.0.3.9005
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-9134-4962"))
@@ -14,15 +14,15 @@ License: GPL (>= 3)
 URL: https://github.com/magnusdv/KLINK
 BugReports: https://github.com/magnusdv/KLINK/issues
 Depends: 
-    R (>= 4.1)
+    R (>= 4.2)
 Imports: 
-    forrel (>= 1.7.0),
+    forrel (>= 1.7.1),
     gt (>= 0.10.0),
     openxlsx,
     pedFamilias,
-    pedmut (>= 0.7.1),
-    pedprobr (>= 0.9.3),
-    pedtools (>= 2.7.1),
+    pedmut (>= 0.9.0),
+    pedprobr (>= 0.9.6),
+    pedtools (>= 2.8.1),
     shiny (>= 1.9.1),
     shinydashboard,
     shinyjs,
