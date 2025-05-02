@@ -1,19 +1,17 @@
-## code to prepare `sibship` dataset goes here
+## Code to prepare `sibship` dataset goes here
 library(pedsuite)
+library(norSTR)
 
-# Complete REFA database (50 markers)
-db = pedFamilias::readFam("data-raw/NorskDB_2023.fam", verbose = F)
-names(db) = sapply(db, `[[`, "name")
+# Fusion6c database
+db = norwayDB[markerSets$fusion6c]
 
-# Fusion6c (23 markers)
-lm = KLINK::LINKAGEMAP
-fusion = lm[grepl("^Fus", lm$Kit), ]$Marker
+ids = c("NN1", "NN2")
 
 # True pedigree: Full siblings
-ids = c("NN1", "NN2")
 ped1 = nuclearPed(children = ids) |>
-  setMarkers(locusAttributes = db[fusion]) |>
-  profileSim(ids = ids, seed = 1729) |>
+  profileSim(markers = db, ids = ids, seed = 1729) |>
+  setMutmod(model = "stepwise", rate = list(female = 0.001, male = 0.002),
+            rate2 = 1e-6, range = 0.1) |>
   setGenotype(marker = 7, ids = ids, geno = "9/12") |>
   setGenotype(marker = 8, ids = ids, geno = "13/13") |>
   setGenotype(marker = 14, ids = ids, geno = "14/20") |>
@@ -26,7 +24,7 @@ ped2 = halfSibPed(type = "m") |>
 
 sibship = list(FS = ped1, HS = ped2)
 
-# linkedLR(sibship, LINKAGEMAP, lumpSpecial = T) |> KLINK::addTotals()
+# linkedLR(sibship, norSTR::map50, lumpSpecial = T) |> KLINK::addTotals()
 
 usethis::use_data(sibship, overwrite = TRUE)
 

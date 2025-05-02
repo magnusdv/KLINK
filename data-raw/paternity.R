@@ -1,10 +1,14 @@
 ## code to prepare `paternity` dataset goes here
 library(pedsuite)
 library(ibdsim2)
+library(norSTR)
 
-# Markers in built-in LINKAGEMAP also appearing in NorwegianFrequencies
-mmap = subset(LINKAGEMAP, Marker %in% names(NorwegianFrequencies))
-db = NorwegianFrequencies[mmap$Marker]
+# Markers (unclear why these were chosen)
+markers = c("D5S2500", "SE33", "D6S474", "D8S1132", "D8S1179", "D10S2325",
+            "D11S554", "D12S391", "D18S51", "D19S433", "D21S2055")
+
+map = subset(map50, Marker %in% markers)
+db = norSTR::norwayDB[markers]
 ids = c("AF", "CH")
 
 # True pedigree: Father & son

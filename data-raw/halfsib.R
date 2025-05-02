@@ -1,23 +1,23 @@
 ## code to prepare `halfsib` dataset goes here
 library(pedsuite)
 library(ibdsim2)
+library(norSTR)
 
-# Complete database, 50 markers
-db = pedFamilias::readFam("data-raw/NorskDB_2023.fam", verbose = F)
-
-map = KLINK::LINKAGEMAP
-
+map = norSTR::map50
 map$Mb = ibdsim2::convertPos(chrom = map$Chr, cM = map$cM)
 nas = which(is.na(map$Mb))
-map$Mb[nas] = sapply(loadMap(), physRange)[map$Chr[nas]]
+map$Mb[nas] = sapply(ibdsim2::loadMap(), physRange)[map$Chr[nas]]
 as.data.frame(map)
 
+ids = c("A", "B", "C")
+
 # True pedigree: Half sibling
-ids = LETTERS[1:3]
 ped = halfSibPed(2, 1) |>
   relabel(4:6, new = ids) |>
-  setMarkers(locusAttributes = db) |>
+  setMarkers(locusAttributes = norwayDB) |>
+  setMutmod(model = "equal", rate = 0.001) |>
   setMap(map[c("Chr", "Marker", "Mb")])
+
 
 ibd = ibdsim2::ibdsim(ped, ids = ids, seed = 1729)
 
@@ -32,7 +32,7 @@ ped2 = list(nuclearPed(children = ids[1:2]), singleton("C")) |>
 
 halfsib = list(ped1, ped2)
 
-# linkedLR(halfsib, LINKAGEMAP, lumpSpecial = T) |>  KLINK::addTotals()
+# KLINK::linkedLR(halfsib, map, lumpSpecial = T) |>  KLINK::addTotals()
 
 usethis::use_data(halfsib, overwrite = TRUE)
 
