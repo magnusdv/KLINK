@@ -1,3 +1,4 @@
-.onLoad <- function(libname, pkgname) {
+.onLoad = function(libname, pkgname) {
   options(KLINK.debug = FALSE)
 }
+

@@ -27,6 +27,6 @@ Three pairs of markers are linked:
 library(pedtools)
 plotPedList(sibship, hatched = typedMembers)
 markerSummary(sibship)
-linkedLR(sibship, KLINK::LINKAGEMAP)
+linkedLR(sibship, maxdist = 25)
 }
 \keyword{datasets}

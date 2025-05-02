@@ -4,7 +4,7 @@
 #'
 #' @param pedigrees A list of two pedigrees.
 #' @param linkageMap A data frame with columns including `Marker`, `Chr` and
-#'   `cM`.
+#'   `cM`. By default, a built-in map `norSTR::map50` of 50 STR markers is used.
 #' @param linkedPairs A list of marker pairs. If not supplied, calculated as
 #'   `getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)`.
 #' @param maxdist A number, passed onto `getLinkedMarkers()` if `linkedPairs` is
@@ -24,16 +24,16 @@
 #' @return A data frame with detailed LR results.
 #'
 #' @examples
-#' linkedLR(paternity, KLINK::LINKAGEMAP)
+#' linkedLR(paternity)
 #'
 #' # Detailed messages, including reports on lumping
-#' linkedLR(paternity, KLINK::LINKAGEMAP, debug = TRUE)
+#' linkedLR(paternity, debug = TRUE)
 #'
 #' # For testing
-#' # .linkedLR(paternity, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
+#' # .linkedLR(paternity, markerpair = c("SE33", "D6S474"))
 #'
 #' @export
-linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
+linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist = Inf,
                     markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE,
                     alleleLimit = 12, verbose = TRUE, debug = FALSE) {
 
@@ -98,18 +98,22 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
   # Single-point LR
   if(verbose)
-    cat("Computing single-point LRs\n")
-  lr1 = forrel::kinshipLR(pedigrees, markers = mvec,
-                          likArgs = list(special = lumpSpecial,
-                                         verbose = debug))
+    cat("Computing single-point LRs...")
+  likArgs = list(special = lumpSpecial, verbose = debug)
+  lr1 = forrel::kinshipLR(pedigrees, markers = mvec, likArgs = likArgs)
+  if(verbose)
+    cat("done\n")
+
   LRsingle = lr1$LRperMarker[,1]
   liks = lr1$likelihoodsPerMarker
 
   # No-mutation versions
   if(verbose)
-    cat("Computing no-mutation LRs\n")
-  pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL))
-  LRnomut = forrel::kinshipLR(pedsNomut, markers = mvec, verbose = debug)$LRperMarker[, 1]
+    cat("Computing no-mutation single-point LRs...")
+  pedsNomut = lapply(pedigrees, function(x) setMutmod(x, model = NULL)) # TODO: |> lumpAlleles()
+  LRnomut = forrel::kinshipLR(pedsNomut, markers = mvec, verbose = FALSE)$LRperMarker[, 1]
+  if(verbose)
+    cat("done\n")
 
   # Fix lost names when only 1 marker
   if(is.null(names(LRsingle)))
@@ -170,7 +174,7 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
 
 # Normally not run by end user
 .linkedLR = function(peds, markerpair, cmpos = NULL, mapfun = "Kosambi",
-                     linkageMap = NULL, lumpSpecial = TRUE, alleleLimit = 12,
+                     linkageMap = map50, lumpSpecial = TRUE, alleleLimit = 12,
                      disableMut = FALSE, verbose = FALSE) {
 
   if(getOption("KLINK.debug"))
@@ -197,8 +201,11 @@ linkedLR = function(pedigrees, linkageMap, linkedPairs = NULL, maxdist = Inf,
     H2 = H2 |> setMutmod(model = NULL)
   }
 
+  if(verbose) cat("Pedigree H1\n")
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho, special = lumpSpecial,
                                 alleleLimit = alleleLimit, verbose = verbose)
+
+  if(verbose) cat("Pedigree H2\n")
   denom = pedprobr::likelihood2(H2, marker1 = 1, marker2 = 2, rho = rho, special = lumpSpecial,
                                 alleleLimit = alleleLimit, verbose = verbose)
   list(lik1 = numer, lik2 = denom, LR = numer/denom)

@@ -46,7 +46,7 @@ various LR tables.
 \donttest{
 # Built-in dataset `paternity`
 peds = paternity
-map = LINKAGEMAP
+map = norSTR::map50
 mdata = markerSummary(peds)
 
 # Result table

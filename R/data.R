@@ -40,7 +40,7 @@
 #' library(pedtools)
 #' plotPedList(sibship, hatched = typedMembers)
 #' markerSummary(sibship)
-#' linkedLR(sibship, KLINK::LINKAGEMAP)
+#' linkedLR(sibship)
 "sibship"
 
 #' Dataset for a case involving a putative half sibling.
@@ -58,5 +58,5 @@
 #' library(pedtools)
 #' plotPedList(halfsib, hatched = typedMembers)
 #' markerSummary(halfsib)
-#' # linkedLR(halfsib, KLINK::LINKAGEMAP)
+#' linkedLR(halfsib)
 "halfsib"

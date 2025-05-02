@@ -14,12 +14,12 @@
 #' @return A list of character vectors, each containing two marker names.
 #'
 #' @examples
-#' # Example using the built-in map of 50 STR markers
-#' map = KLINK::LINKAGEMAP
+#' # Example using the default map of 50 STR markers
+#' map = norSTR::map50
 #'
 #' getLinkedPairs(map$Marker, map, maxdist = 25)
 #' @export
-getLinkedPairs = function(markers, linkageMap, maxdist = Inf) {
+getLinkedPairs = function(markers, linkageMap = map50, maxdist = Inf) {
   if(is.null(markers))
     markers = linkageMap$Marker
 

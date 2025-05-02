@@ -5,9 +5,13 @@
 #' @rawNamespace import(gt, except = html)
 #' @importFrom shiny runApp
 #' @importFrom shinyjs useShinyjs
+#' @importFrom shinydashboard dashboardPage
+#' @import norSTR
 #' @import openxlsx
 #' @import pedtools
-#' @importFrom shinydashboard dashboardPage
 ## usethis namespace: end
 NULL
+
+#' @export
+map50 = norSTR::map50
 

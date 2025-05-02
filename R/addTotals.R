@@ -13,7 +13,7 @@
 #'
 #' @returns The same data frame, but with an added row of total LRs.
 #' @examples
-#' res = linkedLR(paternity, KLINK::LINKAGEMAP) |> addTotals()
+#' res = linkedLR(paternity) |> addTotals()
 #'
 #' # No effect of linkage in this case:
 #' stopifnot(all.equal(res[nrow(res), "LRlinked"],

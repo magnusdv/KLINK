@@ -24,7 +24,7 @@ should include LR results for only one marker in each linkage group. This is
 the the case e.g. if the input was produced by \code{\link[=linkedLR]{linkedLR()}}.
 }
 \examples{
-res = linkedLR(paternity, KLINK::LINKAGEMAP) |> addTotals()
+res = linkedLR(paternity) |> addTotals()
 
 # No effect of linkage in this case:
 stopifnot(all.equal(res[nrow(res), "LRlinked"],

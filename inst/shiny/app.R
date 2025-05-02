@@ -36,7 +36,7 @@ ui = dashboardPage(title = "KLINK",
     tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
 
     radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
-                 choices = c("Built-in" = "LINKAGEMAP", "Custom" = "custom")),
+                 choices = c("Built-in" = "map50", "Custom" = "custom")),
     conditionalPanel(
       condition = "input.maptype == 'custom'",
       fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
@@ -277,7 +277,7 @@ server = function(input, output, session) {
     path = system.file("extdata", filename, package = "KLINK")
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
-    updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
+    updateRadioButtons(session, "maptype", selected = "map50")
     NOTES(NULL)
     XML(NULL)
     pedigrees$complete = KLINK::loadFamFile(path)
@@ -534,7 +534,7 @@ server = function(input, output, session) {
     customMap$map = customMap$name = NULL
     NOTES(NULL)
     XML(NULL)
-    updateRadioButtons(session, "maptype", selected = "LINKAGEMAP")
+    updateRadioButtons(session, "maptype", selected = "map50")
     updateNumericInput(session, "decimals", value = 3)
     updateNumericInput(session, "maxdist", value = 200)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")

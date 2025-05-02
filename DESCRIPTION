@@ -17,6 +17,7 @@ Depends:
     R (>= 4.2)
 Imports: 
     forrel (>= 1.7.1),
+    norSTR,
     gt (>= 0.10.0),
     openxlsx,
     pedFamilias,

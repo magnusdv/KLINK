@@ -6,7 +6,7 @@
 \usage{
 linkedLR(
   pedigrees,
-  linkageMap,
+  linkageMap = map50,
   linkedPairs = NULL,
   maxdist = Inf,
   markerData = NULL,
@@ -21,7 +21,7 @@ linkedLR(
 \item{pedigrees}{A list of two pedigrees.}
 
 \item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chr} and
-\code{cM}.}
+\code{cM}. By default, a built-in map \code{norSTR::map50} of 50 STR markers is used.}
 
 \item{linkedPairs}{A list of marker pairs. If not supplied, calculated as
 \code{getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)}.}
@@ -53,12 +53,12 @@ A data frame with detailed LR results.
 This function does the main LR calculations of the KLINK app.
 }
 \examples{
-linkedLR(paternity, KLINK::LINKAGEMAP)
+linkedLR(paternity)
 
 # Detailed messages, including reports on lumping
-linkedLR(paternity, KLINK::LINKAGEMAP, debug = TRUE)
+linkedLR(paternity, debug = TRUE)
 
 # For testing
-# .linkedLR(paternity, markerpair = c("SE33", "D6S474"), linkageMap = LINKAGEMAP)
+# .linkedLR(paternity, markerpair = c("SE33", "D6S474"))
 
 }

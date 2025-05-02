@@ -15,7 +15,7 @@ A list of two pedigrees forming opposing hypotheses about three individuals:
 }
 \details{
 \itemize{
-\item H1: A and B are full sibs, and C is their half brother
+\item H1: A and B are full siblings, and C is their half brother
 \item H2: A and B are full siblings, and C is unrelated to them
 }
 
@@ -25,6 +25,6 @@ The individuals are typed with 50 markers, but some genotypes are missing.
 library(pedtools)
 plotPedList(halfsib, hatched = typedMembers)
 markerSummary(halfsib)
-# linkedLR(halfsib, KLINK::LINKAGEMAP)
+linkedLR(halfsib)
 }
 \keyword{datasets}

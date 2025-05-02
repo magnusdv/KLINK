@@ -18,7 +18,7 @@ Load genetic map
 }
 \examples{
 tmp = tempfile(fileext = ".map")
-map1 = as.data.frame(KLINK::LINKAGEMAP)
+map1 = as.data.frame(norSTR::map50)
 write.table(map1, tmp, sep = "\t", quote = FALSE, row.names = FALSE)
 
 map2 = loadMap(tmp)
