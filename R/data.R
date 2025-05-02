@@ -23,16 +23,18 @@
 #' forrel::kinshipLR(paternity)
 "paternity"
 
+
 #' Dataset for a full vs half sibship case
 #'
 #' A list of two pedigrees forming opposing hypotheses about two individuals
 #' `NN1` and `NN2`: `FS` (full siblings) vs. `HS` (half siblings). Both
 #' individuals are genotyped with the 23 markers included in the Fusion 6C kit.
-#' Three pairs of markers are linked:
+#' Among the 23 markers, four pairs are linked:
 #'
-#' * TPOX and D2S441
-#' * D5S818 and CSF1PO
-#' * vWA and D12S391
+#' * TPOX and D2S441 (88.8 cM, 9 & 13 alleles)
+#' * D5S818 and CSF1PO (27.8 cM, 9 & 11 alleles)
+#' * vWA and D12S391 (11.9 cM, 12 & 23 alleles)
+#' * D21S11 and Penta D (44.7 cM, 26 & 24 alleles)
 #'
 #' @format A list of two ped objects, named FS and HS.
 #'
@@ -43,11 +45,12 @@
 #' linkedLR(sibship)
 "sibship"
 
+
 #' Dataset for a case involving a putative half sibling.
 #'
 #' A list of two pedigrees forming opposing hypotheses about three individuals:
 #'
-#' * H1: A and B are full sibs, and C is their half brother
+#' * H1: A and B are full siblings, and C is their half brother
 #' * H2: A and B are full siblings, and C is unrelated to them
 #'
 #' The individuals are typed with 50 markers, but some genotypes are missing.

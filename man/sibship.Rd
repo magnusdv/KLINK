@@ -14,19 +14,20 @@ sibship
 A list of two pedigrees forming opposing hypotheses about two individuals
 \code{NN1} and \code{NN2}: \code{FS} (full siblings) vs. \code{HS} (half siblings). Both
 individuals are genotyped with the 23 markers included in the Fusion 6C kit.
-Three pairs of markers are linked:
+Among the 23 markers, four pairs are linked:
 }
 \details{
 \itemize{
-\item TPOX and D2S441
-\item D5S818 and CSF1PO
-\item vWA and D12S391
+\item TPOX and D2S441 (88.8 cM, 9 & 13 alleles)
+\item D5S818 and CSF1PO (27.8 cM, 9 & 11 alleles)
+\item vWA and D12S391 (11.9 cM, 12 & 23 alleles)
+\item D21S11 and Penta D (44.7 cM, 26 & 24 alleles)
 }
 }
 \examples{
 library(pedtools)
 plotPedList(sibship, hatched = typedMembers)
 markerSummary(sibship)
-linkedLR(sibship, maxdist = 25)
+linkedLR(sibship)
 }
 \keyword{datasets}
