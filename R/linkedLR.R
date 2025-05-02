@@ -136,35 +136,39 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
   # Loop over linkage groups and fill in results
   for(lg in split(mvec, pair)) {
 
-    if(verbose)
-      cat(sprintf("* %s (# alleles = %s)\n", toString(lg), toString(nAlleles(ped1, lg))))
-
     idx1 = match(lg[1], res$Marker)
 
-    if(length(lg) == 2) {
-      res$LRnolink[idx1] = prod(LRsingle[lg])
-      res$LRnomut[idx1]  = .linkedLR(pedsNomut, lg, cmpos = cmpos[lg],
-                                     mapfun = MAPFUN, verbose = debug)$LR
-
-      linkLR = .linkedLR(pedigrees, lg, cmpos = cmpos[lg], mapfun = MAPFUN,
-                         lumpSpecial = lumpSpecial, alleleLimit = alleleLimit,
-                         verbose = debug)
-
-      res$LRlinked[idx1] = linkLR$LR
-      res$Lik1[idx1] = linkLR$lik1
-      res$Lik2[idx1] = linkLR$lik2
-
-    }
-    else {
+    if(length(lg) == 1) {
       res$LRnolink[idx1] = res$LRlinked[idx1] = LRsingle[[lg]]
       res$LRnomut[idx1] = LRnomut[[lg]]
       res$Lik1[idx1] = liks[lg, 1]
       res$Lik2[idx1] = liks[lg, 2]
+      next
     }
+
+    # By now: Linkage pair!
+    cmdist = diff(cmpos[lg])
+
+    if(verbose) {
+      nalls = nAlleles(ped1, lg) |> paste(collapse = " & ")
+      cat(sprintf("* %s (%.1f cM, %s alleles)\n", toString(lg), cmdist, nalls))
+    }
+
+    res$LRnolink[idx1] = prod(LRsingle[lg])
+    res$LRnomut[idx1]  = .linkedLR(pedsNomut, lg, cmdist = cmdist, mapfun = MAPFUN,
+                                   verbose = FALSE)$LR
+
+    linkLR = .linkedLR(pedigrees, lg, cmdist = cmdist, mapfun = MAPFUN,
+                       lumpSpecial = lumpSpecial, alleleLimit = alleleLimit,
+                       verbose = debug)
+
+    res$LRlinked[idx1] = linkLR$LR
+    res$Lik1[idx1] = linkLR$lik1
+    res$Lik2[idx1] = linkLR$lik2
   }
 
   if(verbose)
-    cat("Time elapsed: ", format(Sys.time() - st, digits = 3), "\n")
+    cat("\nTime elapsed: ", format(Sys.time() - st, digits = 3), "\n")
 
   res$Loglik1 = safelog(res$Lik1)
   res$Loglik2 = safelog(res$Lik2)
@@ -173,7 +177,7 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
 
 
 # Normally not run by end user
-.linkedLR = function(peds, markerpair, cmpos = NULL, mapfun = "Kosambi",
+.linkedLR = function(peds, markerpair, cmdist = NULL, mapfun = "Kosambi",
                      linkageMap = map50, lumpSpecial = TRUE, alleleLimit = 12,
                      disableMut = FALSE, verbose = FALSE) {
 
@@ -183,19 +187,26 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
   if(length(markerpair) < 2)
     return(NA_real_)
 
-  # For testing purposes
-  if(is.null(cmpos))
-    cmpos = linkageMap$cM[match(markerpair, linkageMap$Marker)]
   if(is.character(mapfun))
-    mapfun = switch(tolower(mapfun), haldane = pedprobr::haldane, kosambi = pedprobr::kosambi,
+    mapfun = switch(tolower(mapfun),
+                    haldane = pedprobr::haldane,
+                    kosambi = pedprobr::kosambi,
                     stop2("Illegal map function: ", mapfun))
 
-  rho = mapfun(diff(cmpos))
+  # For testing purposes
+  if(is.null(cmdist)) {
+    cmpos = linkageMap$cM[match(markerpair, linkageMap$Marker)]
+    cmdist = diff(cmpos)
+  }
+
+  # Convert distance to recombination rate
+  rho = mapfun(cmdist)
+
 
   H1 = pedtools::selectMarkers(peds[[1]], markerpair)
   H2 = pedtools::selectMarkers(peds[[2]], markerpair)
 
-  # Not used in app, but useful for debugging
+  # Not used in app, only for debugging
   if(disableMut) {
     H1 = H1 |> setMutmod(model = NULL)
     H2 = H2 |> setMutmod(model = NULL)
