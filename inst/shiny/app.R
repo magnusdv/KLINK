@@ -1,5 +1,6 @@
 suppressMessages(suppressPackageStartupMessages({
   library(KLINK)
+  library(forrel)
   library(shiny)
   library(shinyjs)
   library(shinyBS)
@@ -9,7 +10,10 @@ suppressMessages(suppressPackageStartupMessages({
 
 VERSION = packageDescription("KLINK")$Version
 
-debug = function(...) {if (getOption("KLINK.debug")) cat(..., "\n")}
+debug = function(...) {
+  if (getOption("KLINK.debug"))
+  cat(..., "\n")
+}
 
 if(Sys.getlocale("LC_CTYPE") == "C")
   Sys.setlocale("LC_CTYPE", locale = "en_US.UTF-8")
@@ -53,7 +57,6 @@ ui = dashboardPage(title = "KLINK",
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
     radioButtons("mapfunction", "Map function", choices = c("Kosambi", "Haldane"),
                  selected = "Kosambi", inline = TRUE),
-    #checkboxInput("speclump", "Special lumping"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
     bsTooltip("emptymarkers",
@@ -358,8 +361,8 @@ server = function(input, output, session) {
                       linkedPairs = linkedPairs(),
                       markerData = markerData(),
                       mapfun = input$mapfunction,
-                      verbose = FALSE,
-                      lumpSpecial = FALSE) #input$speclump)
+                      verbose = TRUE, debug = TRUE,
+                      lumpSpecial = TRUE)
     })
 
     resultTable(res)

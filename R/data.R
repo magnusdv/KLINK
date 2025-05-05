@@ -10,9 +10,9 @@
 
 #' Dataset for a paternity case
 #'
-#' A list of two pedigrees forming the hypotheses in a paternity case: H1 (`AF` is
-#' the father of `CH`) and H2 (unrelated). `AF` and `CH` are genotyped with 11
-#' markers, with allele frequencies from `forrel::NorwegianFrequencies`.
+#' A list of two pedigrees forming the hypotheses in a paternity case: H1 (`AF`
+#' is the father of `CH`) and H2 (unrelated). `AF` and `CH` are genotyped with
+#' 11 markers, with allele frequencies from `norSTR::norwayDB`.
 #'
 #' @format A list of two pedigrees, named H1 and H2.
 #'

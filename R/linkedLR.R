@@ -213,6 +213,7 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
   }
 
   if(verbose) cat("Pedigree H1\n")
+  print(H1)
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho, special = lumpSpecial,
                                 alleleLimit = alleleLimit, verbose = verbose)
 
