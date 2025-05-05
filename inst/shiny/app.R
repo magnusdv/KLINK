@@ -1,6 +1,5 @@
 suppressMessages(suppressPackageStartupMessages({
   library(KLINK)
-  library(forrel)
   library(shiny)
   library(shinyjs)
   library(shinyBS)
@@ -361,7 +360,7 @@ server = function(input, output, session) {
                       linkedPairs = linkedPairs(),
                       markerData = markerData(),
                       mapfun = input$mapfunction,
-                      verbose = TRUE, debug = TRUE,
+                      verbose = FALSE, debug = FALSE,
                       lumpSpecial = TRUE)
     })
 

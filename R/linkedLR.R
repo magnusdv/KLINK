@@ -16,7 +16,7 @@
 #' @param lumpSpecial A logical indicating if special lumping should be
 #'   activated. This is strongly recommended in all cases with linked STR
 #'   markers.
-#' @param alleleLimit A number, by default 12, passed on to
+#' @param alleleLimit A number, by default 10, passed on to
 #'   [pedprobr::likelihood2()].
 #' @param verbose A logical, by default TRUE.
 #' @param debug A logical, by default FALSE.
@@ -35,7 +35,7 @@
 #' @export
 linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist = Inf,
                     markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE,
-                    alleleLimit = 12, verbose = TRUE, debug = FALSE) {
+                    alleleLimit = 10, verbose = TRUE, debug = FALSE) {
 
   if (getOption("KLINK.debug")) {
     print("linkedLR")
@@ -156,7 +156,7 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
 
     res$LRnolink[idx1] = prod(LRsingle[lg])
     res$LRnomut[idx1]  = .linkedLR(pedsNomut, lg, cmdist = cmdist, mapfun = MAPFUN,
-                                   verbose = FALSE)$LR
+                                   alleleLimit = Inf, verbose = FALSE)$LR
 
     linkLR = .linkedLR(pedigrees, lg, cmdist = cmdist, mapfun = MAPFUN,
                        lumpSpecial = lumpSpecial, alleleLimit = alleleLimit,
@@ -178,7 +178,7 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
 
 # Normally not run by end user
 .linkedLR = function(peds, markerpair, cmdist = NULL, mapfun = "Kosambi",
-                     linkageMap = map50, lumpSpecial = TRUE, alleleLimit = 12,
+                     linkageMap = map50, lumpSpecial = TRUE, alleleLimit = Inf,
                      disableMut = FALSE, verbose = FALSE) {
 
   if(getOption("KLINK.debug"))
@@ -213,7 +213,6 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
   }
 
   if(verbose) cat("Pedigree H1\n")
-  print(H1)
   numer = pedprobr::likelihood2(H1, marker1 = 1, marker2 = 2, rho = rho, special = lumpSpecial,
                                 alleleLimit = alleleLimit, verbose = verbose)
 

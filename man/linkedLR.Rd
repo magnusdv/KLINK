@@ -12,7 +12,7 @@ linkedLR(
   markerData = NULL,
   mapfun = "Kosambi",
   lumpSpecial = TRUE,
-  alleleLimit = 12,
+  alleleLimit = 10,
   verbose = TRUE,
   debug = FALSE
 )
@@ -39,7 +39,7 @@ NULL.}
 activated. This is strongly recommended in all cases with linked STR
 markers.}
 
-\item{alleleLimit}{A number, by default 12, passed on to
+\item{alleleLimit}{A number, by default 10, passed on to
 \code{\link[pedprobr:likelihood]{pedprobr::likelihood2()}}.}
 
 \item{verbose}{A logical, by default TRUE.}
