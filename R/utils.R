@@ -36,6 +36,14 @@ colsBetween = function(x, a, b) {
   nms[aidx + seq_len(n)]
 }
 
+# Capitilize first letter of each element
+capit = function(x) {
+  notna = !is.na(x)
+  if(!length(x) || !any(notna))
+    return(x)
+  substr(x[notna], 1, 1) = toupper(substr(x[notna], 1, 1))
+  x
+}
 
 # Marker names spelling issues-------------------------------------------------
 

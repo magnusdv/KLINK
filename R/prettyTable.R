@@ -18,6 +18,7 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
     tab_options(data_row.padding = px(1),
                 container.padding.y = px(3),
                 table.font.size = size,
+                table.layout = "auto",
                 table.additional_css = ".gt_table {width: max-content !important}") |>
     tab_style(
       style = cell_text(size = pct(105)),
@@ -74,10 +75,10 @@ prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE, decimals = 
   mtab$annot = ifelse(uninf, "u", "")
 
   if(all(is.na(mtab$Model))) {
-    mtab$Model = "none"
-    mtab$Rate = mtab$Range = mtab$Rate2 = mtab$Stationary = mtab$Lumpable = NULL
+    mtab$Model = "None"
+    mtab$Rate = mtab$Range = mtab$Rate2 = mtab$Stat = mtab$Lump = NULL
   }
-  else if(!any(mtab$Model == "stepwise", na.rm = TRUE)) {
+  else if(!any(mtab$Model == "Stepwise", na.rm = TRUE)) {
     mtab$Range = mtab$Rate2 = NULL
   }
 

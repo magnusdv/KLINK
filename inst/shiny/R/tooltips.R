@@ -4,10 +4,10 @@
 #   MinFreq = "Smallest allele frequency in the database",
 #   Model = "Mutation model type",
 #   Rate = "Mutation rate (females / males)",
-#   Range = "Range - a parameter for stepwise models",
 #   Rate2 = "Rate2 - a parameter for stepwise models",
-#   Stationary = "Is the mutation model stationary?",
-#   Lumpable = "Are alleles lumpable under this model?",
+#   Range = "Range - a parameter for stepwise models",
+#   Stat = "Stationary mutation model?",
+#   Lump = "Lumpable mutation model?",
 #   #
 #   Pair = "Linkage pair",
 #   Marker = "Marker name",

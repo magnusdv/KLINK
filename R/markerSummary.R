@@ -29,13 +29,12 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
   reslist = lapply(locAttrs, function(a) {
     gg = geno[a$name, , drop = FALSE]
     mut = a$mutmod
-    pars = pedmut::getParams(mut, c("model", "rate", "range", "rate2"), format = 3)
-    colnames(pars) = c("Model", "Rate", "Range", "Rate2")
+    pars = pedmut::getParams(mut, c("model", "rate", "rate2", "range"), format = 3)
+    colnames(pars) = c("Model", "Rate", "Rate2", "Range")
+    pars$Model = capit(pars$Model)
 
-    if(is.null(mut)) {
-      lumptxt = stattxt = "-"
-    }
-    else {
+    lumptxt = stattxt = NA_character_
+    if(!is.null(mut)) {
       lumptxt = if(pedmut::alwaysLumpable(mut)) "Always" else "No"  #if (specLump) "Special" else
       stattxt = if(pedmut::isStationary(mut)) "Yes" else "No"
     }
@@ -44,7 +43,9 @@ markerSummary = function(pedigrees, replaceNames = FALSE) {
                      Alleles = length(a$alleles),
                      PIC = PIC(a$afreq),
                      MinFreq = sprintf("%.2g", min(a$afreq)),
-                     pars, Stationary = stattxt, Lumpable = lumptxt)
+                     pars,
+                     Stat = stattxt,
+                     Lump = lumptxt)
   })
 
   res = do.call(rbind, reslist)
