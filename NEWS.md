@@ -1,10 +1,10 @@
-# dev version
+# KLINK 1.1.0
 
 ## New features
 
 * Added new datasets `sibship` and `halfsib`. In the app, these are available as `Example1` and `Example2`, respectively.
 
-* Renamed columns in the linkage map: `Chrom` -> `Chr` and `PosCM` -> `cM`. When loading custom maps, variations of these names are accepted.
+* KLINK now employs the *special lumping* methods recently implemented in **pedprobr** and **pedmut**. This permits the use of complex mutation models (e.g. `Stepwise`) in most common pedigrees, including paternity and full/half siblings. In larger pedigrees, nonlumpable models are replaced with the simpler 'Equal' model.
 
 * The **LR table** shown in the app has a new look, now using the same layout and marker order as the other tables. 
 The "LR table" sheet of the Excel download also uses this marker order. 
@@ -25,15 +25,24 @@ for the LR table in the app and the Excel download.
 
 * Busy indicator: A pulsating effect is now shown when the app is busy.
 
+* Renamed columns in the linkage map: `Chrom` -> `Chr` and `PosCM` -> `cM`. When loading custom maps, variations of these names are accepted.
+
 * Only on shinyapp.io: Show banner warning about uploading sensitive data.
+
 
 ## Minor changes and fixes
 
 * Empty the `.xml` field when a new `.fam` file is loaded.
+
 * RStudio now stops the app when the user closes the browser.
+
 * Graceful handling of input without data.
-* Fixed a bug appearing when the input file contains an unmapped single marker.
+
 * The `Marker map` control has been moved up to the `Input` app region.
+
+* Fixed a bug appearing when the input file contains an unmapped single marker.
+
+* Fixed a bug giving slightly incorrect LR values in some cases when a stepwise mutation model was used. This bug was related to lumping, which is now handled differently (see entry under `New features`).
 
 
 # KLINK 1.0.2
