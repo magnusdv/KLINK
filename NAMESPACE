@@ -2,6 +2,7 @@
 
 export(addTotals)
 export(getLinkedPairs)
+export(getTotals)
 export(launchApp)
 export(linkedLR)
 export(loadFamFile)
