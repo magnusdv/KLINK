@@ -12,6 +12,10 @@
 ## usethis namespace: end
 NULL
 
+
+#' @title Genetic marker map
+#' @description This object is re-exported from [norSTR::map50].
+#' @name map50
 #' @export
 map50 = norSTR::map50
 
