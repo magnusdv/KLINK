@@ -4,14 +4,15 @@
 
 * Added new datasets `sibship` and `halfsib`. In the app, these are available as `Example1` and `Example2`, respectively.
 
+* The default genetic map, previously built-in to KLINK, has been moved to the **norSTR** package under the name `map50`, and is now imported from there.
+
 * KLINK now employs the *special lumping* methods recently implemented in **pedprobr** and **pedmut**. This permits the use of complex mutation models (e.g. `Stepwise`) in most common pedigrees, including paternity and full/half siblings. In larger pedigrees, nonlumpable models are replaced with the simpler 'Equal' model.
 
 * The **LR table** shown in the app has a new look, now using the same layout and marker order as the other tables. 
 The "LR table" sheet of the Excel download also uses this marker order. 
 *Note*: The *Report* sheets has not changed.
 
-* New app controls `Empty markers` (hide/show) and `Likelihoods` (hide/show/loglik) 
-for the LR table in the app and the Excel download.
+* New app controls `Empty markers` (hide/show) and `Likelihoods` (hide/show/loglik) for the LR table in the app and the Excel download.
 
 * New app control `Decimals` for setting the number of decimals in displayed tables.
 
@@ -23,7 +24,7 @@ for the LR table in the app and the Excel download.
 
 * Added tooltips explaining app controls and table columns.
 
-* Busy indicator: A pulsating effect is now shown when the app is busy.
+* Busy-indicator: A pulsating effect is now shown when the app is busy.
 
 * Renamed columns in the linkage map: `Chrom` -> `Chr` and `PosCM` -> `cM`. When loading custom maps, variations of these names are accepted.
 
