@@ -160,7 +160,9 @@ server = function(input, output, session) {
   # Error utility
   showNote = function(..., type = "error") {
     debug("showNote")
-    showNotification(HTML(paste(..., sep = "<br>")), duration = NULL, type = type)
+    msg = paste(..., sep = "<br>")
+    msg = gsub("\n", "<br>", msg)
+    showNotification(HTML(msg), duration = NULL, type = type)
     invisible(NULL)
   }
 
