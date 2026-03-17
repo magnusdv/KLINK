@@ -6,6 +6,7 @@
 #' @importFrom shiny runApp
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinydashboard dashboardPage
+#' @importFrom shinyBS bsTooltip
 #' @import norSTR
 #' @import openxlsx
 #' @import pedtools

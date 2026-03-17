@@ -25,6 +25,7 @@ Imports:
     pedprobr (>= 1.0.0),
     pedtools (>= 2.8.1),
     shiny (>= 1.10.0),
+    shinyBS,
     shinydashboard,
     shinyjs,
     verbalisr (>= 0.7.1),
