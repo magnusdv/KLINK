@@ -13,15 +13,13 @@
 markerSummary = function(pedigrees, replaceNames = FALSE) {
   ped1 = pedigrees[[1]]
 
-  # Check if special (founder-type) lumping applies to all markers
-  # specLump = specialLumpability(pedigrees)
-
   # Genotypes
   typed = typedMembers(ped1)
   geno = t.default(pedtools::getGenotypes(ped1, ids = typed))
-  if(replaceNames && length(typed) > 0)
-    colnames(geno) = paste0("Person", 1:ncol(geno))
 
+  # Replace names with Person1, Person2, ... (only if at least one long name)
+  if(replaceNames && length(typed) > 0 && max(nchar(typed)) > 10)
+    colnames(geno) = paste0("Person", seq_along(typed))
 
   # List of lists: Marker attributes
   locAttrs = pedtools::getLocusAttributes(ped1)

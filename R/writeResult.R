@@ -337,8 +337,10 @@ writeLegend = function(wb, sheet, df, r, c, fill) {
 getIdLegend = function(nameKeys) {
   idsLong = as.character(nameKeys)
   idsShort = names(nameKeys)
-  data.frame("Samples " = paste(idsLong, ""),
-             row.names = paste(idsShort, ""),
+  rownms = if(identical(idsLong, idsShort)) seq_along(idsLong) else paste0(idsShort, " ")
+
+  data.frame("Samples " = paste0(idsLong, " "),
+             row.names = rownms,
              check.names = FALSE)
 }
 
