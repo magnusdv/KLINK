@@ -1,16 +1,20 @@
-#' @importFrom graphics par plot.new points rect segments text.default
-karyogram = function(linkageMap, linkedPairs = NULL, bgcol = "gray92") {
+#' @importFrom graphics par plot.new plot.window points rect segments text.default
+karyogram = function(linkageMap, linkedPairs = NULL,
+                     bgcol = "gray92", border = 1, cols = KARYOPALETTE, unlinkedCol = "gray100",
+                     pch = 21, cexPoints = 2.75,
+                     labs = seq_along(linkageMap$Marker), cexLabs = 0.8,
+                     cexChr = 1,
+                     mar = c(1, 1.5, 1, 1)) {
 
   h = 0.7
+  op = par(mar = mar, xpd = TRUE)
+  on.exit(par(op), add = TRUE)
+
   plot.new()
+  plot.window(xlim = c(0, max(CHROM.MB)), ylim = c(22 + h, 1), xaxs = "i", yaxs = "i")
 
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
-
-  par(mar = c(1,1.5,1,1), usr = c(0, max(CHROM.MB), 22+h, 1), xpd = TRUE)
-
-  rect(xleft = 0, ybottom = 1:22, xright = CHROM.MB, ytop = 1:22 + h, col = bgcol)
-  text.default(0, 1:22 + h/2, labels = 1:22, pos = 2)
+  rect(xleft = 0, ybottom = 1:22, xright = CHROM.MB, ytop = 1:22 + h, col = bgcol, border = border)
+  text.default(0, 1:22 + h/2, labels = 1:22, pos = 2, cex = cexChr)
 
   # Linked pairs
   m = linkageMap$Marker
@@ -30,16 +34,28 @@ karyogram = function(linkageMap, linkedPairs = NULL, bgcol = "gray92") {
   y = chr + h/2
   x = pmin(linkageMap$cM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
 
-  # Segments first, to hide endpoints
+  # Colors and symbols
+  fills = rep(unlinkedCol, length(pp)) # cols[pp[islinked]]
+  fills[islinked] = cols[pp[islinked]]
+  pch = rep_len(pch, length.out = length(pp))
+
+  # Text color (black or white, depending on background)
+  bw = textBW(fills)
+
+  # Connectors (before points, to hide endpoints)
   segments(x0 = x[pair1], x1 = x[pair2], y0 = y[pair1], y1 = y[pair2], col = 1, lwd = 1.3)
 
-  points(x[islinked], y[islinked], bg = KARYOPALETTE[pp[islinked]], pch = 21, cex = 2.5)
-  points(x[!islinked], y[!islinked], col = 1, pch = 21, cex = 2.5)
+  # Linked points (unlinked points and first point of linked pairs)
+  points(x[!pair2], y[!pair2], bg = fills[!pair2], pch = pch[!pair2], cex = cexPoints)
 
-  # Labels inside points: White text on dark colours
-  bw = rep(1, length(pp))
-  bw[islinked] = DARKLIGHT[pp[islinked]]
-  text.default(x, y, labels = seq_along(m), cex = 0.8, col = c("black", "white")[bw])
+  # Labels inside points
+  text.default(x[!pair2], y[!pair2], labels = labs[!pair2], col = bw[!pair2], cex = cexLabs, font = 2)
+
+  # Second point of linked pairs (do these separately to avoid overlap)
+  if(length(linkedPairs)) {
+    points(x[pair2], y[pair2], bg = fills[pair2], pch = pch[pair2], cex = cexPoints)
+    text.default(x[pair2], y[pair2], labels = labs[pair2], col = bw[pair2], cex = cexLabs, font = 2)
+  }
 }
 
 
@@ -60,7 +76,20 @@ KARYOPALETTE = c("#FD3216FF", "#00FE35FF", "#6A76FCFF", "#FED4C4FF", "#FE00CEFF"
                  "#6E899CFF", "#00B5F7FF", "#B68E00FF", "#C9FBE5FF", "#FF0092FF", "#22FFA7FF",
                  "#E3EE9EFF", "#86CE00FF", "#BC7196FF", "#7E7DCDFF", "#FC6955FF", "#E48F72FF")
 
-DARKLIGHT = c(2,1,2,1,2,1,
-              1,1,2,1,2,2,
-              2,1,2,1,2,1,
-              1,1,2,2,1,2)
+
+# Utility for choose black or white text
+
+#' @importFrom grDevices col2rgb
+textBW = function(bg, threshold = 0.3) {
+  rgb = col2rgb(bg) / 255
+
+  f = function(x) ifelse(x <= 0.03928,
+                         x / 12.92,
+                         ((x + 0.055) / 1.055) ^ 2.4)
+
+  L = 0.2126 * f(rgb[1, ]) +
+    0.7152 * f(rgb[2, ]) +
+    0.0722 * f(rgb[3, ])
+
+  ifelse(L > threshold, "black", "white")
+}
