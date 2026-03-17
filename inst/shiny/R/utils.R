@@ -3,3 +3,5 @@ mylink = function(text, href, .noWS = "outside", ...) {
     href = text
   shiny::a(text, href = href, .noWS = .noWS, target = "_blank", ...)
 }
+
+`%NA|%` = function(x, y) if(is.na(x)) y else x

@@ -62,9 +62,18 @@ ui = dashboardPage(title = "KLINK",
               "Hide or show markers with no genotype information. (Affects the 'LR table' in the app and in the Excel download.)"),
     radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
-    bsTooltip("likelihoods", "Hide or show likelihood columns? (Only affects the 'LR table' in the app.)"),
-    numericInput("decimals", label = "Decimals", value = 3, min = 1, step = 1),
-    numericInput("maxdist", label = "Ignore linkage above (cM)", value = 200, min = 0, step = 5),
+    bsTooltip("likelihoods", "Hide or show likelihood columns? (Affects app only; always included in download.)"),
+    div(id = "numrow",
+        style = "display:flex; gap:15px; padding:10px 15px 0 15px;",
+      div(style = "flex:1;",
+          numericInput("decimals", "Decimals", value = 3, min = 1, step = 1, width = "100%"),
+          bsTooltip("decimals", "Number of decimals to show in tables. (Affects app only; download uses full precision.)")
+      ),
+      div(style = "flex:1;",
+          numericInput("maxdist", "Unlinked > cM", value = NA, min = 0, step = 5, width = "100%"),
+          bsTooltip("maxdist", "Markers farther apart than this are treated as unlinked. Leave empty for no limit.")
+      )
+    ),
     hr(),
     div(style = "margin-top:20px;padding-right:30px",
         actionButton("compute", "Calculate LR", width = "100%", class = "btn-lg btn-danger",
@@ -478,7 +487,8 @@ server = function(input, output, session) {
   # Linked pairs
   linkedPairs = reactive({
     debug("linked pairs")
-    getLinkedPairs(markerData()$Marker, linkageMap(), maxdist = req(input$maxdist))
+    maxd =  if(is.na(input$maxdist)) Inf else input$maxdist
+    getLinkedPairs(markerData()$Marker, linkageMap(), maxdist = req(maxd))
   })
 
   # Karyogram plot
@@ -510,7 +520,7 @@ server = function(input, output, session) {
                       "Genetic map" = mapname(),
                       "Database" = famfile$params$dbName %||% "unknown",
                       "Map function" = input$mapfunction,
-                      "Max distance" = input$maxdist)
+                      "Max distance" = input$maxdist %NA|% "Inf")
 
       KLINK::writeResult(
         resultTable(),
@@ -540,7 +550,7 @@ server = function(input, output, session) {
     XML(NULL)
     updateRadioButtons(session, "maptype", selected = "map50")
     updateNumericInput(session, "decimals", value = 3)
-    updateNumericInput(session, "maxdist", value = 200)
+    updateNumericInput(session, "maxdist", value = NA)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")
     updateRadioButtons(session, "emptymarkers", selected = "hide")
     updateRadioButtons(session, "likelihoods", selected = "hide")

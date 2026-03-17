@@ -28,3 +28,7 @@
 .wait-cursor { cursor: wait !important; }
 
 .shiny-input-number {height: 24px; padding-top: 2px; padding-bottom: 2px}
+
+#numrow .shiny-input-container { padding: 0;}
+#numrow label {  white-space: nowrap; }
+}
