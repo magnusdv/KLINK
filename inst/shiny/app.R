@@ -60,6 +60,10 @@ ui = dashboardPage(title = "KLINK",
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
     radioButtons("mapfunction", "Map function", choices = c("Kosambi", "Haldane"),
                  selected = "Kosambi", inline = TRUE),
+    radioButtons("mutmod", "Mutation model", choices = c("Original", "Simple", "Off"),
+                 selected = "Original", inline = TRUE),
+    bsTooltip("mutmod",
+              "Global mutation model setting"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
     bsTooltip("emptymarkers",
@@ -164,7 +168,7 @@ server = function(input, output, session) {
 
   # Main reactive variables
   famfile = reactiveValues(famname = NULL, params = NULL)
-  pedigrees = reactiveValues(complete = NULL, reduced = NULL, active = NULL)
+  pedigrees = reactiveValues(complete = NULL, reduced = NULL, plot = NULL, active = NULL)
   XML = reactiveVal(NULL)
   NOTES = reactiveVal(NULL)
 
@@ -302,11 +306,15 @@ server = function(input, output, session) {
   })
 
   observeEvent(pedigrees$complete, {
-    debug("Set reduced/active")
+    debug("updates derived pedigrees")
     peds = pedigrees$complete
     pedred = KLINK:::removeEmpty(peds)
     pedigrees$reduced = pedred
-    pedigrees$active = if(input$hideEmptyComps) pedred else peds
+    pedigrees$plot = if(input$hideEmptyComps) pedred else peds
+    pedigrees$active = switch(input$mutmod,
+                              Original = pedred,
+                              Simple = lapply(pedred, \(x) setMutmod(x, model = "equal", rate = 0.001)),
+                              Off = lapply(pedred, \(x) setMutmod(x, model = NULL)))
     resultTable(NULL)
 
     # Update dropdown marker list
@@ -321,14 +329,14 @@ server = function(input, output, session) {
 
   observeEvent(input$showmarker, {
     if(input$showmarker == "(none)") {
-      markers = c("Marker" = "",  "(none)", pedtools::name(pedigrees$complete[[1]]))
+      markers = c("Marker" = "",  "(none)", pedtools::name(pedigrees$plot[[1]]))
       updateSelectInput(session, "showmarker", choices = markers)
     }
   })
 
   output$pedplot1 = renderPlot({
     debug("plot1")
-    ped1 = req(pedigrees$active[[1]])
+    ped1 = req(pedigrees$plot[[1]])
     m = input$showmarker
     if(m == "Marker") m = NULL
     KLINK:::plotPed(ped1, marker = selectedMarker(), cex = 1.2)
@@ -336,14 +344,26 @@ server = function(input, output, session) {
 
   output$pedplot2 = renderPlot({
     debug("plot2")
-    ped2 = req(pedigrees$active[[2]])
+    ped2 = req(pedigrees$plot[[2]])
     m = input$showmarker
     if(m == "Marker") m = NULL
     KLINK:::plotPed(ped2, marker = selectedMarker(), cex = 1.2)
   }, execOnResize = TRUE)
 
   observeEvent(input$hideEmptyComps, {
-    pedigrees$active = if(input$hideEmptyComps) pedigrees$reduced else pedigrees$complete
+    pedigrees$plot = if(input$hideEmptyComps) pedigrees$reduced else pedigrees$complete
+  })
+
+
+  # Mutation model ------------------------------------------------------------------------------
+
+  # Update the active pedigree when the mutation setting changes
+  observeEvent(input$mutmod, {
+    pedred = pedigrees$reduced |> req() # without empty components
+    pedigrees$active = switch(input$mutmod,
+                              Original = pedred,
+                              Simple = lapply(pedred, \(x) setMutmod(x, model = "equal", rate = 0.001)),
+                              Off = lapply(pedred, \(x) setMutmod(x, model = NULL)))
   })
 
 
@@ -364,7 +384,7 @@ server = function(input, output, session) {
   # Compute LR
   observeEvent(input$compute, {
     debug("compute LR")
-    peds = req(pedigrees$reduced)
+    peds = req(pedigrees$active)
 
     if(is.null(linkageMap()))
       return(showNote("No marker map has been loaded."))
@@ -384,7 +404,7 @@ server = function(input, output, session) {
   })
 
   # Reset LR table
-  observe({input$mapfunction; resultTable(NULL)})
+  observe({input$mapfunction; pedigrees$active; resultTable(NULL)})
 
   # Activate download button when LR table is ready
   observeEvent(resultTable(), {
@@ -408,8 +428,10 @@ server = function(input, output, session) {
 
   markerData = reactive({
     debug("markerData")
-    if(is.null(peds <- pedigrees$complete))
+    peds = pedigrees$active
+    if(is.null(peds))
       return(NULL)
+
     mdat = KLINK::markerSummary(peds, replaceNames = is.null(XML()))
     req(mdat)
 
@@ -418,7 +440,7 @@ server = function(input, output, session) {
     mdat[ord, , drop = FALSE]
   })
 
-  observeEvent(pedigrees$complete,
+  observeEvent(pedigrees$active,
     updateTabsetPanel(session, "tabs", selected = "Marker data"))
 
   # Print loaded marker data
@@ -528,7 +550,7 @@ server = function(input, output, session) {
 
       KLINK::writeResult(
         resultTable(),
-        pedigrees = pedigrees$reduced,
+        pedigrees = pedigrees$active,
         linkageMap = linkageMapSubset(),
         markerData = markerData(),
         outfile = file,
@@ -558,7 +580,7 @@ server = function(input, output, session) {
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")
     updateRadioButtons(session, "emptymarkers", selected = "hide")
     updateRadioButtons(session, "likelihoods", selected = "hide")
-    pedigrees$complete = pedigrees$reduced = pedigrees$active = NULL
+    pedigrees$complete = pedigrees$reduced = pedigrees$plot = pedigrees$active = NULL
     resultTable(NULL)
   })
 
