@@ -84,7 +84,7 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
   cmpos = linkageMap$cM[match(mvec, linkageMap$Marker)] |> setnames(mvec)
 
   # Initialise result table
-  res = cbind.data.frame(Pair = pair, markerData[c("Marker", gcols, "Typed")])
+  res = cbind.data.frame(Pair = pair, markerData[c("Marker", gcols, "Typed")], row.names = NULL)
   nr = nrow(res)
 
   # Fix NAs in pair
