@@ -48,7 +48,6 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
                 "LR table" = LRtable,
                 Notifications = outputNotes(notes),
                 "Full report" = NULL,
-                "Unlinked report" = NULL,
                 Plots = NULL)
 
   hs = createStyle(textDecoration = "bold")
@@ -86,18 +85,11 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
 
   # Write main report with special styling
   report = outputLRreport(resultTable, gcols = idsShort, AMEL = XML$AMEL)
-  writeReportSheet(wb, "Full report", report, pedigrees, famname, nameKeys, settings, notes, linked = TRUE)
+  writeReportSheet(wb, "Full report", report, pedigrees, famname, nameKeys, settings, notes, linked = TRUE, norsk = FALSE)
 
   # PIC values used to choose markers for unlinked report
   # NB: no longer using pics based on input db. Always using NorskDB_2024 (for consistency)
   pic = PICnor # setnames(markerData$PIC, markerData$Marker)
-
-  # Report with only unlinked markers
-  reportUnl = outputLRunlinked(resultTable, gcols = idsShort, AMEL = XML$AMEL, pic = pic)
-  writeReportSheet(wb, "Unlinked report", reportUnl, pedigrees, famname, nameKeys, settings, notes, linked = FALSE)
-
-  # REFA request: add LR column from unlinked report to "LR table" sheet
-  addUnlinkedColumn(wb, LRtable, reportUnl, hs = hs)
 
   activeSheet(wb) = "Full report"
   saveWorkbook(wb, file = outfile, overwrite = TRUE)
@@ -151,7 +143,7 @@ writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
   LRcol = match("LR", names(report))
 
   # Write main content
-  title = if(norsk) "Resultatrapport" else "Results Report"
+  title = if(norsk) "Resultatrapport" else "KLINK Report"
   if(!is.null(famname))
     title = paste0(title, ": ", sub(".fam", "", basename(famname), fixed = TRUE))
   writeData(wb, sheet, title)
@@ -244,7 +236,7 @@ outputLRcomplete = function(resultTable, hide = FALSE) {
 }
 
 
-# REFA report
+# Main report
 outputLRreport = function(resultTable, gcols, AMEL = NULL) {
 
   # Remove missing & handle linkage pairs
@@ -281,45 +273,6 @@ outputLRreport = function(resultTable, gcols, AMEL = NULL) {
 }
 
 
-# REFA report 2: Unlinked only
-outputLRunlinked = function(resultTable, gcols, AMEL = NULL, pic) {
-
-  # Remove markers with no data (and make linked leftovers into singles)
-  res = removeMissing(resultTable, gcols)
-
-  # From each pair, keep marker with highest PIC
-  r = resultTable[resultTable$Gsize == 2, , drop = FALSE]
-  keep = sapply(split(r, r$Pair), function(sub) sub$Marker[which.max(pic[sub$Marker])])
-
-  # Select unlinked markers
-  res = res[res$Gsize == 1 | res$Marker %in% keep, , drop = FALSE]
-  nr = nrow(res)
-  if(nr == 0)
-    return("No markers to report")
-
-  # Columns¨
-  res = cbind(Idx = 1:nr, res["Marker"], res[gcols], LR = res$LRsingle)
-
-  # Change allele separator to "-"
-  res[gcols] = lapply(res[gcols], \(x) sub("/", "-", x))
-
-  # Add totals
-  res = addTotals(res, "LR")
-
-  # Round
-  res$LR = c(sprintf("%.3f", res$LR[1:nr]), sprintf("%.4g", res$LR[nr+1])) |> fixNA()
-
-  # Add AMEL if given
-  res = addAMEL(res, AMEL)
-
-  names(res)[1] = ""
-  rownames(res) = NULL
-
-  # Return
-  res
-}
-
-
 # Removes markers with no data after sorting. (Ensures same order in both REFA reports.)
 removeMissing = function(restab, gcols) {
   res = restab
@@ -332,7 +285,7 @@ removeMissing = function(restab, gcols) {
   incomp = res$Pair %in% unique(res$Pair[miss2])
 
   # TODO: Is this still necessary?
-  if(any(miss2)) message("Download message: Yes, incomplete pairs are still handled")
+  #if(any(miss2)) message("Download message: Yes, incomplete pairs are still handled")
 
   # ... convert to singlepoint
   if(any(miss2)) {
@@ -391,7 +344,7 @@ getIdLegend = function(nameKeys) {
 
 getRelLegend = function(pedigrees, ids) {
   if(length(ids) != 2)
-    return(data.frame(Relationship = "No output (only for 2 individuals)", row.names = " "))
+    return(data.frame(Relationships = "No output (only for 2 individuals)", row.names = " "))
 
   rels = lapply(pedigrees, function(ped) {
     s = verbalisr::verbalise(ped, ids) |>
@@ -399,7 +352,7 @@ getRelLegend = function(pedigrees, ids) {
     paste(s, collapse = " AND ")
   })
 
-  data.frame("Relationship " = as.character(rels), row.names = paste("Ped", 1:2),
+  data.frame("Relationships " = as.character(rels), row.names = paste("Ped", 1:2),
              check.names = FALSE)
 }
 
@@ -423,20 +376,4 @@ getSettingsLegend = function(settings) {
   # Convert to data frame
   s = paste(names(settings), settings, sep = ": ")
   data.frame("Settings " = s, check.names = FALSE)
-}
-
-
-addUnlinkedColumn = function(wb, LRtable, reportUnl, hs = NULL) {
-  lrs = setnames(reportUnl$LR, reportUnl$Marker)
-  df = data.frame("LR.unl.report" = as.character(lrs[LRtable$Marker]))
-
-  # Insert two columns away
-  sheet = "LR table"
-  cl = ncol(LRtable) + 2
-
-  writeData(wb, sheet, x = df, startCol = cl, headerStyle = hs)
-  addStyle(wb, sheet, cols = cl, rows = 1:(nrow(LRtable)+1), stack = TRUE,
-           style = createStyle(halign = "center"))
-  setColWidths(wb, sheet, cl, "12.14")
-
 }
