@@ -46,11 +46,15 @@ ui = dashboardPage(title = "KLINK",
                 accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
     ),
 
-    tags$div(class = "loadfile", fileInput("xmlfile", "(Optional) .xml", buttonLabel = icon("folder-open"), accept = ".xml")),
+    tags$div(class = "loadfile",
+             fileInput("xmlfile", "(Optional) .xml",
+                       buttonLabel = icon("folder-open"), accept = ".xml")),
 
     fluidRow(style = "padding: 0px 15px 0px 15px",
-      column(6, actionButton("loadex1",  "Example 1", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
-      column(6, align = "right", actionButton("loadex2",  "Example 2", class = "btn btn-success", style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90"))
+      column(6, actionButton("loadex1",  "Example 1", class = "btn btn-success",
+                             style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90")),
+      column(6, align = "right", actionButton("loadex2",  "Example 2", class = "btn btn-success",
+                                              style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90"))
     ),
     hr(),
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
@@ -59,7 +63,7 @@ ui = dashboardPage(title = "KLINK",
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
     bsTooltip("emptymarkers",
-              "Hide or show markers with no genotype information. (Affects the 'LR table' in the app and in the Excel download.)"),
+              "Hide or show markers with no genotype information. (Affects the LR table in the app and in download.)"),
     radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
     bsTooltip("likelihoods", "Hide or show likelihood columns? (Affects app only; always included in download.)"),

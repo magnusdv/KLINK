@@ -22,7 +22,7 @@ ped = halfSibPed(2, 1) |>
 ibd = ibdsim2::ibdsim(ped, ids = ids, seed = 1729)
 
 ped1 = profileSimIBD(ped, ibd, ids = ids, seed = 1729) |>
-  setAlleles(markers = c("D5S2500"), alleles = 0) |> # 1 empty marker
+  removeGenotypes(markers = "D5S2500") |> # 1 empty marker
   setGenotype(ids = "C", marker = "D2S1360", geno = "27/27") |>
   setMap(map = data.frame(Chrom = NA, Marker = map$Marker, Mb = NA))
 
