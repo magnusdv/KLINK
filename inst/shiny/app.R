@@ -38,12 +38,6 @@ ui = dashboardPage(title = "KLINK",
     ),
     tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
 
-    radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
-                 choices = c("Built-in" = "map50", "Custom" = "custom")),
-    conditionalPanel(
-      condition = "input.maptype == 'custom'",
-      fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
-                accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
     ),
 
     tags$div(class = "loadfile",
@@ -58,6 +52,14 @@ ui = dashboardPage(title = "KLINK",
     ),
     hr(),
     h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
+    radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
+                 choices = c("Built-in" = "map50", "Custom" = "custom")),
+    conditionalPanel(
+      condition = "input.maptype == 'custom'",
+      fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
+                accept = c("text/tab-separated-values", "text/plain", ".txt", ".map"))
+    ),
+
     radioButtons("mapfunction", "Map function", choices = c("Kosambi", "Haldane"),
                  selected = "Kosambi", inline = TRUE),
     radioButtons("mutmod", "Mutation model", choices = c("Original", "Simple", "Off"),
