@@ -30,19 +30,21 @@ ui = dashboardPage(title = "KLINK",
   ),
 
   sidebar = dashboardSidebar(
-    fluidRow(style = "padding: 5px 15px 0px 15px",
-             column(6, h4(HTML("<b>INPUT</b>"), style = "margin-bottom: 0px")),
-             column(6, align = "right",
-                    actionButton("reset",  "RESET",  class = "btn-sm btn-warning",
-                                  style = "font-weight:bolder; padding:0px 8px; margin: 8px 0px 0px 0px;")),
-    ),
-    tags$div(class = "loadfile", fileInput("famfile", "Load .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
 
+    tags$div(
+      style = "display:flex; justify-content:space-between; align-items:center; padding:5px 15px 0 15px; margin-top:10px;",
+      h4(HTML("<b>INPUT</b>"), style = "margin:0;"),
+      tags$div(
+        style = "display:flex; align-items:center; gap:15px;",
+        actionButton("reset", "RESET", class = "btn-sm btn-warning", style = "font-weight:bolder; padding:0 8px; margin:0;"),
+        helpButton("inputHelp")
+      )
     ),
+    tags$div(class = "loadfile",
+             fileInput("famfile", "Familias .fam file", buttonLabel = icon("folder-open"), accept = ".fam")),
 
     tags$div(class = "loadfile",
-             fileInput("xmlfile", "(Optional) .xml",
-                       buttonLabel = icon("folder-open"), accept = ".xml")),
+             fileInput("xmlfile", "Optional .xml file", buttonLabel = icon("folder-open"), accept = ".xml")),
 
     fluidRow(style = "padding: 0px 15px 0px 15px",
       column(6, actionButton("loadex1",  "Example 1", class = "btn btn-success",
@@ -50,8 +52,15 @@ ui = dashboardPage(title = "KLINK",
       column(6, align = "right", actionButton("loadex2",  "Example 2", class = "btn btn-success",
                                               style = "padding: 1px 8px; margin: 8px 0px 0px 0px; background-color:#90ee90"))
     ),
+
     hr(),
-    h4(HTML("<b>SETTINGS</b>"), style = "padding-left:15px; margin-bottom: 0px; margin-top: 0px"),
+
+    tags$div(
+      style = "display:flex; justify-content:space-between; align-items:center; padding:0 15px; margin:0;",
+      h4(HTML("<b>SETTINGS</b>"), style = "margin:0;"),
+      helpButton("settingsHelp")
+    ),
+
     radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
                  choices = c("Built-in" = "map50", "Custom" = "custom")),
     conditionalPanel(
@@ -69,19 +78,19 @@ ui = dashboardPage(title = "KLINK",
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
     bsTooltip("emptymarkers",
-              "Hide or show markers with no genotype information. (Affects the LR table in the app and in download.)"),
+              "Hide or show markers with no genotype information."),
     radioButtons("likelihoods", "Likelihoods", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show", "Loglik" = "loglik"), selected = "hide"),
-    bsTooltip("likelihoods", "Hide or show likelihood columns? (Affects app only; always included in download.)"),
+    bsTooltip("likelihoods", "Hide or show (log-)likelihood columns."),
     div(id = "numrow",
         style = "display:flex; gap:15px; padding:10px 15px 0 15px;",
       div(style = "flex:1;",
           numericInput("decimals", "Decimals", value = 3, min = 1, step = 1, width = "100%"),
-          bsTooltip("decimals", "Number of decimals to show in tables. (Affects app only; download uses full precision.)")
+          bsTooltip("decimals", "Number of decimals to show in tables.")
       ),
       div(style = "flex:1;",
           numericInput("maxdist", "Unlinked > cM", value = NA, min = 0, step = 5, width = "100%"),
-          bsTooltip("maxdist", "Markers farther apart than this are treated as unlinked. Leave empty for no limit.")
+          bsTooltip("maxdist", "Markers farther apart than this are treated as unlinked.")
       )
     ),
     hr(),
@@ -586,7 +595,17 @@ server = function(input, output, session) {
     resultTable(NULL)
   })
 
+  # Help page modals-------------------------------------------------------------------------
+
+  observeEvent(input$inputHelp, {
+    showHelpModal("input.md")
+  })
+  observeEvent(input$settingsHelp, {
+    showHelpModal("settings.md")
+  })
 }
+
+
 
 # Run the application
 shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))
