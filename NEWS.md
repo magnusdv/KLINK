@@ -1,3 +1,23 @@
+# KLINK 1.2.0
+
+## New app features
+
+* Added help buttons and doc pages.
+* Moved the "Marker map" control down to Settings.
+* New setting controlling mutation models.
+* Moved the "Max dist" input field, and changed the label to "Unlinked >".
+* Improved the karyogram plot.
+
+## Minor changes and fixes
+
+* Excel output: A few Norwegian words have been replaced by English. 
+* Excel output: Some obsolete content has been removed, included the 'Unlinked report' sheet.
+* Don't relabel to Person1, Person2, ... if everyone has short names.
+* Explicitly import `shinyBS`, which was mistakenly left out in the last version.
+* Fix row names in result tables.
+* Better checks for malformed map files.
+
+
 # KLINK 1.1.0
 
 ## New features
