@@ -324,8 +324,8 @@ server = function(input, output, session) {
     pedigrees$plot = if(input$hideEmptyComps) pedred else peds
     pedigrees$active = switch(input$mutmod,
                               Original = pedred,
-                              Simple = lapply(pedred, \(x) setMutmod(x, model = "equal", rate = 0.001)),
-                              Off = lapply(pedred, \(x) setMutmod(x, model = NULL)))
+                              Simple = lapply(pedred, \(x) pedtools::setMutmod(x, model = "equal", rate = 0.001)),
+                              Off = lapply(pedred, \(x) pedtools::setMutmod(x, model = NULL)))
     resultTable(NULL)
 
     # Update dropdown marker list
@@ -373,8 +373,8 @@ server = function(input, output, session) {
     pedred = pedigrees$reduced |> req() # without empty components
     pedigrees$active = switch(input$mutmod,
                               Original = pedred,
-                              Simple = lapply(pedred, \(x) setMutmod(x, model = "equal", rate = 0.001)),
-                              Off = lapply(pedred, \(x) setMutmod(x, model = NULL)))
+                              Simple = lapply(pedred, \(x) pedtools::setMutmod(x, model = "equal", rate = 0.001)),
+                              Off = lapply(pedred, \(x) pedtools::setMutmod(x, model = NULL)))
   })
 
 
@@ -586,6 +586,7 @@ server = function(input, output, session) {
     NOTES(NULL)
     XML(NULL)
     updateRadioButtons(session, "maptype", selected = "map50")
+    updateRadioButtons(session, "mutmod", selected = "Original")
     updateNumericInput(session, "decimals", value = 3)
     updateNumericInput(session, "maxdist", value = NA)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")
