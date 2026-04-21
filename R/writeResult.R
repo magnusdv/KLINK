@@ -87,10 +87,6 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
   report = outputLRreport(resultTable, gcols = idsShort, AMEL = XML$AMEL)
   writeReportSheet(wb, "Full report", report, pedigrees, famname, nameKeys, settings, notes, linked = TRUE, norsk = FALSE)
 
-  # PIC values used to choose markers for unlinked report
-  # NB: no longer using pics based on input db. Always using NorskDB_2024 (for consistency)
-  pic = PICnor # setnames(markerData$PIC, markerData$Marker)
-
   activeSheet(wb) = "Full report"
   saveWorkbook(wb, file = outfile, overwrite = TRUE)
 }
@@ -283,9 +279,6 @@ removeMissing = function(restab, gcols) {
   # Incomplete pairs ...
   miss2 = res$miss & res$Gsize == 2
   incomp = res$Pair %in% unique(res$Pair[miss2])
-
-  # TODO: Is this still necessary?
-  #if(any(miss2)) message("Download message: Yes, incomplete pairs are still handled")
 
   # ... convert to singlepoint
   if(any(miss2)) {

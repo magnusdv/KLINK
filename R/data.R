@@ -1,13 +1,3 @@
-#' Built-in linkage map
-#'
-#' A genetic map including 50 autosomal STR markers.
-#'
-#' @format A data frame with 50 rows and 4 columns: `Marker`, `Chr`, `cM`,
-#'   `Kit`.
-#'
-"LINKAGEMAP"
-
-
 #' Dataset for a paternity case
 #'
 #' A list of two pedigrees forming the hypotheses in a paternity case: H1 (`AF`
