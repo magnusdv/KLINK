@@ -32,4 +32,4 @@ Then you may start KLINK as follows:
 KLINK::launchApp()
 ```
 
-<img src="man/figures/screenshot-klink.png" width="100%" />
+<img src="man/figures/screenshot120.png" alt="" width="100%" />

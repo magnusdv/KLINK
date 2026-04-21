@@ -40,5 +40,5 @@ KLINK::launchApp()
 ```
 
 ```{r, echo = F}
-knitr::include_graphics("man/figures/screenshot-klink.png")
+knitr::include_graphics("man/figures/screenshot120.png")
 ```
