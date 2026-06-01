@@ -136,12 +136,12 @@ ui = dashboardPage(title = "KLINK",
                       style = "position:absolute; right:10px; top:5px; margin:0px; padding:4px 8px; background:orange")),
                    tabPanel("Linkage map",
                             fluidRow(
-                              column(6, class = "col-lg-5", gt::gt_output("linkage_table")),
-                              column(6, class = "col-lg-7", plotOutput("karyo", height = "700px")) # todo:680?
+                              column(6, class = "col-lg-5", scrollGt("linkage_table", height = "710px")),
+                              column(6, class = "col-lg-7", plotOutput("karyo", height = "710px"))
                             )
                    ),
-                   tabPanel("Marker data", gt::gt_output("marker_table")),
-                   tabPanel("LR table", gt::gt_output("result_table"))
+                   tabPanel("Marker data", scrollGt("marker_table", height = "710px")),
+                   tabPanel("LR table", scrollGt("result_table", height = "710px"))
             ),
      ),
    ),
