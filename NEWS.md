@@ -1,3 +1,16 @@
+# Dev version
+
+## New app features
+
+* More robust loading of custom marker maps, accept files using comma as decimal separator.
+* Custom marker maps may now be provided as Excel files. This includes KLINK download files, which contain the marker map in the first sheet.
+
+## Minor changes and fixes
+
+* Fix karyogram colours when there are many linked pairs.
+* Control the height of tables in the app.
+
+
 # KLINK 1.2.0
 
 ## New app features
