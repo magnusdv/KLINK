@@ -7,14 +7,21 @@
 loadMap(path)
 }
 \arguments{
-\item{path}{Path to a map file, which should contain tab-separated columns
-\code{Marker}, \code{Chr}, \code{cM}. (Slight variations are allowed.)}
+\item{path}{Path to the map file, either as plain text or Excel.}
 }
 \value{
-A data frame.
+A data frame with standardised column names and rows sorted by
+chromosome and position.
 }
 \description{
-Load genetic map
+Loads a genetic map from a tab-separated text file, or from the first sheet
+of an Excel file with extension \code{.xlsx}.
+}
+\details{
+The file should contain columns \code{Marker}, \code{Chr} and \code{cM} (slight
+variations in column names are allowed). Chromosomes should be positive
+integers, optionally prefixed by "chr". Positions must be nonnegative
+numeric values. Both period and comma are accepted as decimal separators.
 }
 \examples{
 tmp = tempfile(fileext = ".map")
