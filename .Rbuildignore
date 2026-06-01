@@ -9,3 +9,5 @@
 ^README\.Rmd$
 ^inst/shiny/rsconnect$
 ^\.github$
+^\.positai$
+^\.claude$
