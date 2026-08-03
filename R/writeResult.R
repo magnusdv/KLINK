@@ -59,7 +59,9 @@ writeResult = function(resultTable, pedigrees, linkageMap, markerData,
   }
 
   # Pedigree sheet
-  writePlots(wb, "Plots", pedigrees)
+  plotfiles = c(tempfile(fileext = ".png"), tempfile(fileext = ".png"))
+  on.exit(unlink(plotfiles), add = TRUE)
+  writePlots(wb, "Plots", pedigrees, plotfiles)
 
   ped1 = pedigrees[[1]]
   resNms = names(resultTable)
@@ -103,23 +105,21 @@ outputMdata = function(markerData, hide = FALSE) {
 }
 
 #' @importFrom grDevices png dev.off
-writePlots = function(wb, sheet, peds) {
-  fil1 = tempfile(fileext = ".png")
-  fil2 = tempfile(fileext = ".png")
+writePlots = function(wb, sheet, peds, files) {
 
-  png(fil1, width = 4.5, height = 3.5, units = "in", res = 300)
-  plotPed(peds[[1]], cex = 1, title = "Ped 1", margins = c(1,2,3,2))
-  graphics::box("outer")
-  dev.off()
+  writePlot = function(file, ped, title) {
+    png(file, width = 4.5, height = 3.5, units = "in", res = 300)
+    on.exit(dev.off())
+    plotPed(ped, cex = 1, title = title, margins = c(1,2,3,2))
+    graphics::box("outer")
+  }
 
-  png(fil2, width = 4.5, height = 3.5, units = "in", res = 300)
-  plotPed(peds[[2]], cex = 1, title = "Ped 2", margins = c(1,2,3,2))
-  graphics::box("outer")
-  dev.off()
+  writePlot(files[1], peds[[1]], "Ped 1")
+  writePlot(files[2], peds[[2]], "Ped 2")
 
   # Write to Excel
-  insertImage(wb, "Plots", file = fil1, width = 4.5, height = 3.5, startRow = 3, startCol = 2)
-  insertImage(wb, "Plots", file = fil2, width = 4.5, height = 3.5, startRow = 21, startCol = 2)
+  insertImage(wb, sheet, file = files[1], width = 4.5, height = 3.5, startRow = 3, startCol = 2)
+  insertImage(wb, sheet, file = files[2], width = 4.5, height = 3.5, startRow = 21, startCol = 2)
 }
 
 writeReportSheet = function(wb, sheet, report, pedigrees, famname, nameKeys,
