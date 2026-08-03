@@ -1,14 +1,19 @@
-# Dev version
+# KLINK 1.2.1
+
+A paper presenting KLINK has been published in FSI:Genetics (Vigeland and Gilfillan, 2026):  
+[*KLINK: A program for kinship testing with pairwise linked STR markers*](https://doi.org/10.1016/j.fsigen.2026.103578).
 
 ## New app features
 
-* More robust loading of custom marker maps, accept files using comma as decimal separator.
+* More robust loading of custom marker maps, also supporting files using comma as decimal separator.
 * Custom marker maps may now be provided as Excel files. This includes KLINK download files, which contain the marker map in the first sheet.
+* Requires **pedtools** 2.11.0 and **pedprobr** 1.1.0, giving more efficient likelihood calculations and improved handling of looped pedigrees.
 
 ## Minor changes and fixes
 
 * Fix karyogram colours when there are many linked pairs.
 * Control the height of tables in the app.
+* General code and documentation clean-up.
 
 
 # KLINK 1.2.0
@@ -61,7 +66,7 @@ The "LR table" sheet of the Excel download also uses this marker order.
 
 * Renamed columns in the linkage map: `Chrom` -> `Chr` and `PosCM` -> `cM`. When loading custom maps, variations of these names are accepted.
 
-* Only on shinyapp.io: Show banner warning about uploading sensitive data.
+* Only on shinyapps.io: Show banner warning about uploading sensitive data.
 
 
 ## Minor changes and fixes
