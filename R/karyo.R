@@ -39,7 +39,7 @@ karyogram = function(linkageMap, linkedPairs = NULL,
   # Positions
   chr = linkageMap$Chr
   y = chr + h/2
-  x = pmin(linkageMap$cM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
+  x = pmin.int(linkageMap$cM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
 
   # Colours and symbols
   fills = rep(unlinkedCol, length(pp))

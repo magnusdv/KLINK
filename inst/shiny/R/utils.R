@@ -44,7 +44,7 @@ helpFile = function(filename) {
   if(file.exists(p))
     return(p)
 
-  stop("Help file not found: ", file)
+  stop("Help file not found: ", filename)
 }
 
 scrollGt = function(id, height = "710px") {

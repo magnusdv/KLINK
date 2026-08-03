@@ -44,7 +44,10 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
 
   st = Sys.time()
 
-  MAPFUN = switch(tolower(mapfun), haldane = pedprobr::haldane, kosambi = pedprobr::kosambi)
+  MAPFUN = switch(tolower(mapfun),
+                  haldane = pedprobr::haldane,
+                  kosambi = pedprobr::kosambi,
+                  stop2("Illegal map function: ", mapfun))
 
   if(is.null(markerData)) {
     markerData = markerSummary(pedigrees)

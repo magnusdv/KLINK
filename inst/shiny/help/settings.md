@@ -10,7 +10,7 @@ The marker map specifies the genetic positions of markers, measured in centiMorg
 - **Built-in**: A map with updated positions for 50 markers from several common forensic STR kits. (Default.)
 - **Custom**: Lets you upload your own map file.
 
-A custom map file must be tab-delimited and contain columns matching **Marker**, **Chr**, and **cM**. Column order does not matter, and matching is case-insensitive. Longer names are also accepted, provided they start with matching terms; for example **Marker name** or **Chromosome**. If no column matches **cM**, KLINK will look for **POS** instead and use that column as the marker position.
+A custom map may be a tab-delimited text file or (the first sheet of) an Excel (`.xlsx`) file, with columns matching **Marker**, **Chr**, and **cM**. Column order does not matter, and matching is case-insensitive. Longer names are also accepted, provided they start with matching terms; for example **Marker name** or **Chromosome**. If no column matches **cM**, KLINK will look for **POS** instead and use that column as the marker position.
 
 Chromosome values must be positive integers, optionally written with the prefix `chr`.
 

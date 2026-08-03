@@ -51,7 +51,7 @@ closestPairs = function(v, maxdist = Inf) {
 
   res = list()
 
-  while(T) {
+  repeat {
     b = which.min(dfs)
     if(!length(b) || dfs[b] > maxdist)
       break

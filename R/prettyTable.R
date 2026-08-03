@@ -102,7 +102,9 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
   extraDec = decimals - 3
 
   # First column annot: Uninformative for linkage
-  uninf = restab$Typed < 2 & restab$Marker %in% unlist(linkedPairs)
+  #uninf = restab$Typed < 2 & restab$Marker %in% unlist(linkedPairs)
+  uninf = restab$Typed < 2 &
+    matchMarkernames(restab$Marker, unlist(linkedPairs), nomatch = 0L) > 0L
   restab$annot = ifelse(uninf, "u", "")
 
   # Add totals

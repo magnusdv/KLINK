@@ -6,7 +6,7 @@ h1 {margin-top: 0;}
 
 ### Familias .fam file
 
-The is the main input for KLINK, containing the pedigree structure, genotypes, allele frequencies and parameters for mutation models.
+This is the main input for KLINK, containing the pedigree structure, genotypes, allele frequencies and parameters for mutation models.
 It is typically exported from the Familias program itself (https://www.familias.name/), but can also be created from R using the `pedFamilias` package.
 
 ### Optional .xml file
