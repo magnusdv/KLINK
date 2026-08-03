@@ -11,11 +11,18 @@ status](https://www.r-pkg.org/badges/version/KLINK)](https://CRAN.R-project.org/
 [![](https://cranlogs.r-pkg.org/badges/last-month/KLINK?color=yellow)](https://cran.r-project.org/package=KLINK)
 <!-- badges: end -->
 
-KLINK is an R package and a Shiny application for LR calculations in
-forensic kinship testing. For more information, see the [KLINK
-website](https://magnusdv.github.io/pedsuite/articles/web_only/klink.html).
+KLINK is an R package and Shiny app for LR calculations in forensic
+kinship testing, with support for pairwise linked STR markers. It is
+built on [pedsuite](https://magnusdv.github.io/pedsuite), with a
+dedicated [KLINK
+homepage](https://magnusdv.github.io/pedsuite/articles/web_only/klink.html).
 
-Or try the live app here: <https://magnusdv.shinyapps.io/klink/>
+For details, see the paper [*KLINK: A program for kinship testing with
+pairwise linked STR
+markers*](https://doi.org/10.1016/j.fsigen.2026.103578) (Vigeland and
+Gilfillan, 2026, *Forensic Science International: Genetics*).
+
+**Try the online app:** <https://magnusdv.shinyapps.io/klink/>
 
 ## Running KLINK locally
 

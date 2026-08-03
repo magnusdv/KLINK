@@ -3,22 +3,24 @@ Title: Kinship Analysis with Linked Markers
 Version: 1.2.0.9000
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
-    comment = c(ORCID = "0000-0002-9134-4962"))
+           comment = c(ORCID = "0000-0002-9134-4962"))
 Description: A 'shiny' application for forensic kinship testing, based on
     the 'pedsuite' R packages. 'KLINK' is closely aligned with the (non-R)
     software 'Familias' and 'FamLink', but offers several unique features,
     including visualisations and automated report generation. The
     calculation of likelihood ratios supports pairs of linked markers, and
-    all common mutation models.
+    all common mutation models. The program is described in Vigeland and
+    Gilfillan (2026) <doi:10.1016/j.fsigen.2026.103578>.
 License: GPL (>= 3)
-URL: https://github.com/magnusdv/KLINK
+URL: https://github.com/magnusdv/KLINK,
+    https://doi.org/10.1016/j.fsigen.2026.103578
 BugReports: https://github.com/magnusdv/KLINK/issues
 Depends: 
     R (>= 4.2)
 Imports: 
     forrel (>= 1.9.0),
-    norSTR,
     gt,
+    norSTR,
     openxlsx,
     pedFamilias,
     pedmut,
@@ -31,8 +33,8 @@ Imports:
     shinyjs,
     verbalisr,
     xml2
+Config/roxygen2/version: 8.0.0
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.0.0

@@ -6,12 +6,13 @@
 \alias{KLINK-package}
 \title{KLINK: Kinship Analysis with Linked Markers}
 \description{
-A 'shiny' application for forensic kinship testing, based on the 'pedsuite' R packages. 'KLINK' is closely aligned with the (non-R) software 'Familias' and 'FamLink', but offers several unique features, including visualisations and automated report generation. The calculation of likelihood ratios supports pairs of linked markers, and all common mutation models.
+A 'shiny' application for forensic kinship testing, based on the 'pedsuite' R packages. 'KLINK' is closely aligned with the (non-R) software 'Familias' and 'FamLink', but offers several unique features, including visualisations and automated report generation. The calculation of likelihood ratios supports pairs of linked markers, and all common mutation models. The program is described in Vigeland and Gilfillan (2026) \doi{10.1016/j.fsigen.2026.103578}.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/magnusdv/KLINK}
+  \item \doi{10.1016/j.fsigen.2026.103578}
   \item Report bugs at \url{https://github.com/magnusdv/KLINK/issues}
 }
 

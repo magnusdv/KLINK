@@ -148,11 +148,13 @@ ui = dashboardPage(title = "KLINK",
    p("This is KLINK version", VERSION, "(",
      mylink("changelog", "https://github.com/magnusdv/KLINK/blob/master/NEWS.md"), " | ",
      mylink("official releases", "https://github.com/magnusdv/KLINK/releases"), ").",
-     "If you encounter problems, please file a ",
-     mylink("bug report", "https://github.com/magnusdv/KLINK/issues"), ". See also the ",
+     "If you use KLINK in a publication, please cite ",
+     mylink("this paper", "https://doi.org/10.1016/j.fsigen.2026.103578"), ".",
+     "See also the ",
      mylink("KLINK homepage", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html"),
-     " for more information.")
-   )
+     ". Bug reports are welcome ",
+     mylink("here", "https://github.com/magnusdv/KLINK/issues"), "."),
+  )
 )
 
 
@@ -160,8 +162,12 @@ ui = dashboardPage(title = "KLINK",
 
 server = function(input, output, session) {
 
-  # Close app when browser closes
-  observeEvent(input$browserClosed, stopApp())
+  # Stop the app when the local session closes
+  session$onSessionEnded(function() {
+    host = isolate(session$clientData$url_hostname)
+    if(isTRUE(host %in% c("localhost", "127.0.0.1", "::1")))
+      stopApp()
+  })
 
   # Show banner with warning on shinyapps.io
   output$banner = renderUI({
