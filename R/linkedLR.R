@@ -7,7 +7,7 @@
 #'   `cM`. By default, a built-in map `norSTR::map50` of 50 STR markers is used.
 #' @param linkedPairs A list of marker pairs. If not supplied, calculated as
 #'   `getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)`.
-#' @param maxdist A number, passed onto `getLinkedMarkers()` if `linkedPairs` is
+#' @param maxdist A number, passed onto `getLinkedPairs()` if `linkedPairs` is
 #'   NULL.
 #' @param markerData A data frame with marker data, typically the output of
 #'   `markerSummary(pedigrees)`.

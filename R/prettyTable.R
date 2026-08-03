@@ -59,7 +59,7 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
 # Actual tables -----------------------------------------------------------
 
 
-prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, typed = NULL, decimals = 3) {
+prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, decimals = 3) {
   # First column annot: Index
   map$annot = seq_len(nrow(map))
   map$Typed = NA_integer_
@@ -102,7 +102,6 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
   extraDec = decimals - 3
 
   # First column annot: Uninformative for linkage
-  #uninf = restab$Typed < 2 & restab$Marker %in% unlist(linkedPairs)
   uninf = restab$Typed < 2 &
     matchMarkernames(restab$Marker, unlist(linkedPairs), nomatch = 0L) > 0L
   restab$annot = ifelse(uninf, "u", "")

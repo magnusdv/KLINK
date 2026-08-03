@@ -26,7 +26,7 @@ linkedLR(
 \item{linkedPairs}{A list of marker pairs. If not supplied, calculated as
 \code{getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)}.}
 
-\item{maxdist}{A number, passed onto \code{getLinkedMarkers()} if \code{linkedPairs} is
+\item{maxdist}{A number, passed onto \code{getLinkedPairs()} if \code{linkedPairs} is
 NULL.}
 
 \item{markerData}{A data frame with marker data, typically the output of

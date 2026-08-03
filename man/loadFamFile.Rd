@@ -16,7 +16,9 @@ loadFamFile(path, fallbackModel = "equal", withParams = FALSE)
 included in the output. (See \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.)}
 }
 \value{
-A list of two \code{ped} objects.
+If \code{withParams = FALSE}, a list of two pedigree hypotheses in the
+form of \code{ped} objects. If \code{withParams = TRUE}, a list with components
+\code{peds} and \code{params}.
 }
 \description{
 Load \code{.fam} file
@@ -25,5 +27,7 @@ Load \code{.fam} file
 fam = system.file("extdata/halfsib-test.fam", package = "KLINK")
 peds = loadFamFile(fam)
 pedtools::plotPedList(peds)
+
+loadFamFile(fam, withParams = TRUE)$params
 
 }

@@ -148,7 +148,7 @@ ui = dashboardPage(title = "KLINK",
      "See also the ",
      mylink("KLINK homepage", "https://magnusdv.github.io/pedsuite/articles/web_only/klink.html"),
      ". Bug reports are welcome ",
-     mylink("here", "https://github.com/magnusdv/KLINK/issues"), "."),
+     mylink("here", "https://github.com/magnusdv/KLINK/issues"), ".")
   )
 )
 
@@ -351,16 +351,12 @@ server = function(input, output, session) {
   output$pedplot1 = renderPlot({
     debug("plot1")
     ped1 = req(pedigrees$plot[[1]])
-    m = input$showmarker
-    if(m == "Marker") m = NULL
     KLINK:::plotPed(ped1, marker = selectedMarker(), cex = 1.2)
   }, execOnResize = TRUE)
 
   output$pedplot2 = renderPlot({
     debug("plot2")
     ped2 = req(pedigrees$plot[[2]])
-    m = input$showmarker
-    if(m == "Marker") m = NULL
     KLINK:::plotPed(ped2, marker = selectedMarker(), cex = 1.2)
   }, execOnResize = TRUE)
 
@@ -543,7 +539,9 @@ server = function(input, output, session) {
     debug("linkage map table")
     map = linkageMapSubset()
     validate(need(!is.null(map), "No marker map has been loaded."))
-    KLINK:::prettyLinkageMap(map, linkedPairs(), hide = input$emptymarkers == "hide", decimals = input$decimals)
+    KLINK:::prettyLinkageMap(map, linkedPairs(),
+                             hide = input$emptymarkers == "hide",
+                             decimals = input$decimals)
   }, width = "100%", align = "left")
 
 

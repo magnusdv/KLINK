@@ -6,12 +6,16 @@
 #' @param withParams A logical indicating if the Familias parameters should be
 #'   included in the output. (See [pedFamilias::readFam()].)
 #'
-#' @return A list of two `ped` objects.
+#' @return If `withParams = FALSE`, a list of two pedigree hypotheses in the
+#'   form of `ped` objects. If `withParams = TRUE`, a list with components
+#'   `peds` and `params`.
 #'
 #' @examples
 #' fam = system.file("extdata/halfsib-test.fam", package = "KLINK")
 #' peds = loadFamFile(fam)
 #' pedtools::plotPedList(peds)
+#'
+#' loadFamFile(fam, withParams = TRUE)$params
 #'
 #' @export
 loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {

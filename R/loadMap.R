@@ -24,6 +24,7 @@
 #' @export
 loadMap = function(path) {
   formatMsg = "\n\nThe map file must be tab-separated and contain\nthe following named columns: Marker, Chr, cM."
+  formatMsg = "\n\nThe map file must be a tab-separated text file (or Excel file)\ncontaining columns 'Marker', 'Chr', 'cM'."
 
   # File extension
   ext = tolower(tools::file_ext(path))
