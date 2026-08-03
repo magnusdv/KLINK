@@ -1,4 +1,4 @@
-# KLINK 1.2.1
+# KLINK 1.2.2
 
 A paper presenting KLINK has been published in FSI:Genetics (Vigeland and Gilfillan, 2026):  
 [*KLINK: A program for kinship testing with pairwise linked STR markers*](https://doi.org/10.1016/j.fsigen.2026.103578).
