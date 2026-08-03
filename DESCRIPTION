@@ -16,15 +16,16 @@ BugReports: https://github.com/magnusdv/KLINK/issues
 Depends: 
     R (>= 4.2)
 Imports: 
-    forrel,
+    forrel (>= 1.9.0),
     norSTR,
     gt,
     openxlsx,
     pedFamilias,
     pedmut,
-    pedprobr,
-    pedtools (>= 2.9.0),
-    shiny,
+    pedprobr (>= 1.1.0),
+    pedtools (>= 2.11.0),
+    scales,
+    shiny (>= 1.9.0),
     shinyBS,
     shinydashboard,
     shinyjs,
