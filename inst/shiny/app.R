@@ -110,11 +110,6 @@ ui = dashboardPage(title = "KLINK",
     useBusyIndicators(spinners = FALSE, pulse = TRUE),
     busyIndicatorOptions(pulse_height = "10px"),
 
-    # Embed JS here; cannot send gmail attachment with script.js
-    tags$script(HTML("
-      window.onbeforeunload = function(){ Shiny.onInputChange('browserClosed', Math.random()); };
-    ")),
-
    fluidRow(
      column(width = 4,
             box(title = tagList("Ped 1",

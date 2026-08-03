@@ -1,18 +1,22 @@
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q89XNF62C2"></script>
 <script>
+window.buttonClick = function() {};
+
+if (/\.shinyapps\.io$/.test(window.location.hostname)) {
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  window.gtag = function() { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', 'G-Q89XNF62C2');
 
-  gtag('config', 'G-Q89XNF62C2');
-</script>
+  var script = document.createElement('script');
+  script.async = true;
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-Q89XNF62C2';
+  document.head.appendChild(script);
 
-<script>
-function buttonClick(buttonId) {
-  gtag('event', 'click', {
-    'event_category': 'button',
-    'event_label': buttonId
-  });
+  window.buttonClick = function(buttonId) {
+    window.gtag('event', 'click', {
+      event_category: 'button',
+      event_label: buttonId
+    });
+  };
 }
 </script>
