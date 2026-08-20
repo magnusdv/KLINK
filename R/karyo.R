@@ -26,15 +26,15 @@ karyogram = function(linkageMap, linkedPairs = NULL,
 
   # Prepare colours for linked pairs; this gives same colours as the gt tables
   nPairs = length(linkedPairs)
-  if(nPairs) {
+  if(nPairs > length(cols)) {
     pairLevels = factor(seq_len(nPairs), levels = seq_len(nPairs))
     cols = scales::col_factor(cols, domain = pairLevels)(pairLevels)
   }
 
   pp = lp2vec(m, linkedPairs)
   islinked = !is.na(pp)
-  pair1 = islinked & !duplicated(pp)
-  pair2 = islinked & duplicated(pp)
+  pair1 = islinked & !duplicated.default(pp)
+  pair2 = islinked & !duplicated.default(pp, fromLast = TRUE)
 
   # Positions
   chr = linkageMap$Chr

@@ -520,7 +520,8 @@ server = function(input, output, session) {
     if(is.null(mdat))
       return(fullmap)
     idx = KLINK:::matchMarkernames(fullmap$Marker, mdat$Marker, nomatch = 0)
-    fullmap[idx > 0, , drop = FALSE]
+    keep = idx > 0 & !duplicated.default(idx)
+    fullmap[keep, , drop = FALSE]
   })
 
   # Linked pairs
