@@ -1,3 +1,8 @@
+# KLINK 1.2.3 (dev)
+
+* Handle custom maps with duplicate marker spellings.
+
+
 # KLINK 1.2.2
 
 A paper presenting KLINK has been published in FSI:Genetics (Vigeland and Gilfillan, 2026):  
