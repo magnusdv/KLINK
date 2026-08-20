@@ -16,22 +16,28 @@ import(gt, except = html)
 import(norSTR)
 import(openxlsx)
 import(pedtools)
-importFrom(grDevices,col2rgb)
-importFrom(grDevices,dev.off)
-importFrom(grDevices,png)
-importFrom(graphics,par)
-importFrom(graphics,plot.new)
-importFrom(graphics,plot.window)
-importFrom(graphics,points)
-importFrom(graphics,rect)
-importFrom(graphics,segments)
-importFrom(graphics,text.default)
+importFrom(grDevices,
+  col2rgb,
+  dev.off,
+  png
+)
+importFrom(graphics,
+  par,
+  plot.new,
+  plot.window,
+  points,
+  rect,
+  segments,
+  text.default
+)
 importFrom(shiny,runApp)
 importFrom(shinyBS,bsTooltip)
 importFrom(shinydashboard,dashboardPage)
 importFrom(shinyjs,useShinyjs)
-importFrom(xml2,read_xml)
-importFrom(xml2,xml_find_all)
-importFrom(xml2,xml_find_first)
-importFrom(xml2,xml_ns_strip)
-importFrom(xml2,xml_text)
+importFrom(xml2,
+  read_xml,
+  xml_find_all,
+  xml_find_first,
+  xml_ns_strip,
+  xml_text
+)
