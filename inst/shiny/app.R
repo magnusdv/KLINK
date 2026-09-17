@@ -221,7 +221,7 @@ server = function(input, output, session) {
       withCallingHandlers(
         warning = function(w) addNote(conditionMessage(w)), {
           if(!endsWith(fil$name, ".fam"))
-            stop2("Input file must end with '.fam': ", fil$name)
+            stop2("Input file must end with .fam: ", fil$name)
           KLINK::loadFamFile(fil$datapath, fallbackModel = "equal", withParams = TRUE)
         }
       )

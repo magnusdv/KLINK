@@ -1,7 +1,7 @@
 # KLINK 1.2.3 (dev)
 
 * Handle custom maps with duplicate marker spellings.
-
+* Improved handling of non-ASCII characters (like é, à, ö), via an update in **pedFamilias**.
 
 # KLINK 1.2.2
 
