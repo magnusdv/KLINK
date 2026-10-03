@@ -3,12 +3,13 @@
 #' @param path The path to a `.fam` file.
 #' @param fallbackModel The name of a mutation model; passed on to
 #'   [pedFamilias::readFam()].
-#' @param withParams A logical indicating if the Familias parameters should be
-#'   included in the output. (See [pedFamilias::readFam()].)
+#' @param checkLumping A logical. If TRUE (default), and if the pedigree disallows special
+#'   lumping, unlumpable models are replaced with the fallback model.
+#' @param withParams A logical indicating if the Familias parameters should be included in
+#'   the output. (See [pedFamilias::readFam()].)
 #'
-#' @return If `withParams = FALSE`, a list of two pedigree hypotheses in the
-#'   form of `ped` objects. If `withParams = TRUE`, a list with components
-#'   `peds` and `params`.
+#' @return If `withParams = FALSE`, a list of two pedigree hypotheses in the form of `ped`
+#'   objects. If `withParams = TRUE`, a list with components `peds` and `params`.
 #'
 #' @examples
 #' fam = system.file("extdata/halfsib-test.fam", package = "KLINK")
@@ -18,7 +19,7 @@
 #' loadFamFile(fam, withParams = TRUE)$params
 #'
 #' @export
-loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
+loadFamFile = function(path, fallbackModel = "equal", checkLumping = TRUE, withParams = FALSE) {
   if (getOption("KLINK.debug")) print("loadFamFile")
 
   x0 = pedFamilias::readFam(path, useDVI = NA, verbose = FALSE,
@@ -84,13 +85,15 @@ loadFamFile = function(path, fallbackModel = "equal", withParams = FALSE) {
     names(x)[msnm] = paste("Ped", which(msnm))
 
   # Check Lumpability
-  lumpable = checkLumpability(x[[1]]) & checkLumpability(x[[2]])
-  if(!all(lumpable)) {
-    msg = sprintf("Pedigree prohibits lumping for %d markers; changed models '%s'",
-                  sum(!lumpable), fallbackModel)
-    warning(msg, call. = FALSE)
-    x = lapply(x, function(ped)
-      setMutmod(ped, which(!lumpable), model = fallbackModel, update = TRUE))
+  if(checkLumping) {
+    lumpable = checkLumpability(x[[1]]) & checkLumpability(x[[2]])
+    if(!all(lumpable)) {
+      msg = sprintf("Pedigree prohibits lumping for %d markers; using '%s' mutation model for these",
+                    sum(!lumpable), fallbackModel)
+      warning(msg, call. = FALSE)
+      x = lapply(x, function(ped)
+        setMutmod(ped, which(!lumpable), model = fallbackModel, update = TRUE))
+    }
   }
 
   if(withParams)
@@ -131,7 +134,7 @@ checkLumpability = function(x) {
   untyped = untypedMembers(x)
   usign = pedprobr:::uSignature(x, untyped = untyped)
   if(usign[1] > 1 || (usign[3] + usign[4]) > 0)
-    return(rep(FALSE, nMark))
+    return(alwLumpable)
 
   # If all markers have the same untyped, ok!
   res = rep(TRUE, nMark)
@@ -140,7 +143,7 @@ checkLumpability = function(x) {
     return(res)
 
   # Otherwise, check each marker
-  for(i in seq_len(nMark)) {
+  for(i in which(!alwLumpable)) {
     unt = names(which(gg[, i] == "-/-"))
     us = if(setequal(unt, untyped)) usign else pedprobr:::uSignature(x, untyped = unt)
     if(us[1] > 1 || (us[3] + us[4]) > 0)

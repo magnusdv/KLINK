@@ -29,6 +29,8 @@ Controls how mutations are modelled in the likelihood calculations.
 - **Simple**: Applies an 'equal' model with rate 0.001, to all markers.
 - **Off**: Disables all mutation models.
 
+When **Original** is selected, **Simplify for lumping** replaces *non-lumpable* mutation models (i.e., that do not allow allele lumping) with a simple 'equal' model. This is highly recommended, as unlumped models may dramatically increase computation time and memory usage, and possibly cause the app to stop.
+
 The main purpose of the **Simple** option is to provide a lightweight fallback when the input file lacks mutation models. 
 **Off** is intended mainly for testing. Note that the LR table always includes a 'No mut' column, regardless of this setting.
 

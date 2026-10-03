@@ -4,7 +4,12 @@
 \alias{loadFamFile}
 \title{Load \code{.fam} file}
 \usage{
-loadFamFile(path, fallbackModel = "equal", withParams = FALSE)
+loadFamFile(
+  path,
+  fallbackModel = "equal",
+  checkLumping = TRUE,
+  withParams = FALSE
+)
 }
 \arguments{
 \item{path}{The path to a \code{.fam} file.}
@@ -12,13 +17,15 @@ loadFamFile(path, fallbackModel = "equal", withParams = FALSE)
 \item{fallbackModel}{The name of a mutation model; passed on to
 \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.}
 
-\item{withParams}{A logical indicating if the Familias parameters should be
-included in the output. (See \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.)}
+\item{checkLumping}{A logical. If TRUE (default), and if the pedigree disallows special
+lumping, unlumpable models are replaced with the fallback model.}
+
+\item{withParams}{A logical indicating if the Familias parameters should be included in
+the output. (See \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.)}
 }
 \value{
-If \code{withParams = FALSE}, a list of two pedigree hypotheses in the
-form of \code{ped} objects. If \code{withParams = TRUE}, a list with components
-\code{peds} and \code{params}.
+If \code{withParams = FALSE}, a list of two pedigree hypotheses in the form of \code{ped}
+objects. If \code{withParams = TRUE}, a list with components \code{peds} and \code{params}.
 }
 \description{
 Load \code{.fam} file

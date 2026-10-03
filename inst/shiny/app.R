@@ -73,8 +73,12 @@ ui = dashboardPage(title = "KLINK",
                  selected = "Kosambi", inline = TRUE),
     radioButtons("mutmod", "Mutation model", choices = c("Original", "Simple", "Off"),
                  selected = "Original", inline = TRUE),
-    bsTooltip("mutmod",
-              "Global mutation model setting"),
+    conditionalPanel(
+      condition = "input.mutmod == 'Original'",
+      div(id = "checkLump", checkboxInput("checkLumping", "Simplify for lumping", value = TRUE))
+    ),
+    bsTooltip("mutmod", "Global mutation model setting"),
+    bsTooltip("checkLumping", "Replace unlumpable models with a simple model (recommended!)"),
     radioButtons("emptymarkers", "Empty markers", inline = TRUE, width = "100%",
                  choices = c("Hide" = "hide", "Show" = "show"), selected = "hide"),
     bsTooltip("emptymarkers",
@@ -179,7 +183,7 @@ server = function(input, output, session) {
     })
 
   # Main reactive variables
-  famfile = reactiveValues(famname = NULL, params = NULL)
+  famfile = reactiveValues(famname = NULL, params = NULL, filepath = NULL)
   pedigrees = reactiveValues(complete = NULL, reduced = NULL, plot = NULL, active = NULL)
   XML = reactiveVal(NULL)
   NOTES = reactiveVal(NULL)
@@ -202,6 +206,34 @@ server = function(input, output, session) {
     NOTES(c(oldnotes, newnote))
   }
 
+  # Read .fam file and collect warnings
+  readFam = function(fil) {
+    NOTES(NULL)
+
+    peddata = tryCatch(
+      error = showNote,
+      withCallingHandlers(
+        warning = function(w) addNote(conditionMessage(w)), {
+          if(!endsWith(fil$name, ".fam"))
+            stop2("Input file must end with .fam: ", fil$name)
+          KLINK::loadFamFile(fil$datapath, fallbackModel = "equal",
+                             checkLumping = checkLumping(), withParams = TRUE)
+        }
+      )
+    )
+
+    if(!is.null(peddata)) {
+      allLabs = unlist(lapply(peddata$peds, labels), recursive = TRUE, use.names = FALSE)
+      if(any(misspar <- startsWith(allLabs, ":missing:"))) {
+        nmiss = sum(misspar)
+        msg = if(nmiss == 1) "1 missing parent was added." else paste(nmiss, "missing parents were added.")
+        addNote(paste(msg, "LRs may deviate from Familias/FamLink2."))
+      }
+    }
+
+    peddata
+  }
+
   output$notificationMenu = renderMenu({
     debug("notificationMenu")
     notes = lapply(NOTES(), function(n) {notificationItem(HTML(n), status = "warning")})
@@ -214,21 +246,11 @@ server = function(input, output, session) {
 
     shinyjs::reset("xmlfile")
     XML(NULL)
-    NOTES(NULL)
 
-    peddata = tryCatch(
-      error = showNote,
-      withCallingHandlers(
-        warning = function(w) addNote(conditionMessage(w)), {
-          if(!endsWith(fil$name, ".fam"))
-            stop2("Input file must end with .fam: ", fil$name)
-          KLINK::loadFamFile(fil$datapath, fallbackModel = "equal", withParams = TRUE)
-        }
-      )
-    )
+    peddata = readFam(fil)
 
     if(is.null(peddata)) {
-      famfile$famname = famfile$params = NULL
+      famfile$famname = famfile$params = famfile$filepath = NULL
       pedigrees$complete = pedigrees$reduced = pedigrees$plot = pedigrees$active = NULL
       resultTable(NULL)
       shinyjs::reset("famfile")
@@ -236,17 +258,9 @@ server = function(input, output, session) {
     }
 
     famfile$famname = fil$name
-    pedigrees$complete = peds = peddata$peds
+    famfile$filepath = fil$datapath
     famfile$params = peddata$params
-
-    allLabs = unlist(lapply(peds, labels), recursive = TRUE, use.names = FALSE)
-
-    if(any(misspar <- startsWith(allLabs, ":missing:"))) {
-      nmiss = sum(misspar)
-      msg = if(nmiss == 1) "1 missing parent was added." else paste(nmiss, "missing parents were added.")
-      msg = paste(msg, "LRs may deviate from Familias/FamLink2.")
-      addNote(msg)
-    }
+    pedigrees$complete = peddata$peds
   })
 
   observeEvent(input$xmlfile, {
@@ -312,10 +326,14 @@ server = function(input, output, session) {
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
     updateRadioButtons(session, "maptype", selected = "map50")
-    NOTES(NULL)
     XML(NULL)
-    pedigrees$complete = KLINK::loadFamFile(path)
+    fil = list(name = filename, datapath = path)
+    peddata = readFam(fil)
+    req(peddata)
+
+    pedigrees$complete = peddata$peds
     famfile$famname = filename
+    famfile$filepath = path
     famfile$params = NULL
   })
 
@@ -376,6 +394,40 @@ server = function(input, output, session) {
                               Off = lapply(pedred, \(x) pedtools::setMutmod(x, model = NULL)))
   })
 
+  checkLumping = reactiveVal(TRUE)
+
+  observeEvent(list(input$mutmod, input$checkLumping), {
+    val = input$mutmod == "Original" && input$checkLumping
+    if(val != checkLumping())
+      checkLumping(val)
+  })
+
+  # Reload file when changing lumping policy
+  observeEvent(checkLumping(), {
+    path = req(famfile$filepath)
+    fil = list(name = famfile$famname, datapath = path)
+    peddata = readFam(fil)
+    if(is.null(peddata)) {
+      pedigrees$complete = pedigrees$reduced = pedigrees$plot = pedigrees$active = NULL
+      resultTable(NULL)
+      return()
+    }
+
+    peds = peddata$peds
+
+    # Restore XML-based renaming after reloading the .fam file
+    xmldat = XML()
+    if(!is.null(xmldat) && !identical(xmldat$Initials, xmldat$ID))
+      peds = lapply(peds, \(ped)
+        pedtools::relabel(ped, old = xmldat$ID, new = xmldat$Initials))
+
+    pedigrees$complete = peds
+
+    # Built-in examples deliberately have params = NULL
+    if(!is.null(famfile$params))
+      famfile$params = peddata$params
+  }, ignoreInit = TRUE)
+
 
   # Main LR table ------------------------------------------------------------------
 
@@ -406,7 +458,8 @@ server = function(input, output, session) {
                       markerData = markerData(),
                       mapfun = input$mapfunction,
                       verbose = FALSE, debug = FALSE,
-                      lumpSpecial = TRUE)
+                      lumpSpecial = TRUE,
+                      alleleLimit = if(checkLumping()) 10 else Inf)
     })
 
     resultTable(res)
@@ -414,7 +467,7 @@ server = function(input, output, session) {
   })
 
   # Reset LR table
-  observe({input$mapfunction; pedigrees$active; resultTable(NULL)})
+  observe({input$mapfunction; pedigrees$active; checkLumping(); resultTable(NULL)})
 
   # Activate download button when LR table is ready
   observeEvent(resultTable(), {
@@ -557,10 +610,15 @@ server = function(input, output, session) {
     content = function(file) {
       debug("download")
 
+      mutSetting = switch(input$mutmod,
+        Original = if(checkLumping()) "Original, simplify for lumping" else "Original, preserved",
+        Simple = "Simple",  Off = "Off")
+
       settings = list("KLINK version" = VERSION,
                       "Familias file" = famfile$famname,
                       "Genetic map" = mapname(),
                       "Database" = famfile$params$dbName %||% "unknown",
+                      "Mutation model" = mutSetting,
                       "Map function" = input$mapfunction,
                       "Max distance" = input$maxdist %NA|% "Inf")
 
@@ -586,12 +644,13 @@ server = function(input, output, session) {
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
     shinyjs::reset("mapfile")
-    famfile$famname = famfile$params = NULL
+    famfile$famname = famfile$params = famfile$filepath = NULL
     customMap$map = customMap$name = NULL
     NOTES(NULL)
     XML(NULL)
     updateRadioButtons(session, "maptype", selected = "map50")
     updateRadioButtons(session, "mutmod", selected = "Original")
+    updateCheckboxInput(session, "checkLumping", value = TRUE)
     updateNumericInput(session, "decimals", value = 3)
     updateNumericInput(session, "maxdist", value = NA)
     updateRadioButtons(session, "mapfunction", selected = "Kosambi")

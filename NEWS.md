@@ -1,5 +1,6 @@
-# KLINK 1.2.3 (dev)
+# KLINK 1.3.0
 
+* Added a check button for preserving original mutation models also when these are unlumpable. Note that this may dramatically increase computation time, and possibly cause the app to crash.
 * Handle custom maps with duplicate marker spellings.
 * Improved handling of non-ASCII characters (like é, à, ö), via an update in **pedFamilias**.
 
