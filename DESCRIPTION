@@ -20,7 +20,7 @@ Depends:
 Imports: 
     forrel (>= 1.9.0),
     gt,
-    norSTR,
+    norSTR (>= 0.3.0),
     openxlsx,
     pedFamilias,
     pedmut,

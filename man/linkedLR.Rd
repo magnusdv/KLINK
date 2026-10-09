@@ -6,7 +6,7 @@
 \usage{
 linkedLR(
   pedigrees,
-  linkageMap = map50,
+  linkageMap = map51,
   linkedPairs = NULL,
   maxdist = Inf,
   markerData = NULL,
@@ -20,27 +20,24 @@ linkedLR(
 \arguments{
 \item{pedigrees}{A list of two pedigrees.}
 
-\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chr} and
-\code{cM}. By default, a built-in map \code{norSTR::map50} of 50 STR markers is used.}
+\item{linkageMap}{A data frame with columns including \code{Marker}, \code{Chr} and \code{cM}. By
+default, a built-in map \code{norSTR::map51} of 51 STR markers is used.}
 
-\item{linkedPairs}{A list of marker pairs. If not supplied, calculated as
-\code{getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)}.}
+\item{linkedPairs}{A list of marker pairs. If not supplied, calculated internally with
+\code{\link[=getLinkedPairs]{getLinkedPairs()}}.}
 
-\item{maxdist}{A number, passed onto \code{getLinkedPairs()} if \code{linkedPairs} is
-NULL.}
+\item{maxdist}{A number, passed onto \code{getLinkedPairs()} if \code{linkedPairs} is NULL.}
 
 \item{markerData}{A data frame with marker data, typically the output of
 \code{markerSummary(pedigrees)}.}
 
-\item{mapfun}{Name of the map function to be used; either "Haldane" or
-"Kosambi" (default).}
+\item{mapfun}{Name of the map function to be used; either "Haldane" or "Kosambi"
+(default).}
 
-\item{lumpSpecial}{A logical indicating if special lumping should be
-activated. This is strongly recommended in all cases with linked STR
-markers.}
+\item{lumpSpecial}{A logical indicating if special lumping should be activated. This is
+strongly recommended in all cases with linked STR markers.}
 
-\item{alleleLimit}{A number, by default 10, passed on to
-\code{\link[pedprobr:likelihood2]{pedprobr::likelihood2()}}.}
+\item{alleleLimit}{A number, by default 10, passed on to \code{\link[pedprobr:likelihood2]{pedprobr::likelihood2()}}.}
 
 \item{verbose}{A logical, by default TRUE.}
 

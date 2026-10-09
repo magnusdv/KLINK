@@ -46,7 +46,7 @@ various LR tables.
 \donttest{
 # Built-in dataset `paternity`
 peds = paternity
-map = norSTR::map50
+map = norSTR::map51
 mdata = markerSummary(peds)
 
 # Result table

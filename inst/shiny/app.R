@@ -62,7 +62,7 @@ ui = dashboardPage(title = "KLINK",
     ),
 
     radioButtons("maptype", "Marker map", inline = TRUE, width = "100%",
-                 choices = c("Built-in" = "map50", "Custom" = "custom")),
+                 choices = c("Built-in" = "map51", "Custom" = "custom")),
     conditionalPanel(
       condition = "input.maptype == 'custom'",
       fileInput("mapfile", NULL, buttonLabel = icon("folder-open"),
@@ -325,7 +325,7 @@ server = function(input, output, session) {
     path = system.file("extdata", filename, package = "KLINK")
     shinyjs::reset("famfile")
     shinyjs::reset("xmlfile")
-    updateRadioButtons(session, "maptype", selected = "map50")
+    updateRadioButtons(session, "maptype", selected = "map51")
     XML(NULL)
     fil = list(name = filename, datapath = path)
     peddata = readFam(fil)
@@ -430,7 +430,6 @@ server = function(input, output, session) {
 
 
   # Main LR table ------------------------------------------------------------------
-
   resultTable = reactiveVal(NULL)
 
   # Print LR result table
@@ -669,7 +668,7 @@ server = function(input, output, session) {
     customMap$map = customMap$name = NULL
     NOTES(NULL)
     XML(NULL)
-    updateRadioButtons(session, "maptype", selected = "map50")
+    updateRadioButtons(session, "maptype", selected = "map51")
     updateRadioButtons(session, "mutmod", selected = "Original")
     updateCheckboxInput(session, "checkLumping", value = TRUE)
     updateNumericInput(session, "decimals", value = 3)

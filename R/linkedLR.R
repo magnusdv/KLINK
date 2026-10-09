@@ -3,21 +3,18 @@
 #' This function does the main LR calculations of the KLINK app.
 #'
 #' @param pedigrees A list of two pedigrees.
-#' @param linkageMap A data frame with columns including `Marker`, `Chr` and
-#'   `cM`. By default, a built-in map `norSTR::map50` of 50 STR markers is used.
-#' @param linkedPairs A list of marker pairs. If not supplied, calculated as
-#'   `getLinkedPairs(markerData$Marker, linkageMap, maxdist = maxdist)`.
-#' @param maxdist A number, passed onto `getLinkedPairs()` if `linkedPairs` is
-#'   NULL.
+#' @param linkageMap A data frame with columns including `Marker`, `Chr` and `cM`. By
+#'   default, a built-in map `norSTR::map51` of 51 STR markers is used.
+#' @param linkedPairs A list of marker pairs. If not supplied, calculated internally with
+#'   [getLinkedPairs()].
+#' @param maxdist A number, passed onto `getLinkedPairs()` if `linkedPairs` is NULL.
 #' @param markerData A data frame with marker data, typically the output of
 #'   `markerSummary(pedigrees)`.
-#' @param mapfun Name of the map function to be used; either "Haldane" or
-#'   "Kosambi" (default).
-#' @param lumpSpecial A logical indicating if special lumping should be
-#'   activated. This is strongly recommended in all cases with linked STR
-#'   markers.
-#' @param alleleLimit A number, by default 10, passed on to
-#'   [pedprobr::likelihood2()].
+#' @param mapfun Name of the map function to be used; either "Haldane" or "Kosambi"
+#'   (default).
+#' @param lumpSpecial A logical indicating if special lumping should be activated. This is
+#'   strongly recommended in all cases with linked STR markers.
+#' @param alleleLimit A number, by default 10, passed on to [pedprobr::likelihood2()].
 #' @param verbose A logical, by default TRUE.
 #' @param debug A logical, by default FALSE.
 #'
@@ -33,7 +30,7 @@
 #' # .linkedLR(paternity, markerpair = c("SE33", "D6S474"))
 #'
 #' @export
-linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist = Inf,
+linkedLR = function(pedigrees, linkageMap = map51, linkedPairs = NULL, maxdist = Inf,
                     markerData = NULL, mapfun = "Kosambi", lumpSpecial = TRUE,
                     alleleLimit = 10, verbose = TRUE, debug = FALSE) {
 
@@ -183,7 +180,7 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
 
 # Normally not run by end user
 .linkedLR = function(peds, markerpair, cmdist = NULL, mapfun = "Kosambi",
-                     linkageMap = map50, lumpSpecial = TRUE, alleleLimit = Inf,
+                     linkageMap = map51, lumpSpecial = TRUE, alleleLimit = Inf,
                      disableMut = FALSE, verbose = FALSE) {
 
   if(getOption("KLINK.debug"))

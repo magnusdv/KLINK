@@ -14,9 +14,15 @@
 NULL
 
 
-#' @title Genetic marker map
-#' @description This object is re-exported from [norSTR::map50].
-#' @name map50
+#' Genetic marker maps
+#'
+#' These objects are re-exported from [norSTR::map51] and [norSTR::map50].
+#' `map51` is the current map, while `map50` is retained for reproducibility.
+#'
+#' @name map51
+#' @export
+map51 = norSTR::map51
+
+#' @rdname map51
 #' @export
 map50 = norSTR::map50
-

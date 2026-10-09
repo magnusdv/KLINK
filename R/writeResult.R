@@ -20,7 +20,7 @@
 #' \donttest{
 #' # Built-in dataset `paternity`
 #' peds = paternity
-#' map = norSTR::map50
+#' map = norSTR::map51
 #' mdata = markerSummary(peds)
 #'
 #' # Result table
@@ -365,7 +365,7 @@ getSettingsLegend = function(settings) {
   if(!is.null(dist <- settings[["Max distance"]]))
     settings[["Max distance"]] = paste(dist, "cM")
 
-  if(identical(settings[["Genetic map"]], "map50"))
+  if(identical(settings[["Genetic map"]], "map51"))
     settings[["Genetic map"]] = "Built-in"
 
   # Convert to data frame
