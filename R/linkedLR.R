@@ -61,7 +61,7 @@ linkedLR = function(pedigrees, linkageMap = map51, linkedPairs = NULL, maxdist =
   mvec = markerData$Marker
   linkageMap = subsetMap(linkageMap, mvec)
 
-  # Only pair markers with >2 typed individuals
+  # Only pair markers with >=2 typed individuals
   good = (markerData$Typed >= 2) |> setnames(mvec)
 
   if(is.null(linkedPairs)) {

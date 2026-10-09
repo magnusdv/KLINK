@@ -14,38 +14,37 @@ getLinkedPairs(linkageMap = map51, maxdist = Inf)
 subsetMap(linkageMap, markers)
 }
 \arguments{
-\item{path}{Path to a genetic map file, either a tab-separated text file or
-an Excel file with extension \code{.xlsx}.}
+\item{path}{Path to a genetic map file, either a tab-separated text file or an Excel
+file with extension \code{.xlsx}.}
 
 \item{linkageMap}{A data frame with columns \code{Marker}, \code{Chr}, \code{cM} and (optionally)
 \code{Mb}, sorted by chromosome and position.}
 
-\item{maxdist}{A positive number indicating the maximum distance (in cM)
-between paired markers. Markers further apart are considered unlinked.}
+\item{maxdist}{A positive number indicating the maximum distance (in cM) between paired
+markers. Markers further apart are considered unlinked.}
 
 \item{markers}{A character vector of marker names to retain.}
 }
 \value{
-\code{loadMap()} and \code{subsetMap()} return data frames. \code{getLinkedPairs()}
-returns a list of character vectors, each containing two marker names.
+\code{loadMap()} and \code{subsetMap()} return data frames. \code{getLinkedPairs()} returns a
+list of character vectors, each containing two marker names.
 }
 \description{
-Functions for loading, subsetting and pairing markers in genetic linkage
-maps.
+Functions for loading, subsetting and pairing markers in genetic linkage maps.
 }
 \details{
-\code{subsetMap()} restricts a map to a given set of markers. Marker names are
-matched flexibly, ignoring case and the separators "-", ".", "_" and space.
-The returned map uses the marker spelling supplied in \code{markers}. If multiple
-map entries match the same marker, only the first is retained.
-
-\code{getLinkedPairs()} identifies disjoint marker pairs from the supplied map.
-Within each chromosome, pairs are selected greedily by successively choosing
-the closest available markers. Each marker occurs in at most one pair.
 \code{loadMap()} reads and sorts a genetic map from a text or Excel file, with required
 columns \code{Marker}, \code{Chr}, \code{cM}, and optionally a column \code{Mb} with physical positions
 used in karyograms.
 
+\code{subsetMap()} restricts a map to a given set of markers. Marker names are matched
+flexibly, ignoring case and the separators "-", ".", "_" and space. The returned map
+uses the marker spelling supplied in \code{markers}. If multiple map entries match the same
+marker, only the first is retained.
+
+\code{getLinkedPairs()} identifies disjoint marker pairs from the supplied map. Within each
+chromosome, pairs are selected greedily by successively choosing the closest available
+markers. Each marker occurs in at most one pair.
 }
 \examples{
 map = norSTR::map51

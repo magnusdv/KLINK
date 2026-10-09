@@ -1,31 +1,30 @@
 #' Genetic map utilities
 #'
-#' Functions for loading, subsetting and pairing markers in genetic linkage
-#' maps.
+#' Functions for loading, subsetting and pairing markers in genetic linkage maps.
 #'
 #' `loadMap()` reads and sorts a genetic map from a text or Excel file, with required
 #' columns `Marker`, `Chr`, `cM`, and optionally a column `Mb` with physical positions
 #' used in karyograms.
 #'
-#' `subsetMap()` restricts a map to a given set of markers. Marker names are
-#' matched flexibly, ignoring case and the separators "-", ".", "_" and space.
-#' The returned map uses the marker spelling supplied in `markers`. If multiple
-#' map entries match the same marker, only the first is retained.
+#' `subsetMap()` restricts a map to a given set of markers. Marker names are matched
+#' flexibly, ignoring case and the separators "-", ".", "_" and space. The returned map
+#' uses the marker spelling supplied in `markers`. If multiple map entries match the same
+#' marker, only the first is retained.
 #'
-#' `getLinkedPairs()` identifies disjoint marker pairs from the supplied map.
-#' Within each chromosome, pairs are selected greedily by successively choosing
-#' the closest available markers. Each marker occurs in at most one pair.
+#' `getLinkedPairs()` identifies disjoint marker pairs from the supplied map. Within each
+#' chromosome, pairs are selected greedily by successively choosing the closest available
+#' markers. Each marker occurs in at most one pair.
 #'
 #' @param linkageMap A data frame with columns `Marker`, `Chr`, `cM` and (optionally)
 #'   `Mb`, sorted by chromosome and position.
 #' @param markers A character vector of marker names to retain.
-#' @param maxdist A positive number indicating the maximum distance (in cM)
-#'   between paired markers. Markers further apart are considered unlinked.
-#' @param path Path to a genetic map file, either a tab-separated text file or
-#'   an Excel file with extension `.xlsx`.
+#' @param maxdist A positive number indicating the maximum distance (in cM) between paired
+#'   markers. Markers further apart are considered unlinked.
+#' @param path Path to a genetic map file, either a tab-separated text file or an Excel
+#'   file with extension `.xlsx`.
 #'
-#' @returns `loadMap()` and `subsetMap()` return data frames. `getLinkedPairs()`
-#'   returns a list of character vectors, each containing two marker names.
+#' @returns `loadMap()` and `subsetMap()` return data frames. `getLinkedPairs()` returns a
+#'   list of character vectors, each containing two marker names.
 #'
 #' @examples
 #' map = norSTR::map51

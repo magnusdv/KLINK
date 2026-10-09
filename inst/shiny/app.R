@@ -595,12 +595,15 @@ server = function(input, output, session) {
     mdat = markerData()
     good = mdat$Marker[mdat$Typed >= 2]
     map = linkageMapSubset()
+    if(is.null(map)) return(list())
     getLinkedPairs(map[map$Marker %in% good, , drop = FALSE], maxdist = req(maxd))
   })
 
   # Karyogram plot
   output$karyo = renderPlot({
     map = linkageMapSubset()
+    if(is.null(map)) return()
+
     labs = seq_len(nrow(map))
 
     mdat = markerData()

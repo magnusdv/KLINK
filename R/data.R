@@ -21,10 +21,12 @@
 #' individuals are genotyped with the 23 markers included in the Fusion 6C kit.
 #' Among the 23 markers, four pairs are linked:
 #'
-#' * TPOX and D2S441 (88.8 cM, 9 & 13 alleles)
-#' * D5S818 and CSF1PO (27.8 cM, 9 & 11 alleles)
-#' * vWA and D12S391 (11.9 cM, 12 & 23 alleles)
-#' * D21S11 and Penta D (44.7 cM, 26 & 24 alleles)
+#' * TPOX and D2S441 (86.0 cM, 9 & 13 alleles)
+#' * D5S818 and CSF1PO (26.2 cM, 9 & 11 alleles)
+#' * vWA and D12S391 (11.4 cM, 12 & 23 alleles)
+#' * D21S11 and Penta D (45.7 cM, 26 & 24 alleles)
+#'
+#' (Genetic distances taken from the `norSTR::map51` linkage map.)
 #'
 #' @format A list of two ped objects, named FS and HS.
 #'

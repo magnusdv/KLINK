@@ -49,7 +49,9 @@ capit = function(x) {
 
 # Normalise marker names, for safe matching (below)
 normalise = function(x) {
-  tolower(gsub("[-._ ]", "", x))
+  x = tolower(gsub("[-._ ]", "", x))
+  x[x == "apoai1"] = "apo"
+  x
 }
 
 # Safe matching of marker names
