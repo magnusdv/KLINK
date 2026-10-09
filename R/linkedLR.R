@@ -62,17 +62,19 @@ linkedLR = function(pedigrees, linkageMap = map50, linkedPairs = NULL, maxdist =
     stop2("No genotyped individuals")
 
   mvec = markerData$Marker
+  linkageMap = subsetMap(linkageMap, mvec)
 
-  # Ensure map uses same marker spelling
-  linkageMap$Marker = fixMarkernames(linkageMap$Marker, mvec)
-  if(!is.null(linkedPairs))
-    linkedPairs = lapply(linkedPairs, fixMarkernames, mvec)
-  else
-    linkedPairs = getLinkedPairs(mvec, linkageMap, maxdist = maxdist)
-
-  # Remove pairings involving markers with less than 2 typed
+  # Only pair markers with >2 typed individuals
   good = (markerData$Typed >= 2) |> setnames(mvec)
-  linkedPairs = Filter(\(x) all(good[x]), linkedPairs)
+
+  if(is.null(linkedPairs)) {
+    mapGood = linkageMap[linkageMap$Marker %in% mvec[good], , drop = FALSE]
+    linkedPairs = getLinkedPairs(mapGood, maxdist = maxdist)
+  }
+  else {
+    linkedPairs = lapply(linkedPairs, fixMarkernames, mvec)
+    linkedPairs = Filter(\(x) all(good[x]), linkedPairs)
+  }
 
   if(verbose) {
     cat("Map function:", mapfun, "\n")

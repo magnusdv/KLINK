@@ -22,7 +22,7 @@ karyogram = function(linkageMap, linkedPairs = NULL,
     return()
 
   if(is.null(linkedPairs))
-    linkedPairs = getLinkedPairs(m, linkageMap)
+    linkedPairs = getLinkedPairs(linkageMap)
 
   # Prepare colours for linked pairs; this gives same colours as the gt tables
   nPairs = length(linkedPairs)

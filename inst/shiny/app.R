@@ -453,7 +453,7 @@ server = function(input, output, session) {
 
     res = tryCatch(error = showNote, {
       KLINK::linkedLR(pedigrees = peds,
-                      linkageMap = linkageMap(),
+                      linkageMap = linkageMapSubset(),
                       linkedPairs = linkedPairs(),
                       markerData = markerData(),
                       mapfun = input$mapfunction,
@@ -498,8 +498,9 @@ server = function(input, output, session) {
     mdat = KLINK::markerSummary(peds, replaceNames = is.null(XML()))
     req(mdat)
 
-    # Sort according to map (NB: use normalised marker names to avoid Penta D/Penta.D/PentaD)
-    ord = order(KLINK:::matchMarkernames(mdat$Marker, linkageMap()$Marker))
+    # Sort according to map
+    map = linkageMapSubset()
+    ord = order(match(mdat$Marker, map$Marker), na.last = TRUE)
     mdat[ord, , drop = FALSE]
   })
 
@@ -563,36 +564,56 @@ server = function(input, output, session) {
     updateTabsetPanel(session, "tabs", selected = "Linkage map")
   })
 
-  # Subset where only observed markers are included
+  # Subset to markers in .fam file
   linkageMapSubset = reactive({
-    debug("linkage map subset")
-    fullmap = linkageMap()
-    if(is.null(fullmap))
-      return(NULL)
-    mdat = markerData()
-    if(is.null(mdat))
-      return(fullmap)
-    idx = KLINK:::matchMarkernames(fullmap$Marker, mdat$Marker, nomatch = 0)
-    keep = idx > 0 & !duplicated.default(idx)
-    fullmap[keep, , drop = FALSE]
+    debug("linkageMapSubset")
+    map = linkageMap()
+    peds = pedigrees$active
+    if(is.null(map) || is.null(peds))
+      return(map)
+
+    KLINK:::subsetMap(map, pedtools::name(peds[[1]]))
   })
 
   # Linked pairs
   linkedPairs = reactive({
-    debug("linked pairs")
-    maxd =  if(is.na(input$maxdist)) Inf else input$maxdist
-    getLinkedPairs(markerData()$Marker, linkageMap(), maxdist = req(maxd))
+    debug("linkedPairs")
+    maxd = if(is.na(input$maxdist)) Inf else input$maxdist
+    mdat = markerData()
+    good = mdat$Marker[mdat$Typed >= 2]
+    map = linkageMapSubset()
+    getLinkedPairs(map[map$Marker %in% good, , drop = FALSE], maxdist = req(maxd))
   })
 
   # Karyogram plot
-  output$karyo = renderPlot(KLINK:::karyogram(linkageMapSubset(),
-                                              linkedPairs = linkedPairs()))
+  output$karyo = renderPlot({
+    map = linkageMapSubset()
+    labs = seq_len(nrow(map))
+
+    mdat = markerData()
+    if(!is.null(mdat)) {
+      map$Typed = mdat$Typed[match(map$Marker, mdat$Marker)]
+
+      if(input$emptymarkers == "hide") {
+        keep = map$Typed > 0
+        map = map[keep, , drop = FALSE]
+        labs = labs[keep]
+      }
+    }
+
+    KLINK:::karyogram(map, linkedPairs = linkedPairs(), labs = labs)
+  })
 
   # Print loaded genetic map
   output$linkage_table = render_gt({
     debug("linkage map table")
     map = linkageMapSubset()
     validate(need(!is.null(map), "No marker map has been loaded."))
+
+    mdat = markerData()
+    if(!is.null(mdat))
+      map$Typed = mdat$Typed[match(map$Marker, mdat$Marker)]
+
     KLINK:::prettyLinkageMap(map, linkedPairs(),
                              hide = input$emptymarkers == "hide",
                              decimals = input$decimals)
