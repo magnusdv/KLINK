@@ -31,6 +31,10 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
       locations = cells_body(rows = Typed == 0),
       style = cell_text(color = "gray")
     ) |>
+    tab_style(
+      locations = cells_body(rows = Typed == 1),
+      style = cell_text(color = "gray40")
+    ) |>
     tab_style_body(
       columns = Marker,
       style = cell_text(size = "90%"),
@@ -62,16 +66,17 @@ prepTable = function(tab, linkedPairs, hide = FALSE, size = "100%") {
 prettyLinkageMap = function(map, linkedPairs = NULL, hide = FALSE, decimals = 3) {
   # First column annot: Index
   map$annot = seq_len(nrow(map))
-  map$Typed = NA_integer_
+  if(!"Typed" %in% names(map))
+    map$Typed = NA_integer_
 
   prepTable(map, linkedPairs, hide = hide) |>
-    fmt_number("cM", decimals = decimals) |>
+    fmt_number(matches("^(Mb|cM)$"), decimals = decimals) |>
     addTooltips()
 }
 
 prettyMarkerTable = function(mtab, linkedPairs = NULL, hide = FALSE, decimals = 3) {
-  # First column annot: Uninformative for linkage
-  uninf = mtab$Typed < 2 & matchMarkernames(mtab$Marker, unlist(linkedPairs), nomatch = 0L) > 0L
+  # First column: "u" (uninformative) if only one typed individual
+  uninf = mtab$Typed == 1
   mtab$annot = ifelse(uninf, "u", "")
 
   if(all(is.na(mtab$Model))) {
@@ -101,9 +106,8 @@ prettyResultTable = function(restab, linkedPairs = NULL, hide = FALSE, likelihoo
 
   extraDec = decimals - 3
 
-  # First column annot: Uninformative for linkage
-  uninf = restab$Typed < 2 &
-    matchMarkernames(restab$Marker, unlist(linkedPairs), nomatch = 0L) > 0L
+  # First column: "u" (uninformative) if only one typed individual
+  uninf = restab$Typed == 1
   restab$annot = ifelse(uninf, "u", "")
 
   # Add totals

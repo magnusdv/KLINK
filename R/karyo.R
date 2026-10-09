@@ -42,26 +42,26 @@ karyogram = function(linkageMap, linkedPairs = NULL,
   x = pmin.int(linkageMap$cM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
 
   # Colours and symbols
+  ptcol = rep(1, length(pp))
   fills = rep(unlinkedCol, length(pp))
   fills[islinked] = cols[pp[islinked]]
   pch = rep_len(pch, length.out = length(pp))
+  bw = textBW(fills) # black or white text, depending on background
 
-  # Text color (black or white, depending on background)
-  bw = textBW(fills)
+  # Gray out empty/uninformative markers
+  if("Typed" %in% names(linkageMap)) {
+    fills[linkageMap$Typed == 0] = "gray90"
+    ptcol[linkageMap$Typed < 2] = "gray40"
+    bw[linkageMap$Typed < 2] = "gray40"
+  }
 
   # Connectors (before points, to hide endpoints)
   segments(x0 = x[pair1], x1 = x[pair2], y0 = y[pair1], y1 = y[pair2], col = 1, lwd = 1.3)
 
-  # Linked points (unlinked points and first point of linked pairs)
-  points(x[!pair2], y[!pair2], bg = fills[!pair2], pch = pch[!pair2], cex = cexPoints)
-
-  # Labels inside points
-  text.default(x[!pair2], y[!pair2], labels = labs[!pair2], col = bw[!pair2], cex = cexLabs, font = 2)
-
-  # Second point of linked pairs (do these separately to avoid overlap)
-  if(length(linkedPairs)) {
-    points(x[pair2], y[pair2], bg = fills[pair2], pch = pch[pair2], cex = cexPoints)
-    text.default(x[pair2], y[pair2], labels = labs[pair2], col = bw[pair2], cex = cexLabs, font = 2)
+  # Draw markers left-to-right, keeping right-most markers on top
+  for(i in order(chr, x)) {
+    points(x[i], y[i], bg = fills[i], col = ptcol[i], pch = pch[i], cex = cexPoints)
+    text.default(x[i], y[i], labels = labs[i], col = bw[i], cex = cexLabs, font = 2)
   }
 }
 
