@@ -1,8 +1,25 @@
-# KLINK 1.3.0
+# KLINK 1.3.1
 
-* Added a check button for preserving original mutation models also when these are unlumpable. Note that this may dramatically increase computation time, and possibly cause the app to crash.
-* Handle custom maps with duplicate marker spellings.
-* Improved handling of non-ASCII characters (like é, à, ö), via an update in **pedFamilias**.
+## New features
+
+* The default marker map is now `norSTR::map51`, requiring **norSTR** 0.3.0. It adds `D6S1043` to the previous map, and contains both physical GRCh38 positions and updated genetic positions for all 51 STR markers. Since genetic positions have changed, LRs may differ from previous KLINK versions. The exported legacy map `map50` remains available for reproducing earlier analyses; an [Excel version](https://raw.githubusercontent.com/magnusdv/norSTR/master/data-raw/linkageMap50.xlsx) is also available.
+
+* The karyogram now uses physical positions when available, and visually distinguishes empty markers and also uninformative markers (typed in only one individual).
+
+* Empty and uninformative markers are disregarded when forming linkage pairs.
+
+* Added an option to preserve original mutation models in cases where allele lumping is unavailable. Note that this may greatly increase computation time and memory use, and may cause the calculation to fail.
+
+## Minor changes and fixes
+
+* Legacy marker name `APOAI1` is changed to `APO` when loading Familias files, with a warning. The two names are treated as equivalent when matching markers to maps.
+
+* Custom maps containing an `Mb` column now use physical positions in the karyogram.
+
+* Improved handling of custom maps containing duplicate spellings of the same marker.
+
+* Improved handling of non-ASCII characters (like é, à, ö) through an update in **pedFamilias**.
+
 
 # KLINK 1.2.2
 
