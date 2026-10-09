@@ -39,7 +39,10 @@ karyogram = function(linkageMap, linkedPairs = NULL,
   # Positions
   chr = linkageMap$Chr
   y = chr + h/2
-  x = pmin.int(linkageMap$cM/CHROM.CM[chr], 1) * CHROM.MB[chr]  # cm -> mb
+  x = if("Mb" %in% names(linkageMap))
+    pmin(linkageMap$Mb, CHROM.MB[chr])
+  else
+    pmin(linkageMap$cM, CHROM.CM[chr]) / CHROM.CM[chr] * CHROM.MB[chr]
 
   # Colours and symbols
   ptcol = rep(1, length(pp))
@@ -69,8 +72,13 @@ karyogram = function(linkageMap, linkedPairs = NULL,
 
 # Hard-coded parameters ----------------------------------------------------
 
-
-CHROM.MB = c(247.2, 242.9, 199.5, 191.3, 180.9, 170.9, 158.8, 146.3, 140.3,
+# GRCh38/hg38 chromosome lengths
+# (https://hgdownload.soe.ucsc.edu/goldenpath/hg38/bigZips/hg38.chrom.sizes)
+CHROM.MB = c(249.0, 242.2, 198.3, 190.2, 181.5, 170.8, 159.3, 145.1, 138.4,
+             133.8, 135.1, 133.3, 114.4, 107.0, 102.0,  90.3,  83.3, 80.4,
+              58.6,  64.4,  46.7,  50.8)
+# Old lengths
+CHROM.MB37 = c(247.2, 242.9, 199.5, 191.3, 180.9, 170.9, 158.8, 146.3, 140.3,
              135.4, 134.4, 132.3, 114.1, 106.4, 100.3,  88.8,  78.8, 76.1,
              63.8,  62.4,  46.9,  49.7)
 
