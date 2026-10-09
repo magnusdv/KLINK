@@ -1,26 +1,4 @@
-#' Load genetic map
-#'
-#' Loads a genetic map from a tab-separated text file, or from the first sheet
-#' of an Excel file with extension `.xlsx`.
-#'
-#' The file should contain columns `Marker`, `Chr` and `cM` (slight
-#' variations in column names are allowed). Chromosomes should be positive
-#' integers, optionally prefixed by "chr". Positions must be nonnegative
-#' numeric values. Both period and comma are accepted as decimal separators.
-#'
-#' @param path Path to the map file, either as plain text or Excel.
-#'
-#' @returns A data frame with standardised column names and rows sorted by
-#'   chromosome and position.
-#'
-#' @examples
-#' tmp = tempfile(fileext = ".map")
-#' map1 = as.data.frame(norSTR::map50)
-#' write.table(map1, tmp, sep = "\t", quote = FALSE, row.names = FALSE)
-#'
-#' map2 = loadMap(tmp)
-#' stopifnot(all.equal(map1, map2))
-#'
+#' @rdname maptools
 #' @export
 loadMap = function(path) {
   formatMsg = "\n\nThe map file must be tab-separated and contain\nthe following named columns: Marker, Chr, cM."
