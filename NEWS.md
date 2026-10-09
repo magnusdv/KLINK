@@ -12,7 +12,7 @@
 
 ## Minor changes and fixes
 
-* Legacy marker name `APOAI1` is changed to `APO` when loading Familias files, with a warning. The two names are treated as equivalent when matching markers to maps.
+* Legacy marker name `APOAI1` is changed to `APOC3` when loading Familias files, with a warning. The two names are treated as equivalent when matching markers to maps.
 
 * Custom maps containing an `Mb` column now use physical positions in the karyogram.
 

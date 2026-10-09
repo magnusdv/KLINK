@@ -52,11 +52,11 @@ loadFamFile = function(path, fallbackModel = "equal", checkLumping = TRUE, withP
       stop2("Unexpected content detected in the Familias file.")
   })
 
-  # Update legacy APO marker name
+  # Update legacy APOC3 marker name
   if(any(vapply(x, \(xx) "APOAI1" %in% name(xx), logical(1)))) {
     x = lapply(x, \(xx)
-      if("APOAI1" %in% name(xx)) setMarkername(xx, "APOAI1", "APO") else xx)
-    warning("Legacy marker name 'APOAI1' changed to 'APO'", call. = FALSE)
+      if("APOAI1" %in% name(xx)) setMarkername(xx, "APOAI1", "APOC3") else xx)
+    warning("Legacy marker name 'APOAI1' changed to 'APOC3'", call. = FALSE)
   }
 
   x1 = x[[1]]

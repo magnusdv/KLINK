@@ -50,7 +50,7 @@ capit = function(x) {
 # Normalise marker names, for safe matching (below)
 normalise = function(x) {
   x = tolower(gsub("[-._ ]", "", x))
-  x[x == "apoai1"] = "apo"
+  x[x == "apoai1"] = "apoc3"
   x
 }
 
