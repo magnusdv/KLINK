@@ -25,7 +25,7 @@ the output. (See \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}}.)}
 }
 \value{
 If \code{withParams = FALSE}, a list of two pedigree hypotheses in the form of \code{ped}
-objects. If \code{withParams = TRUE}, a list with components \code{peds} and \code{params}.
+objects. If \code{withParams = TRUE}, a list with components \code{peds}, \code{params} and \code{hasUnlumpable}.
 }
 \description{
 Load \code{.fam} file

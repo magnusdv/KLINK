@@ -7,12 +7,10 @@ h1 {margin-top: 0;}
 ### Marker map
 The marker map specifies the genetic positions of markers, measured in centiMorgans (cM).
 
-- **Built-in**: A map with updated positions for 50 markers from several common forensic STR kits. (Default.)
+- **Built-in**: A map with updated positions for 51 markers from several common forensic STR kits. (Default.)
 - **Custom**: Lets you upload your own map file.
 
-A custom map may be a tab-delimited text file or (the first sheet of) an Excel (`.xlsx`) file, with columns matching **Marker**, **Chr**, and **cM**. Column order does not matter, and matching is case-insensitive. Longer names are also accepted, provided they start with matching terms; for example **Marker name** or **Chromosome**. If no column matches **cM**, KLINK will look for **POS** instead and use that column as the marker position.
-
-Chromosome values must be positive integers, optionally written with the prefix `chr`.
+A custom map may be a tab-delimited text file or (the first sheet of) an Excel `.xlsx` file, with columns matching **Marker**, **Chr**, **Mb** (optional) and **cM**. Column order does not matter, and matching is case-insensitive. Longer column names are accepted, provided they start with matching terms; for example **Marker name** or **Chromosome**. Chromosome labels must be positive integers, optionally with prefix `chr`.
 
 ### Map function
 Controls how recombination fractions are derived from genetic distances.

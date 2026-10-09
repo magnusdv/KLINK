@@ -17,8 +17,8 @@ subsetMap(linkageMap, markers)
 \item{path}{Path to a genetic map file, either a tab-separated text file or
 an Excel file with extension \code{.xlsx}.}
 
-\item{linkageMap}{A data frame with columns \code{Marker}, \code{Chr} and \code{cM}, sorted
-by chromosome and position.}
+\item{linkageMap}{A data frame with columns \code{Marker}, \code{Chr}, \code{cM} and (optionally)
+\code{Mb}, sorted by chromosome and position.}
 
 \item{maxdist}{A positive number indicating the maximum distance (in cM)
 between paired markers. Markers further apart are considered unlinked.}
@@ -34,10 +34,6 @@ Functions for loading, subsetting and pairing markers in genetic linkage
 maps.
 }
 \details{
-\code{loadMap()} reads a genetic map from a text or Excel file, standardises the
-required columns \code{Marker}, \code{Chr} and \code{cM}, and sorts the rows by chromosome
-and position.
-
 \code{subsetMap()} restricts a map to a given set of markers. Marker names are
 matched flexibly, ignoring case and the separators "-", ".", "_" and space.
 The returned map uses the marker spelling supplied in \code{markers}. If multiple
@@ -46,6 +42,10 @@ map entries match the same marker, only the first is retained.
 \code{getLinkedPairs()} identifies disjoint marker pairs from the supplied map.
 Within each chromosome, pairs are selected greedily by successively choosing
 the closest available markers. Each marker occurs in at most one pair.
+\code{loadMap()} reads and sorts a genetic map from a text or Excel file, with required
+columns \code{Marker}, \code{Chr}, \code{cM}, and optionally a column \code{Mb} with physical positions
+used in karyograms.
+
 }
 \examples{
 map = norSTR::map51

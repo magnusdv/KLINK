@@ -1,8 +1,7 @@
 #' @rdname maptools
 #' @export
 loadMap = function(path) {
-  formatMsg = "\n\nThe map file must be tab-separated and contain\nthe following named columns: Marker, Chr, cM."
-  formatMsg = "\n\nThe map file must be a tab-separated text file (or Excel file)\ncontaining columns 'Marker', 'Chr', 'cM'."
+  formatMsg = "\n\nThe map file must be a tab-separated text file or Excel file\ncontaining columns 'Marker', 'Chr', 'cM', and optionally 'Mb'."
 
   # File extension
   ext = tolower(tools::file_ext(path))
@@ -23,7 +22,7 @@ loadMap = function(path) {
     map[] = lapply(map, as.character)
 
   # Required columns
-  req = c(Marker = "^marker", Chr = "^chr", cM = "^(pos|cm)")
+  req = c(Marker = "^marker", Chr = "^chr", cM = "^cm")
 
   # Check/fix column names
   orignames = names(map)
@@ -36,28 +35,21 @@ loadMap = function(path) {
     names(map)[i[1]] = cc
   }
 
-  # Chrom labels
-  if(any(is.na(map$Chr) | map$Chr == ""))
-    stop2("Missing elements in chromosome column; please check the map file", formatMsg)
+  # Optional physical positions
+  i = grep("^mb", lownames)
+  if(length(i))
+    names(map)[i[1]] = "Mb"
 
   # Chromosome names: chr1 -> 1
-  chr = suppressWarnings(as.integer(sub("chr", "", map$Chr, ignore.case = TRUE)))
-  badchr = is.na(chr) | chr <= 0
-  if(any(badchr))
-    stop2("Illegal chromosome label: ", map$Chr[badchr][1],
-          "\n\nChrom names must be positive integers, or with prefix 'chr'")
-  map$Chr = chr
+  map$Chr = suppressWarnings(as.integer(sub("chr", "", map$Chr, ignore.case = TRUE)))
 
-    # Positions: Convert to numeric (allow comma as decimal separator)
-  cm = suppressWarnings(as.numeric(chartr(",", ".", map$cM)))
-
-  badpos = is.na(cm) | !is.finite(cm) | cm < 0
-  if(any(badpos))
-    stop2("Illegal position value: ", map$cM[badpos][1], formatMsg)
-  map$cM = cm
+  # Positions: Convert to numeric (allow comma as decimal separator)
+  map$cM = suppressWarnings(as.numeric(chartr(",", ".", map$cM)))
+  if("Mb" %in% names(map))
+    map$Mb = suppressWarnings(as.numeric(chartr(",", ".", map$Mb)))
 
   # Sort rows
-  map = map[order(chr, map$cM), , drop = FALSE]
+  map = map[order(map$Chr, map$cM, na.last = TRUE), , drop = FALSE]
 
   # Return df with standardised column names
   map
