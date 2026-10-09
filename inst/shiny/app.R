@@ -73,9 +73,10 @@ ui = dashboardPage(title = "KLINK",
                  selected = "Kosambi", inline = TRUE),
     radioButtons("mutmod", "Mutation model", choices = c("Original", "Simple", "Off"),
                  selected = "Original", inline = TRUE),
-    conditionalPanel(
-      condition = "input.mutmod == 'Original'",
-      div(id = "checkLump", checkboxInput("checkLumping", "Simplify for lumping", value = TRUE))
+    div(
+      id = "checkLump",
+      style = "display:none;",
+      checkboxInput("checkLumping", "Simplify for lumping", value = TRUE)
     ),
     bsTooltip("mutmod", "Global mutation model setting"),
     bsTooltip("checkLumping", "Replace unlumpable models with a simple model (recommended!)"),
@@ -187,6 +188,7 @@ server = function(input, output, session) {
   pedigrees = reactiveValues(complete = NULL, reduced = NULL, plot = NULL, active = NULL)
   XML = reactiveVal(NULL)
   NOTES = reactiveVal(NULL)
+  lumpingRelevant = reactiveVal(FALSE)
 
   shinyjs::delay(0, shinyjs::disable("download"))
 
@@ -221,6 +223,8 @@ server = function(input, output, session) {
         }
       )
     )
+
+    lumpingRelevant(isTRUE(peddata$hasUnlumpable))
 
     if(!is.null(peddata)) {
       allLabs = unlist(lapply(peddata$peds, labels), recursive = TRUE, use.names = FALSE)
@@ -401,6 +405,16 @@ server = function(input, output, session) {
     if(val != checkLumping())
       checkLumping(val)
   })
+
+  observe({
+    shinyjs::toggle("checkLump", condition = input$mutmod == "Original" && lumpingRelevant())
+  })
+
+  observeEvent(lumpingRelevant(), {
+    if(!lumpingRelevant())
+      updateCheckboxInput(session, "checkLumping", value = TRUE)
+  }, ignoreInit = TRUE)
+
 
   # Reload file when changing lumping policy
   observeEvent(checkLumping(), {
@@ -631,8 +645,12 @@ server = function(input, output, session) {
       debug("download")
 
       mutSetting = switch(input$mutmod,
-        Original = if(checkLumping()) "Original, simplify for lumping" else "Original, preserved",
-        Simple = "Simple",  Off = "Off")
+        Original = if(!lumpingRelevant()) "Original"
+                   else if(checkLumping()) "Original, simplify for lumping"
+                   else "Original, preserved",
+        Simple = "Simple",
+        Off = "Off"
+      )
 
       settings = list("KLINK version" = VERSION,
                       "Familias file" = famfile$famname,
@@ -668,6 +686,7 @@ server = function(input, output, session) {
     customMap$map = customMap$name = NULL
     NOTES(NULL)
     XML(NULL)
+    lumpingRelevant(FALSE)
     updateRadioButtons(session, "maptype", selected = "map51")
     updateRadioButtons(session, "mutmod", selected = "Original")
     updateCheckboxInput(session, "checkLumping", value = TRUE)

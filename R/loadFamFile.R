@@ -9,7 +9,7 @@
 #'   the output. (See [pedFamilias::readFam()].)
 #'
 #' @return If `withParams = FALSE`, a list of two pedigree hypotheses in the form of `ped`
-#'   objects. If `withParams = TRUE`, a list with components `peds` and `params`.
+#'   objects. If `withParams = TRUE`, a list with components `peds`, `params` and `hasUnlumpable`.
 #'
 #' @examples
 #' fam = system.file("extdata/halfsib-test.fam", package = "KLINK")
@@ -92,19 +92,21 @@ loadFamFile = function(path, fallbackModel = "equal", checkLumping = TRUE, withP
     names(x)[msnm] = paste("Ped", which(msnm))
 
   # Check Lumpability
-  if(checkLumping) {
-    lumpable = checkLumpability(x[[1]]) & checkLumpability(x[[2]])
-    if(!all(lumpable)) {
-      msg = sprintf("Pedigree prohibits lumping for %d markers; using '%s' mutation model for these",
-                    sum(!lumpable), fallbackModel)
-      warning(msg, call. = FALSE)
-      x = lapply(x, function(ped)
-        setMutmod(ped, which(!lumpable), model = fallbackModel, update = TRUE))
-    }
+  lumpable = checkLumpability(x[[1]]) & checkLumpability(x[[2]])
+  hasUnlumpable = any(!lumpable)
+
+  if(checkLumping && hasUnlumpable) {
+    msg = sprintf(
+      "Pedigree prohibits lumping for %d markers; using '%s' mutation model for these",
+      sum(!lumpable), fallbackModel
+    )
+    warning(msg, call. = FALSE)
+    x = lapply(x, function(ped)
+      setMutmod(ped, which(!lumpable), model = fallbackModel, update = TRUE))
   }
 
   if(withParams)
-    list(peds = x, params = params)
+    list(peds = x, params = params, hasUnlumpable = hasUnlumpable)
   else
     x
 }
