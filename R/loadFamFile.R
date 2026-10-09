@@ -52,6 +52,13 @@ loadFamFile = function(path, fallbackModel = "equal", checkLumping = TRUE, withP
       stop2("Unexpected content detected in the Familias file.")
   })
 
+  # Update legacy APO marker name
+  if(any(vapply(x, \(xx) "APOAI1" %in% name(xx), logical(1)))) {
+    x = lapply(x, \(xx)
+      if("APOAI1" %in% name(xx)) setMarkername(xx, "APOAI1", "APO") else xx)
+    warning("Legacy marker name 'APOAI1' changed to 'APO'", call. = FALSE)
+  }
+
   x1 = x[[1]]
 
   nMark = nMarkers(x1)
@@ -60,10 +67,10 @@ loadFamFile = function(path, fallbackModel = "equal", checkLumping = TRUE, withP
 
   typed = typedMembers(x1)
   if(length(typed) == 0)
-    warning("No typed individuals found in the Familias file.", call. = FALSE)
+    warning("No typed individuals found in the Familias file", call. = FALSE)
 
   if(length(x) == 1) {
-    warning("Only one pedigree found. Adding unrelated hypothesis", call. = FALSE)
+    warning("Only one pedigree found. Added unrelated hypothesis", call. = FALSE)
 
     if(length(typed) == 0)
       stop2("The second pedigree is empty.")
